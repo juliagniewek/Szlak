@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planer podróży – prototyp</title>
+<style>
+  :root {
+    --bg: #f5f3ef;
+    --card: #ffffff;
+    --text: #22252a;
+    --muted: #666c75;
+    --line: #e2ded6;
+    --accent: #2f6f62;
+    --accent-text: #ffffff;
+    --error: #b3261e;
+    --tag-z: #e6ecf8;
+    --tag-z-text: #2b4a86;
+    --tag-n: #e3f2e6;
+    --tag-n-text: #22663a;
+    --tag-cost: #f3eee4;
+    --tag-cost-text: #6b5527;
+    --tag-warn: #fbe9e7;
+    --tag-warn-text: #8c2f22;
+    --tag-fav: #fff4cc;
+    --tag-fav-text: #7a5a00;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  h2 { font-size: 1.15rem; margin: 0 0 12px; }
+  h3 { font-size: 1rem; margin: 0 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .field { margin-bottom: 18px; }
+  .field > label, .field > .label { display: block; font-weight: 600; margin-bottom: 6px; }
+  .opt { font-weight: 400; color: var(--muted); }
+  select {
+    width: 100%;
+    padding: 10px;
+    font: inherit;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text);
+  }
+  .choices { display: flex; flex-wrap: wrap; gap: 8px; }
+  .choices label {
+    display: flex; align-items: center; gap: 6px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .choices label:has(input:checked) { border-color: var(--accent); background: var(--tag-n); }
+  .fav-list { display: grid; gap: 6px; margin-bottom: 16px; }
+  .fav-list label {
+    display: flex; align-items: flex-start; gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .fav-list label:has(input:checked) { border-color: #d4a800; background: var(--tag-fav); }
+  .fav-list input { margin-top: 5px; }
+  button {
+    font: inherit;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    cursor: pointer;
+  }
+  .primary { background: var(--accent); color: var(--accent-text); }
+  .wide { width: 100%; }
+  .secondary { background: var(--card); color: var(--accent); }
+  .small { padding: 6px 12px; font-size: 0.9rem; }
+  .danger { background: var(--card); color: var(--error); border-color: var(--error); }
+  .error { color: var(--error); font-weight: 600; margin: 12px 0 0; }
+  .summary { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 16px; }
+  .pill { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 0.9rem; }
+  .item { display: grid; grid-template-columns: 64px 1fr auto; gap: 10px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
+  .item:first-of-type { border-top: 0; }
+  .time { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .what { font-weight: 600; }
+  .kind { color: var(--muted); font-size: 0.85rem; }
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .tag { font-size: 0.78rem; border-radius: 6px; padding: 1px 8px; }
+  .tag.z { background: var(--tag-z); color: var(--tag-z-text); }
+  .tag.n { background: var(--tag-n); color: var(--tag-n-text); }
+  .tag.cost { background: var(--tag-cost); color: var(--tag-cost-text); }
+  .tag.warn { background: var(--tag-warn); color: var(--tag-warn-text); }
+  .tag.fav { background: var(--tag-fav); color: var(--tag-fav-text); }
+  .free .what { color: var(--muted); font-weight: 400; font-style: italic; }
+  .add-row { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  .add-row select { flex: 1; min-width: 0; }
+  .note { color: var(--muted); font-size: 0.9rem; }
+  .notice { background: var(--tag-fav); color: var(--tag-fav-text); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; }
+  .status { color: var(--accent); font-weight: 600; margin: 0; align-self: center; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .top-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .trip-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .trip-head .summary { margin: 6px 0 0; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+
+  <!-- Ekran 0: moje wyjazdy -->
+  <section id="screen-trips">
+    <h1>Moje wyjazdy</h1>
+    <p class="sub">Zapisane plany wyjazdów. Wszystkie miejsca są fikcyjne.</p>
+    <p id="storage-note" class="notice" hidden>Ta przeglądarka nie pozwala zapisywać danych. Wyjazdy znikną po zamknięciu strony.</p>
+    <button type="button" id="new-trip" class="primary wide">+ Nowy wyjazd</button>
+    <div id="trip-list" style="margin-top:16px"></div>
+  </section>
+
+  <!-- Ekran 1: parametry wyjazdu i ulubione -->
+  <section id="screen-form" hidden>
+    <div class="top-actions">
+      <button type="button" class="secondary small" data-go="trips">← Moje wyjazdy</button>
+    </div>
+    <h1>Nowy plan</h1>
+    <p class="sub">Podaj parametry wyjazdu i zaznacz ulubione miejsca, a aplikacja ułoży plan dzień po dniu.</p>
+
+    <form id="form" class="card" novalidate>
+      <div class="field">
+        <label for="place">Miejsce</label>
+        <select id="place">
+          <option value="">— wybierz miejsce —</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="days">Liczba dni</label>
+        <select id="days">
+          <option value="">— wybierz liczbę dni —</option>
+          <option value="1">1 dzień</option>
+          <option value="2">2 dni</option>
+          <option value="3">3 dni</option>
+          <option value="4">4 dni</option>
+          <option value="5">5 dni</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <span class="label">Intensywność</span>
+        <div class="choices">
+          <label><input type="radio" name="intensity" value="1"> Odpoczynek</label>
+          <label><input type="radio" name="intensity" value="2"> Umiarkowany</label>
+          <label><input type="radio" name="intensity" value="3"> Intensywny</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="label">Charakter wyjazdu</span>
+        <div class="choices">
+          <label><input type="radio" name="character" value="z"> Zwiedzanie</label>
+          <label><input type="radio" name="character" value="n"> Natura</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="label">Budżet <span class="opt">(opcjonalnie)</span></span>
+        <div class="choices">
+          <label><input type="radio" name="budget" value="" checked> Nie podaję</label>
+          <label><input type="radio" name="budget" value="n"> Niski</label>
+          <label><input type="radio" name="budget" value="w"> Wysoki</label>
+        </div>
+      </div>
+
+      <div id="favorites" class="field" hidden>
+        <span class="label">Ulubione <span class="opt">(opcjonalnie: zaznaczone trafią do planu w pierwszej kolejności)</span></span>
+        <h3>Atrakcje i miejsca</h3>
+        <div id="fav-attractions" class="fav-list"></div>
+        <h3>Restauracje</h3>
+        <div id="fav-restaurants" class="fav-list"></div>
+      </div>
+
+      <button type="submit" class="primary wide">Wygeneruj plan</button>
+      <p id="error" class="error" role="alert" hidden></p>
+    </form>
+  </section>
+
+  <!-- Ekran 2: plan wyjazdu -->
+  <section id="screen-plan" hidden>
+    <div class="top-actions">
+      <button type="button" class="secondary small" data-go="trips">← Moje wyjazdy</button>
+      <button type="button" id="edit-params" class="secondary small">Zmień parametry</button>
+    </div>
+    <h1 id="plan-title">Plan wyjazdu</h1>
+    <div id="plan-summary" class="summary"></div>
+    <p id="plan-leftover" class="notice" hidden></p>
+    <div class="actions" style="margin-bottom:16px">
+      <button type="button" id="save" class="primary">Zapisz wyjazd</button>
+      <p id="save-status" class="status" hidden>Wyjazd zapisany. Zmiany zapisują się automatycznie.</p>
+    </div>
+    <div id="plan-days"></div>
+    <p class="note">Plan wygenerowany z danych fikcyjnych. Te same parametry i ulubione zawsze dają ten sam plan.</p>
+  </section>
+
+</main>
+
+<script>
+// Dane fikcyjne. Atrakcja: [nazwa, charakter z=zwiedzanie / n=natura, koszt n=niski / w=wysoki].
+// Restauracja: [rodzaj, poziom cen n=niski / w=wysoki].
+const PLACES = [
+  {
+    name: "Solmara", kind: "miasto portowe",
+    attractions: [
+      ["Latarnia morska z tarasem widokowym", "z", "n"],
+      ["Muzeum dawnych żaglowców", "z", "w"],
+      ["Stary port z drewnianymi magazynami", "z", "n"],
+      ["Rejs statkiem po zatoce", "z", "w"],
+      ["Targ rybny przy nabrzeżu", "z", "n"],
+      ["Katedra z witrażami", "z", "n"],
+      ["Akwarium miejskie", "z", "w"],
+      ["Plaża pod klifem", "n", "n"],
+      ["Spacer po wydmach", "n", "n"],
+      ["Rezerwat ptaków w ujściu rzeki", "n", "n"],
+      ["Wycieczka kajakiem wzdłuż klifów", "n", "w"],
+      ["Ogród botaniczny na wzgórzu", "n", "w"]
+    ],
+    restaurants: [
+      ["Smażalnia ryb na nabrzeżu", "n"],
+      ["Bar z zupami rybnymi", "n"],
+      ["Piekarnia z kawiarnią", "n"],
+      ["Restauracja z owocami morza z widokiem na zatokę", "w"],
+      ["Restauracja degustacyjna w dawnym magazynie", "w"],
+      ["Bistro na dachu z widokiem na port", "w"]
+    ]
+  },
+  {
+    name: "Kresnów", kind: "miasto historyczne",
+    attractions: [
+      ["Rynek z ratuszem", "z", "n"],
+      ["Zamek na wzgórzu", "z", "w"],
+      ["Podziemna trasa pod rynkiem", "z", "w"],
+      ["Muzeum rzemiosła", "z", "n"],
+      ["Kościół z malowanym drewnianym stropem", "z", "n"],
+      ["Mury obronne z bramą miejską", "z", "n"],
+      ["Kamienica z wystawą zegarów", "z", "w"],
+      ["Spacer z przewodnikiem po starówce", "z", "w"],
+      ["Dawny młyn z ekspozycją", "z", "n"],
+      ["Park nad fosą", "n", "n"],
+      ["Wzgórze z widokiem na miasto", "n", "n"],
+      ["Rejs łódką po rzece", "n", "w"]
+    ],
+    restaurants: [
+      ["Bar mleczny z pierogami", "n"],
+      ["Kawiarnia z domowymi ciastami", "n"],
+      ["Gospoda z kuchnią staropolską", "n"],
+      ["Restauracja w zamkowych piwnicach", "w"],
+      ["Winiarnia przy rynku z kolacją degustacyjną", "w"],
+      ["Restauracja z kuchnią sezonową", "w"]
+    ]
+  },
+  {
+    name: "Wysoczyzna Mglista", kind: "region górski",
+    attractions: [
+      ["Drewniany kościółek na przełęczy", "z", "n"],
+      ["Skansen pasterski", "z", "n"],
+      ["Muzeum górnictwa w dawnej sztolni", "z", "w"],
+      ["Szlak na szczyt z panoramą", "n", "n"],
+      ["Wodospad w wąwozie", "n", "n"],
+      ["Kolejka linowa na grań", "n", "w"],
+      ["Hala z wypasem owiec", "n", "n"],
+      ["Jezioro polodowcowe", "n", "n"],
+      ["Szlak grzbietowy", "n", "n"],
+      ["Termy górskie", "n", "w"],
+      ["Jaskinia ze zwiedzaniem z przewodnikiem", "n", "w"],
+      ["Punkt widokowy o wschodzie słońca", "n", "n"]
+    ],
+    restaurants: [
+      ["Schronisko z kuchnią domową", "n"],
+      ["Bacówka z serami", "n"],
+      ["Karczma przy szlaku", "n"],
+      ["Restauracja w hotelu górskim", "w"],
+      ["Restauracja z kuchnią regionalną i kominkiem", "w"],
+      ["Restauracja na szczycie kolejki", "w"]
+    ]
+  },
+  {
+    name: "Pojezierze Srebrnych Toni", kind: "region jezior",
+    attractions: [
+      ["Ruiny zamku nad jeziorem", "z", "n"],
+      ["Muzeum regionalne", "z", "n"],
+      ["Rejs statkiem po kanałach ze śluzami", "z", "w"],
+      ["Galeria w dawnym dworze", "z", "w"],
+      ["Spływ kajakowy rzeką", "n", "w"],
+      ["Plaża nad jeziorem", "n", "n"],
+      ["Ścieżka wokół jeziora", "n", "n"],
+      ["Wieża obserwacyjna nad mokradłami", "n", "n"],
+      ["Rowerem przez las", "n", "n"],
+      ["Żeglowanie z instruktorem", "n", "w"],
+      ["Wyspa z rezerwatem łabędzi", "n", "n"],
+      ["Kąpiel w jeziorze o zachodzie słońca", "n", "n"]
+    ],
+    restaurants: [
+      ["Smażalnia ryb jeziornych", "n"],
+      ["Bar przy przystani", "n"],
+      ["Naleśnikarnia", "n"],
+      ["Restauracja w dworze nad jeziorem", "w"],
+      ["Restauracja hotelowa z tarasem nad wodą", "w"],
+      ["Kolacja na pokładzie statku", "w"]
+    ]
+  },
+  {
+    name: "Królestwo Aldenii", kind: "kraj",
+    attractions: [
+      ["Stolica z pałacem królewskim", "z", "w"],
+      ["Średniowieczne miasteczko na wzgórzu", "z", "n"],
+      ["Muzeum narodowe", "z", "w"],
+      ["Klasztor wykuty w skałach", "z", "n"],
+      ["Stary kamienny most", "z", "n"],
+      ["Festiwal ludowy na rynku", "z", "n"],
+      ["Park narodowy z kanionem", "n", "n"],
+      ["Wybrzeże z zatoczkami", "n", "n"],
+      ["Winnice w dolinie", "n", "w"],
+      ["Przejazd widokową koleją przez góry", "n", "w"],
+      ["Jezioro w kraterze", "n", "n"],
+      ["Stary las bukowy", "n", "n"]
+    ],
+    restaurants: [
+      ["Tawerna z daniami z grilla", "n"],
+      ["Przydrożny bar z zupami", "n"],
+      ["Targ z jedzeniem ulicznym", "n"],
+      ["Restauracja przy pałacu", "w"],
+      ["Restauracja z kuchnią narodową", "w"],
+      ["Restauracja w winnicy", "w"]
+    ]
+  },
+  {
+    name: "Nowe Lirno", kind: "nowoczesne miasto",
+    attractions: [
+      ["Wieżowiec z tarasem widokowym", "z", "w"],
+      ["Muzeum sztuki współczesnej", "z", "w"],
+      ["Dzielnica murali", "z", "n"],
+      ["Centrum nauki", "z", "w"],
+      ["Hala targowa z lokalnym rękodziełem", "z", "n"],
+      ["Bulwar z nowoczesną architekturą", "z", "n"],
+      ["Kino plenerowe", "z", "n"],
+      ["Galeria w dawnej fabryce", "z", "n"],
+      ["Spektakl w operze", "z", "w"],
+      ["Park z ogrodem wodnym", "n", "n"],
+      ["Bulwary nad rzeką rowerem", "n", "n"],
+      ["Ogród na dachu", "n", "w"]
+    ],
+    restaurants: [
+      ["Hala z jedzeniem ulicznym", "n"],
+      ["Bar z ramenem", "n"],
+      ["Kawiarnia z bajglami", "n"],
+      ["Restauracja fusion na wysokim piętrze", "w"],
+      ["Restauracja z menu degustacyjnym", "w"],
+      ["Bar sushi przy bulwarze", "w"]
+    ]
+  },
+  {
+    name: "Dolina Złotych Winnic", kind: "region winiarski",
+    attractions: [
+      ["Piwnice winne z degustacją", "z", "w"],
+      ["Zamek wśród winnic", "z", "w"],
+      ["Muzeum winiarstwa", "z", "n"],
+      ["Miasteczko z kamiennymi domami", "z", "n"],
+      ["Targ rolniczy", "z", "n"],
+      ["Szlak przez winnice", "n", "n"],
+      ["Lot balonem nad doliną", "n", "w"],
+      ["Rowerem wzdłuż rzeki", "n", "n"],
+      ["Wzgórze z gajem oliwnym", "n", "n"],
+      ["Kąpiel w rzecznej zatoce", "n", "n"],
+      ["Winobranie z gospodarzem winnicy", "n", "w"],
+      ["Punkt widokowy na dolinę", "n", "n"]
+    ],
+    restaurants: [
+      ["Gospoda z serami i chlebem", "n"],
+      ["Bar z domowym makaronem", "n"],
+      ["Piekarnia przy rynku", "n"],
+      ["Restauracja w winnicy z kolacją", "w"],
+      ["Restauracja z kuchnią regionalną w zamku", "w"],
+      ["Taras widokowy z kolacją", "w"]
+    ]
+  },
+  {
+    name: "Wyspy Koralowe", kind: "archipelag",
+    attractions: [
+      ["Stara twierdza na skale", "z", "n"],
+      ["Wioska rybacka", "z", "n"],
+      ["Muzeum morskie", "z", "w"],
+      ["Nurkowanie z rurką przy rafie", "n", "n"],
+      ["Rejs łodzią między wyspami", "n", "w"],
+      ["Plaża z białym piaskiem", "n", "n"],
+      ["Spływ kajakiem po lagunie", "n", "w"],
+      ["Obserwacja żółwi z przewodnikiem", "n", "w"],
+      ["Szlak na wulkaniczne wzgórze", "n", "n"],
+      ["Zatoczka z jaskinią", "n", "n"],
+      ["Zachód słońca na cyplu", "n", "n"],
+      ["Lekcja surfingu", "n", "w"]
+    ],
+    restaurants: [
+      ["Bar z grillowanymi rybami", "n"],
+      ["Budka z owocami i koktajlami", "n"],
+      ["Tawerna rybacka", "n"],
+      ["Restauracja na pomoście", "w"],
+      ["Restauracja hotelowa z kuchnią wyspiarską", "w"],
+      ["Kolacja na plaży", "w"]
+    ]
+  },
+  {
+    name: "Zielony Przesmyk", kind: "miasteczko",
+    attractions: [
+      ["Ratusz z wieżą", "z", "n"],
+      ["Muzeum zabawek", "z", "n"],
+      ["Kościół na skarpie", "z", "n"],
+      ["Pracownia ceramiki z warsztatami", "z", "w"],
+      ["Spacer szlakiem legend", "z", "n"],
+      ["Lokalny browar z degustacją", "z", "w"],
+      ["Wąwóz z potokiem", "n", "n"],
+      ["Ścieżka przez mokradła", "n", "n"],
+      ["Park linowy w lesie", "n", "w"],
+      ["Wzgórze z ruinami wiatraka", "n", "n"],
+      ["Przejażdżka konna", "n", "w"],
+      ["Sad czereśniowy", "n", "n"]
+    ],
+    restaurants: [
+      ["Bar z pierogami", "n"],
+      ["Kawiarnia z zapiekankami", "n"],
+      ["Gospoda przy młynie", "n"],
+      ["Restauracja w dawnym spichlerzu", "w"],
+      ["Restauracja z kuchnią ogrodową", "w"],
+      ["Kolacja w winiarni", "w"]
+    ]
+  },
+  {
+    name: "Puszcza Szeptów", kind: "region leśny",
+    attractions: [
+      ["Muzeum leśne", "z", "n"],
+      ["Wioska z drewnianymi chatami", "z", "n"],
+      ["Ścieżka edukacyjna w lesie", "n", "n"],
+      ["Obserwacja dzikich zwierząt z przewodnikiem", "n", "w"],
+      ["Rowerem przez puszczę", "n", "n"],
+      ["Wieża widokowa nad koronami drzew", "n", "n"],
+      ["Spływ leśną rzeką", "n", "w"],
+      ["Torfowisko z drewnianą kładką", "n", "n"],
+      ["Nocny spacer z przewodnikiem", "n", "w"],
+      ["Grzybobranie", "n", "n"],
+      ["Aleja pomnikowych dębów", "n", "n"],
+      ["Jezioro leśne", "n", "n"]
+    ],
+    restaurants: [
+      ["Karczma leśna", "n"],
+      ["Bar z zupą grzybową", "n"],
+      ["Agroturystyka z domowym obiadem", "n"],
+      ["Restauracja w leśnym hotelu", "w"],
+      ["Kolacja z kuchnią puszczańską", "w"],
+      ["Restauracja w dawnym dworze myśliwskim", "w"]
+    ]
+  }
+];
+
+const CHARACTER = { z: "zwiedzanie", n: "natura" };
+const COST = { n: "koszt niski", w: "koszt wysoki" };
+const PRICE = { n: "ceny niskie", w: "ceny wysokie" };
+const INTENSITY = { 1: "odpoczynek", 2: "umiarkowany", 3: "intensywny" };
+const BUDGET = { "": "budżet nie podany", n: "budżet niski", w: "budżet wysoki" };
+// Godziny atrakcji przed obiadem i po nim, zależnie od intensywności.
+const SLOTS = {
+  1: { before: ["10:00"], after: [] },
+  2: { before: ["10:00"], after: ["15:00"] },
+  3: { before: ["9:00", "11:00"], after: ["15:00"] }
+};
+const STORAGE_KEY = "planer-podrozy-wyjazdy";
+
+const $ = (sel) => document.querySelector(sel);
+
+// Zapisane wyjazdy: w pamięci przeglądarki, a gdy jest niedostępna, tylko do zamknięcia strony.
+let trips = [];
+try {
+  trips = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+} catch (e) {
+  $("#storage-note").hidden = false;
+}
+function persist() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(trips));
+  } catch (e) {
+    $("#storage-note").hidden = false;
+  }
+}
+
+// Wyjazd, który jest teraz otwarty: { id, params, favA, favR, plan, leftover }.
+// id jest puste, dopóki wyjazd nie zostanie zapisany.
+let current = null;
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+const daysLabel = (n) => (n === 1 ? "1 dzień" : `${n} dni`);
+
+function showScreen(name) {
+  ["trips", "form", "plan"].forEach((s) => { $(`#screen-${s}`).hidden = s !== name; });
+  window.scrollTo(0, 0);
+}
+
+// ---------- Ekran 0: moje wyjazdy ----------
+
+function renderTrips() {
+  const list = $("#trip-list");
+  if (!trips.length) {
+    list.innerHTML = `<p class="note">Nie masz jeszcze zapisanych wyjazdów. Kliknij „Nowy wyjazd”, żeby zaplanować pierwszy.</p>`;
+    return;
+  }
+  list.innerHTML = trips.map((t) => {
+    const p = PLACES[t.params.place];
+    const favCount = t.favA.length + t.favR.length;
+    const pills = [
+      daysLabel(t.params.days),
+      INTENSITY[t.params.intensity],
+      CHARACTER[t.params.character],
+      BUDGET[t.params.budget],
+      favCount ? `ulubione: ${favCount}` : null
+    ].filter(Boolean).map((x) => `<span class="pill">${x}</span>`).join("");
+    return `<div class="card"><div class="trip-head">
+        <div><h2 style="margin:0">${esc(p.name)}</h2>
+          <div class="kind">${esc(p.kind)} · zapisano ${esc(t.saved)}</div>
+          <div class="summary">${pills}</div></div>
+        <div class="actions" style="margin:0">
+          <button type="button" class="primary small" data-open="${t.id}">Otwórz</button>
+          <button type="button" class="danger small" data-delete="${t.id}">Usuń</button>
+        </div></div></div>`;
+  }).join("");
+}
+
+$("#trip-list").addEventListener("click", (e) => {
+  const open = e.target.closest("[data-open]");
+  const del = e.target.closest("[data-delete]");
+  if (open) {
+    current = JSON.parse(JSON.stringify(trips.find((t) => t.id === open.dataset.open)));
+    showPlan();
+  } else if (del) {
+    const t = trips.find((x) => x.id === del.dataset.delete);
+    const name = `${PLACES[t.params.place].name} (${daysLabel(t.params.days)})`;
+    if (!confirm(`Usunąć wyjazd „${name}”? Tej operacji nie da się cofnąć.`)) return;
+    trips = trips.filter((x) => x.id !== t.id);
+    persist();
+    renderTrips();
+  }
+});
+
+$("#new-trip").addEventListener("click", () => {
+  current = null;
+  $("#form").reset();
+  $("#error").hidden = true;
+  renderFavorites("", [], []);
+  $("#screen-form h1").textContent = "Nowy plan";
+  showScreen("form");
+});
+
+document.querySelectorAll("[data-go=trips]").forEach((b) => b.addEventListener("click", () => {
+  if (current && !current.id && current.plan &&
+      !confirm("Ten plan nie jest zapisany. Wrócić do listy i go porzucić?")) return;
+  renderTrips();
+  showScreen("trips");
+}));
+
+// ---------- Ekran 1: parametry i ulubione ----------
+
+PLACES.forEach((p, i) => {
+  const o = document.createElement("option");
+  o.value = i;
+  o.textContent = `${p.name} (${p.kind})`;
+  $("#place").appendChild(o);
+});
+
+function renderFavorites(placeIdx, favA, favR) {
+  $("#favorites").hidden = placeIdx === "";
+  if (placeIdx === "") return;
+  const p = PLACES[placeIdx];
+  $("#fav-attractions").innerHTML = p.attractions.map(([name, ch, cost]) =>
+    `<label><input type="checkbox" name="favA" value="${esc(name)}" ${favA.includes(name) ? "checked" : ""}>
+      <span>${esc(name)}<span class="tags"><span class="tag ${ch}">${CHARACTER[ch]}</span>
+      <span class="tag cost">${COST[cost]}</span></span></span></label>`).join("");
+  $("#fav-restaurants").innerHTML = p.restaurants.map(([name, price]) =>
+    `<label><input type="checkbox" name="favR" value="${esc(name)}" ${favR.includes(name) ? "checked" : ""}>
+      <span>${esc(name)}<span class="tags"><span class="tag cost">${PRICE[price]}</span></span></span></label>`).join("");
+}
+
+$("#place").addEventListener("change", () => renderFavorites($("#place").value, [], []));
+
+function radio(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : null;
+}
+const checked = (name) => [...document.querySelectorAll(`input[name="${name}"]:checked`)].map((i) => i.value);
+
+// Stabilne sortowanie: przy wysokim budżecie najpierw pozycje drogie.
+function byBudget(list, budget, costIndex) {
+  if (budget !== "w") return list;
+  return [...list].sort((a, b) => (b[costIndex] === "w") - (a[costIndex] === "w"));
+}
+
+const attractionItem = (time, [name, ch, cost], fav, outside) =>
+  ({ type: "attraction", time, name, ch, cost, fav, outside });
+const mealItem = (time, label, [name, cost], fav) => ({ type: "meal", time, label, name, cost, fav });
+
+// Ulubione trafiają do planu jako pierwsze, niezależnie od budżetu i charakteru.
+function buildPlan({ place, days, intensity, character, budget }, favA, favR) {
+  const p = PLACES[place];
+  const favs = p.attractions.filter((a) => favA.includes(a[0]));
+  const rest = p.attractions.filter((a) => !favA.includes(a[0]) && (budget !== "n" || a[2] === "n"));
+  const queue = [
+    ...favs.map((a) => ({ a, fav: true, outside: a[1] !== character })),
+    ...byBudget(rest.filter((a) => a[1] === character), budget, 2).map((a) => ({ a, fav: false, outside: false })),
+    ...byBudget(rest.filter((a) => a[1] !== character), budget, 2).map((a) => ({ a, fav: false, outside: true }))
+  ];
+
+  const restaurants = [
+    ...p.restaurants.filter((r) => favR.includes(r[0])).map((r) => ({ r, fav: true })),
+    ...byBudget(p.restaurants.filter((r) => !favR.includes(r[0]) && (budget !== "n" || r[1] === "n")), budget, 1)
+      .map((r) => ({ r, fav: false }))
+  ];
+
+  const slots = SLOTS[intensity];
+  const plan = [];
+  let r = 0;
+  for (let d = 0; d < days; d++) {
+    const items = [];
+    const nextAttraction = (time) => {
+      const q = queue.shift();
+      items.push(q ? attractionItem(time, q.a, q.fav, q.outside) : { type: "free", time });
+    };
+    const nextMeal = (time, label) => {
+      const m = restaurants[r++ % restaurants.length];
+      items.push(mealItem(time, label, m.r, m.fav));
+    };
+    slots.before.forEach(nextAttraction);
+    nextMeal("13:00", "Obiad");
+    slots.after.forEach(nextAttraction);
+    nextMeal("19:00", "Kolacja");
+    plan.push(items);
+  }
+  const leftover = queue.filter((q) => q.fav).map((q) => q.a[0]);
+  return { plan, leftover };
+}
+
+$("#form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const placeIdx = $("#place").value;
+  const days = $("#days").value;
+  const intensity = radio("intensity");
+  const character = radio("character");
+  const budget = radio("budget") ?? "";
+
+  const missing = [];
+  if (placeIdx === "") missing.push("miejsce");
+  if (days === "") missing.push("liczbę dni");
+  if (!intensity) missing.push("intensywność");
+  if (!character) missing.push("charakter wyjazdu");
+
+  const err = $("#error");
+  if (missing.length) {
+    err.textContent = `Wybierz jeszcze: ${missing.join(", ")}.`;
+    err.hidden = false;
+    return;
+  }
+  err.hidden = true;
+
+  if (current && current.id &&
+      !confirm("Nowy plan zastąpi zapisany plan tego wyjazdu razem z Twoimi zmianami. Kontynuować?")) return;
+
+  const params = { place: Number(placeIdx), days: Number(days), intensity: Number(intensity), character, budget };
+  const favA = checked("favA");
+  const favR = checked("favR");
+  const { plan, leftover } = buildPlan(params, favA, favR);
+  current = { id: current ? current.id : null, saved: current ? current.saved : null, params, favA, favR, plan, leftover };
+  if (current.id) saveCurrent();
+  showPlan();
+});
+
+// ---------- Ekran 2: plan, edycja i zapis ----------
+
+function saveCurrent() {
+  if (!current.id) current.id = String(Date.now());
+  current.saved = new Date().toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" });
+  const idx = trips.findIndex((t) => t.id === current.id);
+  const copy = JSON.parse(JSON.stringify(current));
+  if (idx >= 0) trips[idx] = copy; else trips.unshift(copy);
+  persist();
+}
+
+function renderItem(it, d, i) {
+  const favTag = it.fav ? '<span class="tag fav">★ ulubione</span>' : "";
+  let body;
+  if (it.type === "free") {
+    body = `<div class="what">Czas wolny</div>
+      <div class="kind">W tym miejscu zabrakło kolejnych atrakcji dla wybranych parametrów</div>`;
+  } else if (it.type === "meal") {
+    body = `<div class="kind">${it.label}</div><div class="what">${esc(it.name)}</div>
+      <div class="tags">${favTag}<span class="tag cost">${PRICE[it.cost]}</span></div>`;
+  } else {
+    body = `<div class="kind">Atrakcja</div><div class="what">${esc(it.name)}</div>
+      <div class="tags">${favTag}<span class="tag ${it.ch}">${CHARACTER[it.ch]}</span>
+      <span class="tag cost">${COST[it.cost]}</span>
+      ${it.outside ? '<span class="tag warn">spoza wybranego charakteru</span>' : ""}</div>`;
+  }
+  return `<div class="item ${it.type === "free" ? "free" : ""}"><div class="time">${it.time}</div>
+    <div>${body}</div>
+    <button type="button" class="danger small" data-remove="${d}:${i}" aria-label="Usuń punkt">Usuń</button></div>`;
+}
+
+// Atrakcje, których nie ma jeszcze w planie, oraz wszystkie restauracje miejsca.
+function addOptions() {
+  const p = PLACES[current.params.place];
+  const used = new Set(current.plan.flat().filter((it) => it.type === "attraction").map((it) => it.name));
+  const attractions = p.attractions.map((a, i) => [a, i]).filter(([a]) => !used.has(a[0]));
+  return `<option value="">— dodaj punkt do tego dnia —</option>
+    <optgroup label="Atrakcje">${attractions.map(([a, i]) =>
+      `<option value="a:${i}">${esc(a[0])} (${CHARACTER[a[1]]}, ${COST[a[2]]})</option>`).join("")}</optgroup>
+    <optgroup label="Restauracje">${p.restaurants.map((r, i) =>
+      `<option value="r:${i}">${esc(r[0])} (${PRICE[r[1]]})</option>`).join("")}</optgroup>`;
+}
+
+function renderPlanDays() {
+  const options = addOptions();
+  $("#plan-days").innerHTML = current.plan.map((items, d) =>
+    `<div class="card"><h2>Dzień ${d + 1}</h2>
+      ${items.length ? items.map((it, i) => renderItem(it, d, i)).join("") : '<p class="note">Ten dzień jest pusty.</p>'}
+      <div class="add-row"><select data-add-select="${d}" aria-label="Punkt do dodania w dniu ${d + 1}">${options}</select>
+      <button type="button" class="secondary small" data-add="${d}">Dodaj</button></div></div>`
+  ).join("");
+}
+
+function showPlan() {
+  const { params, favA, favR, leftover } = current;
+  const p = PLACES[params.place];
+  $("#plan-title").textContent = `Plan: ${p.name}`;
+  $("#plan-summary").innerHTML = [
+    p.kind,
+    daysLabel(params.days),
+    INTENSITY[params.intensity],
+    CHARACTER[params.character],
+    BUDGET[params.budget],
+    favA.length + favR.length ? `ulubione: ${favA.length + favR.length}` : null
+  ].filter(Boolean).map((t) => `<span class="pill">${esc(t)}</span>`).join("");
+  const left = $("#plan-leftover");
+  left.hidden = !leftover.length;
+  left.textContent = leftover.length
+    ? `Nie zmieściły się ulubione: ${leftover.join(", ")}. Możesz dodać je ręcznie w wybranym dniu albo zwiększyć liczbę dni lub intensywność.`
+    : "";
+  updateSaveState();
+  renderPlanDays();
+  showScreen("plan");
+}
+
+function updateSaveState() {
+  $("#save").hidden = !!current.id;
+  $("#save-status").hidden = !current.id;
+}
+
+function afterEdit() {
+  if (current.id) saveCurrent();
+  renderPlanDays();
+}
+
+$("#plan-days").addEventListener("click", (e) => {
+  const rm = e.target.closest("[data-remove]");
+  const add = e.target.closest("[data-add]");
+  if (rm) {
+    const [d, i] = rm.dataset.remove.split(":").map(Number);
+    current.plan[d].splice(i, 1);
+    afterEdit();
+  } else if (add) {
+    const d = Number(add.dataset.add);
+    const value = document.querySelector(`[data-add-select="${d}"]`).value;
+    if (!value) return;
+    const [kind, idx] = value.split(":");
+    const p = PLACES[current.params.place];
+    const day = current.plan[d];
+    if (kind === "a") {
+      const a = p.attractions[idx];
+      // Dodana atrakcja trafia przed kolację, jeśli jest w tym dniu.
+      const dinner = day.findIndex((it) => it.type === "meal" && it.label === "Kolacja");
+      const item = attractionItem("dodane", a, current.favA.includes(a[0]), a[1] !== current.params.character);
+      day.splice(dinner >= 0 ? dinner : day.length, 0, item);
+    } else {
+      const r = p.restaurants[idx];
+      day.push(mealItem("dodane", "Posiłek", r, current.favR.includes(r[0])));
+    }
+    afterEdit();
+  }
+});
+
+$("#save").addEventListener("click", () => {
+  saveCurrent();
+  updateSaveState();
+});
+
+$("#edit-params").addEventListener("click", () => {
+  const { params, favA, favR } = current;
+  $("#error").hidden = true;
+  $("#place").value = params.place;
+  $("#days").value = params.days;
+  document.querySelector(`input[name=intensity][value="${params.intensity}"]`).checked = true;
+  document.querySelector(`input[name=character][value="${params.character}"]`).checked = true;
+  document.querySelector(`input[name=budget][value="${params.budget}"]`).checked = true;
+  renderFavorites(String(params.place), favA, favR);
+  $("#screen-form h1").textContent = current.id ? "Zmień parametry wyjazdu" : "Nowy plan";
+  showScreen("form");
+});
+
+renderTrips();
+</script>
+</body>
+</html>
