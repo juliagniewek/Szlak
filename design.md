@@ -78,7 +78,7 @@ Charakter: nowoczesny magazyn podróżniczy połączony z moodboardem. Spokojny 
 
 Proste ikony liniowe o jednolitej grubości kreski, jeden zestaw w całej aplikacji.
 - **Sekcje:** Odkrywaj (kompas), Szukaj (lupa), Zapisane (serce), Podróże (walizka lub samolot).
-- **Kategorie:** kultura (kolumna), miasta (budynki), natura (drzewo), punkty widokowe (góra), plaże (parasol), jedzenie (sztućce), kawiarnie (filiżanka), aktywności (but lub lina).
+- **Kategorie:** kultura (kolumna), miasta (budynki), natura (drzewo), punkty widokowe (góra), plaże (parasol), jedzenie (sztućce), kawiarnie (filiżanka), aktywności (flaga).
 
 ## Zdjęcia
 

@@ -51,11 +51,7 @@ Podstawa: [brief.md](brief.md), prototyp [prototyp.html](prototyp.html) i notatk
 6. **Mapa**: obok planu, z wyborem dnia.
 7. **Podróże**: lista podróży użytkownika.
 
-**Wygląd:**
-- spokojna paleta (krem, piasek, szałwia, brąz), z mocniejszym kontrastem dla aktywnej sekcji i przycisków,
-- każda sekcja i kategoria ma własną ikonę,
-- karty miejsc mają prawdziwe zdjęcia,
-- nagłówki szeryfowe, tekst bezszeryfowy.
+**Wygląd:** [design.md](design.md). Ciepły, magazynowy styl ze zdjęciami, ikonami i osobnym kolorem dla każdej sekcji pasuje do osoby, która szuka inspiracji w przeglądarce na komputerze i chce łatwo się w niej orientować.
 
 ## 5. User stories i kryteria akceptacji
 

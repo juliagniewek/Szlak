@@ -31,7 +31,9 @@
   :focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
   .muted { color: var(--muted); }
   .small { font-size: 0.875rem; }
-  .eyebrow { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; color: var(--sage); font-weight: 600; margin: 0 0 6px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; color: var(--sec, var(--sage)); font-weight: 700; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+  .eyebrow::before { content: ""; width: 18px; height: 3px; border-radius: 2px; background: var(--sec, var(--sage)); }
+  .ico-svg { display: inline-block; vertical-align: -0.2em; flex: none; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
   /* Układ i nawigacja */
@@ -44,15 +46,17 @@
   .wrap { max-width: 1180px; margin: 0 auto; }
   .bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--paper); border-top: 1px solid var(--sand); }
   .nav-btn { background: none; border: 0; padding: 10px 4px; cursor: pointer; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.78rem; border-radius: 10px; }
-  .nav-btn .ico { font-size: 1.2rem; line-height: 1; }
-  .nav-btn.active { color: var(--brown); font-weight: 700; }
+  .nav-btn .ico { line-height: 1; color: var(--sec); display: inline-flex; }
+  .nav-btn:hover { color: var(--brown); }
+  /* Aktywna sekcja: tło, pogrubienie i pasek w kolorze sekcji (uwaga z peer testu). */
+  .nav-btn.active { color: var(--brown); font-weight: 700; background: var(--sand); box-shadow: inset 0 3px 0 var(--sec); border-radius: 0; }
   .nav-btn .badge { background: var(--sage); color: #fff; border-radius: 999px; font-size: 0.7rem; padding: 0 6px; margin-left: 4px; }
   .nav-btn .badge:empty { display: none; }
   @media (min-width: 900px) {
     .side { display: flex; flex-direction: column; gap: 4px; width: 220px; flex: none; position: sticky; top: 0; height: 100vh; padding: 28px 16px; border-right: 1px solid var(--sand); background: var(--cream); }
     .side .brand { margin: 0 8px 24px; }
     .side .nav-btn { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 10px 12px; font-size: 0.95rem; }
-    .side .nav-btn.active { background: var(--sand); }
+    .side .nav-btn.active { background: var(--sand); box-shadow: inset 4px 0 0 var(--sec); border-radius: 0 10px 10px 0; }
     .side-foot { margin-top: auto; font-size: 0.8rem; color: var(--muted); padding: 0 8px; }
     .bottom-nav, .topbar { display: none; }
     main { padding: 32px 40px 48px; }
@@ -105,8 +109,11 @@
   .pcard:hover { box-shadow: 0 6px 20px rgba(64, 58, 52, 0.12); transform: translateY(-2px); }
   .pcard.selected { outline: 3px solid var(--sage); outline-offset: -3px; }
   .pimg-btn { display: block; width: 100%; border: 0; padding: 0; cursor: pointer; background: none; }
-  .pimg { height: 130px; display: grid; place-items: center; font-size: 2.4rem; }
-  .pimg.big { height: 190px; font-size: 3.5rem; }
+  .pimg { aspect-ratio: 16 / 10; display: grid; place-items: center; color: rgba(255, 253, 249, 0.92); position: relative; overflow: hidden; }
+  .pimg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .dest { background-size: cover; background-position: center; }
+  .pimg.big { aspect-ratio: 16 / 8; }
+  .chip .ico-svg { margin-right: 4px; }
   .pbody { padding: 12px 14px 14px; }
   .pcat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sage); font-weight: 700; }
   .ploc { font-size: 0.875rem; color: var(--muted); }
@@ -236,15 +243,43 @@
 // Prawdziwe kraje, miasta i miejsca, przybliżone współrzędne. Bez adresów i nazw firm.
 // Flagi: p = popularne, s = na jesień i zimę, h = mniej znane.
 
+// Ikony liniowe (jeden zestaw w całej aplikacji, zgodnie z design.md).
+const ICONS = {
+  compass: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+  heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  suitcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18"/>',
+  column: '<path d="M3 9l9-5 9 5M5 9v9M9.5 9v9M14.5 9v9M19 9v9M3 20h18"/>',
+  buildings: '<path d="M3 21h18M5 21V8l6-3v16M11 21V10h8v11M8 10v.01M8 14v.01M8 18v.01M15 14h1M15 18h1"/>',
+  tree: '<path d="M12 3l-5 7h3l-4 6h12l-4-6h3zM12 16v5"/>',
+  mountain: '<path d="M3 20l6-10 4 6 2-3 6 7z"/><circle cx="17" cy="6" r="2"/>',
+  umbrella: '<path d="M3 12a9 9 0 0 1 18 0zM12 12v7a2 2 0 0 1-4 0"/>',
+  utensils: '<path d="M7 3v8a2 2 0 0 0 2 2v8M11 3v8a2 2 0 0 1-2 2M9 3v6M17 3c-2 2-2 6 0 8v10"/>',
+  cup: '<path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM16 10h2a2 2 0 0 1 0 4h-2M8 3v3M12 3v3"/>',
+  flag: '<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>'
+};
+function icon(name, size = 20, filled = false) {
+  return `<svg class="ico-svg" viewBox="0 0 24 24" width="${size}" height="${size}" fill="${filled ? "currentColor" : "none"}"
+    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+}
+
+// Każda sekcja ma własny kolor i ikonę (uwaga z peer testu o czytelności nawigacji).
+const SECTIONS = {
+  explore: { color: "#7B8069", icon: "compass" },
+  search:  { color: "#4F6D8A", icon: "search" },
+  saved:   { color: "#B5452F", icon: "heart" },
+  trips:   { color: "#403A34", icon: "suitcase" }
+};
+
 const CATS = {
-  kultura:   { label: "Kultura",            icon: "🏛️", bg: "linear-gradient(135deg,#c2b29b,#7d6c58)" },
-  miasta:    { label: "Miasta i dzielnice", icon: "🏙️", bg: "linear-gradient(135deg,#b49c84,#5f5044)" },
-  natura:    { label: "Natura",             icon: "🌲", bg: "linear-gradient(135deg,#8f957c,#55604a)" },
-  punkt:     { label: "Punkty widokowe",    icon: "⛰️", bg: "linear-gradient(135deg,#a3a9a6,#5d6461)" },
-  plaza:     { label: "Plaże",              icon: "🏖️", bg: "linear-gradient(135deg,#dccaa4,#93a59f)" },
-  jedzenie:  { label: "Jedzenie",           icon: "🍝", bg: "linear-gradient(135deg,#c99a6b,#8c5a36)" },
-  kawiarnia: { label: "Kawiarnie",          icon: "☕", bg: "linear-gradient(135deg,#ad9078,#5e4636)" },
-  aktywnosc: { label: "Aktywności",         icon: "🧗", bg: "linear-gradient(135deg,#a58d76,#5b6b5a)" }
+  kultura:   { label: "Kultura",            icon: "column",    bg: "linear-gradient(135deg,#c2b29b,#7d6c58)" },
+  miasta:    { label: "Miasta i dzielnice", icon: "buildings", bg: "linear-gradient(135deg,#b49c84,#5f5044)" },
+  natura:    { label: "Natura",             icon: "tree",      bg: "linear-gradient(135deg,#8f957c,#55604a)" },
+  punkt:     { label: "Punkty widokowe",    icon: "mountain",  bg: "linear-gradient(135deg,#a3a9a6,#5d6461)" },
+  plaza:     { label: "Plaże",              icon: "umbrella",  bg: "linear-gradient(135deg,#dccaa4,#93a59f)" },
+  jedzenie:  { label: "Jedzenie",           icon: "utensils",  bg: "linear-gradient(135deg,#c99a6b,#8c5a36)" },
+  kawiarnia: { label: "Kawiarnie",          icon: "cup",       bg: "linear-gradient(135deg,#ad9078,#5e4636)" },
+  aktywnosc: { label: "Aktywności",         icon: "flag",      bg: "linear-gradient(135deg,#a58d76,#5b6b5a)" }
 };
 
 const P = (id, name, city, country, cat, lat, lon, flags, desc) => ({ id, name, city, country, cat, lat, lon, flags, desc });
@@ -305,7 +340,52 @@ const DESTS = [
 ];
 
 const COUNTRIES = [...new Set(PLACES.map((p) => p.country))].sort((a, b) => a.localeCompare(b, "pl"));
-const DAY_COLORS =["#7B8069", "#B0703C", "#4F6D8A", "#8A5A7A", "#403A34", "#A68A3D", "#5E8C7A"];
+// Zdjęcia z Wikimedia Commons (licencje CC lub domena publiczna), ścieżki plików.
+// Wymagają internetu; bez niego karta pokazuje gradient z ikoną kategorii.
+const PHOTOS = {
+  "rzym-koloseum": "d/de/Colosseo_2020.jpg",
+  "rzym-forum": "6/6a/Foro_Romano_Musei_Capitolini_Roma.jpg",
+  "rzym-panteon": "7/7b/Pantheon_%28Rome%29_-_Right_side_and_front.jpg",
+  "rzym-trevi": "c/c7/Trevi_Fountain_-_Roma.jpg",
+  "rzym-pincio": "6/6d/Terrazza_del_Pincio_%2846397854832%29.jpg",
+  "rzym-borghese": "f/f9/Ingresso_monumentale_di_Villa_Borghese_a_Roma_su_piazzale_Flaminio_2018-02.jpg",
+  "dol-tre-cime": "4/4f/2019_Tre_Cime.jpg",
+  "dol-braies": "3/3e/Pragser_Wildsee_Seekofel_von_Bucht.jpg",
+  "dol-siusi": "5/5f/Saslonch_udu_da_Mont_de_Seuc.jpg",
+  "dol-cortina": "3/36/Faloria_Cortina_d%27Ampezzo_10.jpg",
+  "dol-ferrata": "2/27/Climber_on_fixed_rope_route_Piz_Mitgel_2.jpg",
+  "lis-belem": "6/65/Torre_Bel%C3%A9m_April_2009-4a.jpg",
+  "lis-hieronimici": "0/0e/1502_legte_K%C3%B6nig_Manuel_I._den_Grundstein_f%C3%BCr_das_Hieronymus_Kloster_in_Lissabon._06.jpg",
+  "lis-zamek": "3/37/Castelo_Sao_Jorge_Lisboa_1.JPG",
+  "lis-senhora": "4/41/Lisbon_%2836831596786%29_%28cropped%29.jpg",
+  "lis-alfama": "0/07/Lisbon_alfalma.jpg",
+  "lis-tramwaj": "1/16/Lisbon-Day3-1_%2834184431096%29.jpg",
+  "lis-nata": "0/0c/Pasteis_de_Belem.jpg",
+  "lis-sardynki": "b/b1/Sardines_-_%E9%B0%AF%28%E3%81%84%E3%82%8F%E3%81%97%29.jpg",
+  "kra-rynek": "1/18/Sukiennice_and_Main_Market_Square_Krakow_Poland.JPG",
+  "kra-wawel": "8/87/Wawel_%284%29.jpg",
+  "kra-krakusa": "6/61/Wsch%C3%B3d_s%C5%82o%C5%84ca_nad_Kopcem_Krakusa_02.jpg",
+  "kra-sernik": "e/ea/Baked_cheesecake_with_raspberries_and_blueberries.jpg",
+  "bcn-sagrada": "e/ef/SF_maig_2_cropped.jpg",
+  "bcn-guell": "3/33/Parc_guell_-_panoramio.jpg",
+  "bcn-gotycka": "6/6d/Barcelona_-_Carrer_del_Bisbe.jpg",
+  "bcn-batllo": "b/bf/Casa_Batllo_Overview_Barcelona_Spain_cut.jpg",
+  "bcn-montjuic": "d/d7/Fale_-_Spain_-_Barcelona_-_8.jpg",
+  "bcn-bunkers": "5/5f/Tur%C3%B3_Rovira.jpg",
+  "bcn-tapas": "4/46/TapasenBarcelona.JPG",
+  "Rzym": "c/c7/Trevi_Fountain_-_Roma.jpg",
+  "Lizbona": "4/41/Lisbon_%2836831596786%29_%28cropped%29.jpg",
+  "Kraków": "a/a3/Krakow_Rynek_Glowny_panorama_2.jpg",
+  "Barcelona": "a/a6/Evening_light_over_Barcelona.jpg",
+  "Dolomity": "4/4f/2019_Tre_Cime.jpg"
+};
+function photoUrl(key, width = 500) {
+  const path = PHOTOS[key];
+  if (!path) return null;
+  return `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}/${width}px-${path.split("/").pop()}`;
+}
+
+const DAY_COLORS = ["#7B8069", "#B0703C", "#4F6D8A", "#8A5A7A", "#403A34", "#A68A3D", "#5E8C7A"];
 const byId = Object.fromEntries(PLACES.map((p) => [p.id, p]));
 
 // ---------- Stan i zapis ----------
@@ -499,12 +579,16 @@ function runAuto(t, mode, n) {
 
 function img(p, big) {
   const c = CATS[p.cat];
-  return `<div class="pimg${big ? " big" : ""}" style="background:${c.bg}" role="img" aria-label="${esc(c.label)}: ${esc(p.name)}"><span>${c.icon}</span></div>`;
+  const src = photoUrl(p.id, big ? 960 : 500);
+  // Ikona kategorii zostaje pod zdjęciem: widać ją, dopóki zdjęcie się nie wczyta albo gdy go brak.
+  return `<div class="pimg${big ? " big" : ""}" style="background:${c.bg}">${icon(c.icon, big ? 64 : 44)}${src
+    ? `<img src="${src}" alt="${esc(p.name)}" loading="lazy" onerror="this.remove()">`
+    : `<span class="sr">${esc(c.label)}: ${esc(p.name)}</span>`}</div>`;
 }
 function heart(p) {
   const on = isSaved(p.id);
   return `<button class="heart${on ? " on" : ""}" data-action="toggle-save" data-id="${p.id}" aria-pressed="${on}"
-    aria-label="${on ? "Usuń z zapisanych" : "Zapisz"}: ${esc(p.name)}" title="${on ? "Usuń z zapisanych" : "Zapisz"}">${on ? "♥" : "♡"}</button>`;
+    aria-label="${on ? "Usuń z zapisanych" : "Zapisz"}: ${esc(p.name)}" title="${on ? "Usuń z zapisanych" : "Zapisz"}">${icon("heart", 20, on)}</button>`;
 }
 function placeCard(p, selectable) {
   const colls = S.collections.filter((c) => c.placeIds.includes(p.id));
@@ -539,20 +623,22 @@ VIEWS.explore = () => `
   <section>
     <h2>Kategorie</h2>
     <div class="chips">${Object.entries(CATS).map(([k, c]) =>
-      `<button class="chip" data-action="cat" data-cat="${k}">${c.icon} ${c.label}</button>`).join("")}</div>
+      `<button class="chip" data-action="cat" data-cat="${k}">${icon(c.icon, 18)}${c.label}</button>`).join("")}</div>
   </section>
   <section>
     <h2>Wyróżnione kierunki</h2>
     <div class="dest-grid">${DESTS.map((d) => {
       const first = PLACES.find((p) => p.city === d.city);
-      return `<button class="dest" data-action="dest" data-city="${esc(d.city)}" style="background-image:${CATS[first.cat].bg}">
+      const src = photoUrl(d.city, 500);
+      return `<button class="dest" data-action="dest" data-city="${esc(d.city)}" style="background-image:${src ? `url('${src}'), ` : ""}${CATS[first.cat].bg}">
         <span class="dest-country">${esc(d.country)}</span><span class="dest-name">${esc(d.city)}</span>
         <span class="dest-text">${esc(d.text)}</span></button>`;
     }).join("")}</div>
   </section>
   <section><h2>Popularne miejsca</h2>${grid(PLACES.filter((p) => p.flags.includes("p")).slice(0, 8))}</section>
   <section><h2>Na jesień i zimę</h2><p class="muted">Sezonowe inspiracje na chłodniejsze miesiące.</p>${grid(PLACES.filter((p) => p.flags.includes("s")).slice(0, 8))}</section>
-  <section><h2>Mniej znane miejsca</h2><p class="muted">Tam, gdzie zwykle jest mniej turystów.</p>${grid(PLACES.filter((p) => p.flags.includes("h")).slice(0, 8))}</section>`;
+  <section><h2>Mniej znane miejsca</h2><p class="muted">Tam, gdzie zwykle jest mniej turystów.</p>${grid(PLACES.filter((p) => p.flags.includes("h")).slice(0, 8))}</section>
+  <p class="muted small">Zdjęcia: Wikimedia Commons (licencje Creative Commons i domena publiczna).</p>`;
 
 // ---------- Widok: Szukaj ----------
 
@@ -853,7 +939,7 @@ MODALS.place = (m) => {
       <dt>Lokalizacja</dt><dd>${esc(p.city)}, ${esc(p.country)}</dd>
       <dt>Współrzędne</dt><dd>${p.lat != null ? `${p.lat.toFixed(4)}, ${p.lon.toFixed(4)}` : "brak – uzupełnij lokalizację"}</dd>
     </dl>
-    <button class="btn ${saved ? "" : "primary"}" data-action="toggle-save" data-id="${p.id}">${saved ? "♥ Zapisano · usuń z zapisanych" : "♡ Zapisz"}</button>
+    <button class="btn ${saved ? "" : "primary"}" data-action="toggle-save" data-id="${p.id}">${icon("heart", 18, saved)}${saved ? "Zapisano · usuń z zapisanych" : "Zapisz"}</button>
     <h3>Kolekcje</h3>
     ${S.collections.length ? `<ul class="check-list">${S.collections.map((c) => `<li><label>
         <input type="checkbox" data-change="coll-toggle" data-coll="${c.id}" data-id="${p.id}" ${c.placeIds.includes(p.id) && saved ? "checked" : ""}>
@@ -968,6 +1054,7 @@ function render() {
     if (b.dataset.nav === nav) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
   });
   document.querySelectorAll("[data-saved-count]").forEach((e) => { e.textContent = S.saved.length || ""; });
+  $("#view").style.setProperty("--sec", SECTIONS[nav].color);
   $("#storage-warning").hidden = storageOk;
   $("#view").innerHTML = VIEWS[V.view]();
   if (V.modal) renderModal();
@@ -1323,6 +1410,13 @@ document.addEventListener("submit", (e) => {
     persist();
     render();
   }
+});
+
+// Ikony i kolory sekcji w menu.
+document.querySelectorAll("[data-nav]").forEach((b) => {
+  const s = SECTIONS[b.dataset.nav];
+  b.style.setProperty("--sec", s.color);
+  b.querySelector(".ico").innerHTML = icon(s.icon, 22);
 });
 
 render();
