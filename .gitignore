@@ -1,0 +1,13 @@
+# Pliki systemowe Windows i macOS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Ustawienia edytorów
+.vscode/
+.idea/
+
+# Pliki tymczasowe
+*.tmp
+*.log
+~$*
