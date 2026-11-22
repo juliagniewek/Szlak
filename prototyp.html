@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>szlak. – prototyp</title>
+<style>
+  :root {
+    --cream: #F7F4EE;
+    --sand: #E6DED1;
+    --taupe: #B6A58F;
+    --sage: #7B8069;
+    --brown: #403A34;
+    --paper: #FFFDF9;
+    --muted: #6f655b;
+    --danger: #9b3b2e;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--cream); color: var(--brown); font-family: var(--sans); font-size: 16px; line-height: 1.5; }
+  body.modal-open { overflow: hidden; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.2; }
+  h1 { font-size: 2rem; margin: 0 0 8px; }
+  h2 { font-size: 1.35rem; margin: 0 0 12px; }
+  h3 { font-size: 1.05rem; margin: 0 0 4px; }
+  section { margin-bottom: 36px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 0.875rem; }
+  .eyebrow { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; color: var(--sage); font-weight: 600; margin: 0 0 6px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  /* Układ i nawigacja */
+  .app { display: flex; min-height: 100vh; }
+  .side { display: none; }
+  .brand { font-family: var(--serif); font-size: 1.7rem; font-weight: 700; letter-spacing: -0.02em; }
+  .brand span { color: var(--sage); }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  main { flex: 1; min-width: 0; padding: 20px 16px 96px; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  .bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--paper); border-top: 1px solid var(--sand); }
+  .nav-btn { background: none; border: 0; padding: 10px 4px; cursor: pointer; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.78rem; border-radius: 10px; }
+  .nav-btn .ico { font-size: 1.2rem; line-height: 1; }
+  .nav-btn.active { color: var(--brown); font-weight: 700; }
+  .nav-btn .badge { background: var(--sage); color: #fff; border-radius: 999px; font-size: 0.7rem; padding: 0 6px; margin-left: 4px; }
+  .nav-btn .badge:empty { display: none; }
+  @media (min-width: 900px) {
+    .side { display: flex; flex-direction: column; gap: 4px; width: 220px; flex: none; position: sticky; top: 0; height: 100vh; padding: 28px 16px; border-right: 1px solid var(--sand); background: var(--cream); }
+    .side .brand { margin: 0 8px 24px; }
+    .side .nav-btn { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 10px 12px; font-size: 0.95rem; }
+    .side .nav-btn.active { background: var(--sand); }
+    .side-foot { margin-top: auto; font-size: 0.8rem; color: var(--muted); padding: 0 8px; }
+    .bottom-nav, .topbar { display: none; }
+    main { padding: 32px 40px 48px; }
+  }
+
+  /* Przyciski, pola, chipy */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--taupe); background: var(--paper); cursor: pointer; font-weight: 600; text-decoration: none; }
+  .btn:hover { background: var(--sand); }
+  .btn.primary { background: var(--brown); border-color: var(--brown); color: var(--cream); }
+  .btn.primary:hover { background: #2c2824; }
+  .btn.danger { color: var(--danger); border-color: var(--danger); }
+  .btn.small { padding: 5px 12px; font-size: 0.875rem; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .icon { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--sand); background: var(--paper); cursor: pointer; display: inline-grid; place-items: center; flex: none; }
+  .icon:hover:not(:disabled) { background: var(--sand); }
+  .icon:disabled { opacity: 0.35; cursor: not-allowed; }
+  .icon.danger { color: var(--danger); }
+  .linkish { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font: inherit; color: inherit; }
+  .linkish:hover { text-decoration: underline; }
+  input[type=text], input[type=search], input[type=date], input[type=number], input[type=time], select, textarea {
+    padding: 9px 12px; border: 1px solid var(--taupe); border-radius: 10px; background: var(--paper); min-width: 0;
+  }
+  label { font-size: 0.875rem; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--sand); background: var(--paper); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+  .chip:hover { border-color: var(--taupe); }
+  .chip.active { background: var(--brown); color: var(--cream); border-color: var(--brown); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .card { background: var(--paper); border: 1px solid var(--sand); border-radius: var(--radius); padding: 18px; }
+  .notice { background: #efe8da; border-left: 4px solid var(--taupe); padding: 10px 14px; border-radius: 8px; }
+  .tag { font-size: 0.75rem; background: var(--sand); border-radius: 6px; padding: 1px 8px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+
+  /* Odkrywaj */
+  .hero { padding: 8px 0 8px; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3rem); }
+  .lead { font-size: 1.1rem; color: var(--muted); max-width: 560px; }
+  .searchbar { display: flex; gap: 8px; max-width: 640px; margin-top: 16px; }
+  .searchbar input { flex: 1; border-radius: 999px; padding: 11px 18px; }
+  .dest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .dest { border: 0; border-radius: var(--radius); min-height: 150px; padding: 16px; color: #fff; text-align: left; cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; box-shadow: inset 0 -80px 60px -30px rgba(40, 34, 28, 0.55); transition: transform .15s; }
+  .dest:hover { transform: translateY(-2px); }
+  .dest-name { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; }
+  .dest-country { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.9; }
+  .dest-text { font-size: 0.85rem; opacity: 0.95; }
+
+  /* Karty miejsc */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .pcard { position: relative; background: var(--paper); border: 1px solid var(--sand); border-radius: var(--radius); overflow: hidden; transition: box-shadow .15s, transform .15s; }
+  .pcard:hover { box-shadow: 0 6px 20px rgba(64, 58, 52, 0.12); transform: translateY(-2px); }
+  .pcard.selected { outline: 3px solid var(--sage); outline-offset: -3px; }
+  .pimg-btn { display: block; width: 100%; border: 0; padding: 0; cursor: pointer; background: none; }
+  .pimg { height: 130px; display: grid; place-items: center; font-size: 2.4rem; }
+  .pimg.big { height: 190px; font-size: 3.5rem; }
+  .pbody { padding: 12px 14px 14px; }
+  .pcat { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sage); font-weight: 700; }
+  .ploc { font-size: 0.875rem; color: var(--muted); }
+  .heart { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(255, 253, 249, 0.92); cursor: pointer; font-size: 1.2rem; color: var(--brown); display: grid; place-items: center; }
+  .heart.on { color: #b5452f; }
+  .pick { position: absolute; top: 10px; left: 10px; background: rgba(255, 253, 249, 0.92); border-radius: 8px; padding: 6px 8px; flex-direction: row; }
+  .pick input { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+  .empty { text-align: center; padding: 40px 16px; border: 1px dashed var(--taupe); border-radius: var(--radius); }
+  .empty .chips { justify-content: center; margin: 12px 0; }
+
+  /* Szukaj */
+  .filters { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
+  @media (min-width: 700px) { .filters { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; align-items: end; } }
+
+  /* Zapisane */
+  .selbar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: var(--cream); padding: 10px 0; margin: 12px 0; border-bottom: 1px solid var(--sand); }
+
+  /* Podróże */
+  .tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px; }
+  .trip-list { display: grid; gap: 12px; }
+  .trip-card { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+  .trip-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: flex-start; margin: 12px 0 16px; }
+  .pane-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--sand); padding: 4px; border-radius: 999px; margin-bottom: 16px; }
+  .pane-toggle button { border: 0; background: none; border-radius: 999px; padding: 8px; cursor: pointer; font-weight: 600; }
+  .pane-toggle button[aria-selected=true] { background: var(--paper); }
+  .trip-grid { display: grid; gap: 16px; }
+  .trip-grid.pane-plan .map-col, .trip-grid.pane-map .plan-col { display: none; }
+  @media (min-width: 1100px) {
+    .pane-toggle { display: none; }
+    .trip-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; }
+    .trip-grid.pane-plan .map-col, .trip-grid.pane-map .plan-col { display: block; }
+    .map-col { position: sticky; top: 16px; }
+  }
+  .plan-col > * + * { margin-top: 12px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; justify-content: space-between; }
+  .auto { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+  .day { border-top: 4px solid var(--day); }
+  .day-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .day-head h2 { font-size: 1.15rem; margin: 0 0 8px; }
+  .count { font-family: var(--sans); font-size: 0.8rem; background: var(--sand); border-radius: 999px; padding: 1px 9px; vertical-align: middle; }
+  .stops { list-style: none; margin: 0; padding: 0; }
+  .stop { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 4px 10px; padding: 10px 6px; border-top: 1px solid var(--sand); border-radius: 8px; }
+  .stop:first-child { border-top: 0; }
+  .stop.active { background: #efe8da; }
+  .num { width: 28px; height: 28px; border-radius: 50%; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 0.85rem; }
+  .num.empty { background: var(--paper); border: 2px dashed var(--taupe); color: var(--taupe); }
+  .stop-main { min-width: 0; }
+  .stop-main .linkish { font-weight: 600; }
+  .stop-extra { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .stop-extra label { flex-direction: row; align-items: center; gap: 6px; }
+  .stop-extra input { padding: 4px 8px; }
+  .stop-extra .grow { flex: 1; min-width: 160px; }
+  .stop-extra .grow input { flex: 1; }
+  .stop-ctrl { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .stop-ctrl select { padding: 5px 8px; font-size: 0.875rem; max-width: 190px; }
+
+  /* Mapa */
+  .map-card { padding: 14px; }
+  .map-svg { width: 100%; height: auto; display: block; border-radius: 10px; background: #ece5d8; }
+  .map-svg .pin { cursor: pointer; }
+  .map-svg .pin:focus { outline: none; }
+  .map-svg .pin:focus-visible circle.dot { stroke: var(--brown); stroke-width: 3; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.8rem; margin: 10px 0 6px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c); margin-right: 5px; }
+  .map-list { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 2px; max-height: 260px; overflow: auto; }
+  .map-list button { width: 100%; display: flex; gap: 8px; align-items: center; border: 0; background: none; padding: 6px; border-radius: 8px; cursor: pointer; text-align: left; }
+  .map-list button:hover, .map-list button.active { background: #efe8da; }
+  .map-list .num { width: 22px; height: 22px; font-size: 0.72rem; flex: none; }
+
+  /* Okno szczegółów */
+  .overlay { position: fixed; inset: 0; z-index: 50; background: rgba(40, 34, 28, 0.45); display: flex; align-items: flex-end; justify-content: center; }
+  .modal { position: relative; background: var(--paper); width: 100%; max-width: 560px; max-height: 92vh; overflow: auto; border-radius: 18px 18px 0 0; }
+  @media (min-width: 700px) { .overlay { align-items: center; padding: 24px; } .modal { border-radius: 18px; } }
+  .modal-body { padding: 20px; }
+  .modal-body > form, .modal-body > h3 { margin-top: 18px; }
+  .modal .close { position: absolute; top: 12px; right: 12px; }
+  .meta { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 0.9rem; margin: 12px 0; }
+  .meta dt { color: var(--muted); }
+  .meta dd { margin: 0; }
+  .form-grid { display: grid; gap: 12px; }
+  .form-grid .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .check-list { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 4px; max-height: 50vh; overflow: auto; }
+  .check-list label { flex-direction: row; align-items: center; gap: 10px; color: var(--brown); font-size: 0.95rem; padding: 6px 8px; border-radius: 8px; cursor: pointer; }
+  .check-list label:hover { background: var(--cream); }
+  .error { color: var(--danger); font-weight: 600; margin: 0; }
+  .lbl { font-size: 0.875rem; color: var(--muted); }
+
+  .toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); background: var(--brown); color: var(--cream); padding: 10px 18px; border-radius: 999px; z-index: 60; max-width: calc(100% - 32px); font-size: 0.9rem; box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+  @media (min-width: 900px) { .toast { bottom: 24px; } }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="side" aria-label="Główna nawigacja">
+    <div class="brand">szlak<span>.</span></div>
+    <button class="nav-btn" data-action="go" data-view="explore" data-nav="explore"><span class="ico">✦</span>Odkrywaj</button>
+    <button class="nav-btn" data-action="go" data-view="search" data-nav="search"><span class="ico">⌕</span>Szukaj</button>
+    <button class="nav-btn" data-action="go" data-view="saved" data-nav="saved"><span class="ico">♡</span>Zapisane<span class="badge" data-saved-count></span></button>
+    <button class="nav-btn" data-action="go" data-view="trips" data-nav="trips"><span class="ico">✈</span>Podróże</button>
+    <div class="side-foot">
+      <p>Prototyp. Dane zapisują się tylko w tej przeglądarce.</p>
+      <button class="btn small" data-action="reset-data">Wyczyść dane</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="wrap">
+      <div class="topbar"><div class="brand">szlak<span>.</span></div></div>
+      <p id="storage-warning" class="notice" hidden>Ta przeglądarka nie pozwala zapisywać danych. Wszystko zniknie po zamknięciu strony.</p>
+      <div id="view"></div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Główna nawigacja">
+    <button class="nav-btn" data-action="go" data-view="explore" data-nav="explore"><span class="ico">✦</span>Odkrywaj</button>
+    <button class="nav-btn" data-action="go" data-view="search" data-nav="search"><span class="ico">⌕</span>Szukaj</button>
+    <button class="nav-btn" data-action="go" data-view="saved" data-nav="saved"><span class="ico">♡</span><span>Zapisane<span class="badge" data-saved-count></span></span></button>
+    <button class="nav-btn" data-action="go" data-view="trips" data-nav="trips"><span class="ico">✈</span>Podróże</button>
+  </nav>
+</div>
+<div id="modal-root"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+// ---------- Dane przykładowe ----------
+// Prawdziwe kraje, miasta i miejsca, przybliżone współrzędne. Bez adresów i nazw firm.
+// Flagi: p = popularne, s = na jesień i zimę, h = mniej znane.
+
+const CATS = {
+  kultura:   { label: "Kultura",            icon: "🏛️", bg: "linear-gradient(135deg,#c2b29b,#7d6c58)" },
+  miasta:    { label: "Miasta i dzielnice", icon: "🏙️", bg: "linear-gradient(135deg,#b49c84,#5f5044)" },
+  natura:    { label: "Natura",             icon: "🌲", bg: "linear-gradient(135deg,#8f957c,#55604a)" },
+  punkt:     { label: "Punkty widokowe",    icon: "⛰️", bg: "linear-gradient(135deg,#a3a9a6,#5d6461)" },
+  plaza:     { label: "Plaże",              icon: "🏖️", bg: "linear-gradient(135deg,#dccaa4,#93a59f)" },
+  jedzenie:  { label: "Jedzenie",           icon: "🍝", bg: "linear-gradient(135deg,#c99a6b,#8c5a36)" },
+  kawiarnia: { label: "Kawiarnie",          icon: "☕", bg: "linear-gradient(135deg,#ad9078,#5e4636)" },
+  aktywnosc: { label: "Aktywności",         icon: "🧗", bg: "linear-gradient(135deg,#a58d76,#5b6b5a)" }
+};
+
+const P = (id, name, city, country, cat, lat, lon, flags, desc) => ({ id, name, city, country, cat, lat, lon, flags, desc });
+const PLACES = [
+  P("rzym-koloseum", "Koloseum", "Rzym", "Włochy", "kultura", 41.8902, 12.4922, "p", "Największy amfiteatr starożytnego Rzymu. Najlepiej zwiedzać rano, zanim zrobi się tłoczno."),
+  P("rzym-forum", "Forum Romanum", "Rzym", "Włochy", "kultura", 41.8925, 12.4853, "p", "Ruiny dawnego centrum życia publicznego, tuż obok Koloseum."),
+  P("rzym-panteon", "Panteon", "Rzym", "Włochy", "kultura", 41.8986, 12.4769, "ps", "Antyczna świątynia z kopułą i okrągłym otworem w sklepieniu."),
+  P("rzym-trevi", "Fontanna di Trevi", "Rzym", "Włochy", "kultura", 41.9009, 12.4833, "p", "Barokowa fontanna, do której tradycyjnie wrzuca się monetę."),
+  P("rzym-pincio", "Taras widokowy Pincio", "Rzym", "Włochy", "punkt", 41.9113, 12.4794, "", "Widok na dachy i kopuły Rzymu, szczególnie piękny o zachodzie słońca."),
+  P("rzym-borghese", "Park Villa Borghese", "Rzym", "Włochy", "natura", 41.9142, 12.4923, "s", "Duży park z alejami i stawem, chwila odpoczynku od miasta."),
+  P("rzym-awentyn", "Ogród Pomarańczowy na Awentynie", "Rzym", "Włochy", "punkt", 41.8847, 12.4799, "hs", "Spokojny ogród z widokiem na Tyber i kopułę Bazyliki św. Piotra."),
+  P("rzym-zatybrze", "Trattoria z domowym makaronem na Zatybrzu", "Rzym", "Włochy", "jedzenie", 41.8894, 12.4700, "h", "Rzymska kuchnia w bocznej uliczce dzielnicy Trastevere."),
+  P("rzym-espresso", "Kawiarnia z espresso przy Panteonie", "Rzym", "Włochy", "kawiarnia", 41.8992, 12.4776, "", "Szybkie espresso na stojąco, po włosku."),
+
+  P("dol-tre-cime", "Tre Cime di Lavaredo", "Dolomity", "Włochy", "natura", 46.6187, 12.3022, "p", "Trzy charakterystyczne szczyty i pętla szlaku wokół nich."),
+  P("dol-braies", "Jezioro Braies", "Dolomity", "Włochy", "natura", 46.6946, 12.0855, "p", "Turkusowe jezioro górskie ze ścieżką dookoła brzegu."),
+  P("dol-seceda", "Seceda", "Dolomity", "Włochy", "punkt", 46.6000, 11.7240, "h", "Grań z widokiem na ostre turnie, dostępna kolejką."),
+  P("dol-siusi", "Alpe di Siusi", "Dolomity", "Włochy", "natura", 46.5400, 11.6200, "s", "Ogromna wysokogórska łąka; zimą trasy narciarskie i biegowe."),
+  P("dol-cortina", "Cortina d'Ampezzo", "Dolomity", "Włochy", "miasta", 46.5405, 12.1357, "s", "Górskie miasteczko, baza wypadowa na szlaki i stoki."),
+  P("dol-schronisko", "Schronisko z kuchnią tyrolską", "Dolomity", "Włochy", "jedzenie", 46.6150, 12.2950, "h", "Knedle i strudel po drodze na szlak wokół Tre Cime."),
+  P("dol-ferrata", "Via ferrata dla początkujących", "Dolomity", "Włochy", "aktywnosc", 46.5230, 12.1700, "h", "Ubezpieczona trasa skalna. Wymaga sprzętu i kasku."),
+
+  P("lis-belem", "Wieża Belém", "Lizbona", "Portugalia", "kultura", 38.6916, -9.2160, "p", "Kamienna wieża nad brzegiem Tagu, symbol epoki odkryć."),
+  P("lis-hieronimici", "Klasztor Hieronimitów", "Lizbona", "Portugalia", "kultura", 38.6979, -9.2068, "p", "Klasztor z bogato zdobionymi krużgankami w stylu manuelińskim."),
+  P("lis-zamek", "Zamek św. Jerzego", "Lizbona", "Portugalia", "kultura", 38.7139, -9.1335, "p", "Mury zamku na wzgórzu nad starym miastem."),
+  P("lis-senhora", "Punkt widokowy Senhora do Monte", "Lizbona", "Portugalia", "punkt", 38.7193, -9.1325, "h", "Najwyżej położony punkt widokowy w centrum, z dala od tłumów."),
+  P("lis-alfama", "Alfama", "Lizbona", "Portugalia", "miasta", 38.7114, -9.1300, "ps", "Najstarsza dzielnica: strome uliczki, schody i muzyka fado."),
+  P("lis-tramwaj", "Przejazd zabytkowym tramwajem nr 28", "Lizbona", "Portugalia", "aktywnosc", 38.7160, -9.1310, "s", "Żółty tramwaj przez wzgórza i najstarsze dzielnice miasta."),
+  P("lis-nata", "Cukiernia z pastel de nata w Belém", "Lizbona", "Portugalia", "kawiarnia", 38.6975, -9.2033, "s", "Ciepłe babeczki z kremem, posypane cynamonem."),
+  P("lis-sardynki", "Tasca z grillowanymi sardynkami", "Lizbona", "Portugalia", "jedzenie", 38.7108, -9.1285, "h", "Mała knajpka z rybami z grilla i winem z beczki."),
+  P("lis-carcavelos", "Plaża Carcavelos", "Lizbona", "Portugalia", "plaza", 38.6790, -9.3360, "", "Szeroka plaża z falami dla początkujących surferów."),
+
+  P("kra-rynek", "Rynek Główny i Sukiennice", "Kraków", "Polska", "kultura", 50.0617, 19.9373, "ps", "Jeden z największych średniowiecznych placów w Europie."),
+  P("kra-wawel", "Wzgórze Wawelskie", "Kraków", "Polska", "kultura", 50.0540, 19.9354, "p", "Zamek i katedra na wzgórzu nad Wisłą."),
+  P("kra-kazimierz", "Kazimierz", "Kraków", "Polska", "miasta", 50.0510, 19.9450, "p", "Dawna dzielnica żydowska, dziś pełna kawiarni i galerii."),
+  P("kra-krakusa", "Kopiec Krakusa", "Kraków", "Polska", "punkt", 50.0380, 19.9580, "h", "Prehistoryczny kopiec z panoramą miasta, mało turystów."),
+  P("kra-bulwary", "Bulwary Wiślane", "Kraków", "Polska", "natura", 50.0530, 19.9300, "", "Spacer lub rower wzdłuż Wisły, z widokiem na Wawel."),
+  P("kra-kosciuszko", "Kopiec Kościuszki", "Kraków", "Polska", "punkt", 50.0548, 19.8932, "", "Kopiec na skraju miasta z widokiem po horyzont."),
+  P("kra-bar", "Bar mleczny z pierogami", "Kraków", "Polska", "jedzenie", 50.0640, 19.9400, "hs", "Tanie, domowe jedzenie: pierogi, zupy i naleśniki."),
+  P("kra-sernik", "Kawiarnia z sernikiem na Kazimierzu", "Kraków", "Polska", "kawiarnia", 50.0515, 19.9465, "s", "Przytulne wnętrze, sernik i grzane wino zimą."),
+
+  P("bcn-sagrada", "Sagrada Família", "Barcelona", "Hiszpania", "kultura", 41.4036, 2.1744, "p", "Bazylika Gaudíego, wciąż w budowie od ponad stu lat."),
+  P("bcn-guell", "Park Güell", "Barcelona", "Hiszpania", "natura", 41.4145, 2.1527, "p", "Park na wzgórzu z mozaikami Gaudíego i widokiem na miasto."),
+  P("bcn-gotycka", "Dzielnica Gotycka", "Barcelona", "Hiszpania", "miasta", 41.3833, 2.1767, "ps", "Wąskie średniowieczne uliczki wokół katedry."),
+  P("bcn-batllo", "Casa Batlló", "Barcelona", "Hiszpania", "kultura", 41.3917, 2.1650, "", "Kamienica o falującej fasadzie, przypominająca smoka."),
+  P("bcn-barceloneta", "Plaża Barceloneta", "Barcelona", "Hiszpania", "plaza", 41.3784, 2.1925, "p", "Miejska plaża z promenadą, kilka minut od starego miasta."),
+  P("bcn-montjuic", "Wzgórze Montjuïc", "Barcelona", "Hiszpania", "punkt", 41.3636, 2.1586, "h", "Ogrody, twierdza i widok na port."),
+  P("bcn-bunkers", "Punkt widokowy Bunkers del Carmel", "Barcelona", "Hiszpania", "punkt", 41.4190, 2.1620, "h", "Dawne stanowiska obrony przeciwlotniczej z panoramą 360°."),
+  P("bcn-tapas", "Bar z tapas w El Born", "Barcelona", "Hiszpania", "jedzenie", 41.3850, 2.1820, "hs", "Małe przekąski przy barze, wieczorem pełno ludzi.")
+];
+
+const DESTS = [
+  { city: "Rzym", country: "Włochy", text: "Antyk, barokowe place i długie kolacje." },
+  { city: "Lizbona", country: "Portugalia", text: "Wzgórza, tramwaje i ocean." },
+  { city: "Kraków", country: "Polska", text: "Rynek, Wawel i klimatyczny Kazimierz." },
+  { city: "Barcelona", country: "Hiszpania", text: "Gaudí, plaża i tapas." },
+  { city: "Dolomity", country: "Włochy", text: "Szczyty, jeziora i górskie łąki." }
+];
+
+const COUNTRIES = [...new Set(PLACES.map((p) => p.country))].sort((a, b) => a.localeCompare(b, "pl"));
+const DAY_COLORS =["#7B8069", "#B0703C", "#4F6D8A", "#8A5A7A", "#403A34", "#A68A3D", "#5E8C7A"];
+const byId = Object.fromEntries(PLACES.map((p) => [p.id, p]));
+
+// ---------- Stan i zapis ----------
+
+const STORAGE_KEY = "szlak-dane-v1";
+const emptyState = () => ({ saved: [], collections: [], trips: [] });
+let storageOk = true;
+let S;
+try {
+  S = JSON.parse(localStorage.getItem(STORAGE_KEY)) || emptyState();
+} catch (e) {
+  storageOk = false;
+  S = emptyState();
+}
+function persist() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(S));
+  } catch (e) {
+    storageOk = false;
+  }
+}
+
+// Stan widoku (nie jest zapisywany).
+const V = {
+  view: "explore", tripId: null,
+  q: "", cat: "", country: "", city: "", sort: "popular",
+  coll: "all", sel: [],
+  tripsTab: "upcoming", pane: "plan", mapDay: "all", active: null, notice: null, autoN: 3,
+  modal: null
+};
+
+// ---------- Pomocnicze ----------
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ł/g, "l");
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const clone = (o) => JSON.parse(JSON.stringify(o));
+function plural(n, one, few, many) {
+  if (n === 1) return one;
+  const d = n % 10, t = n % 100;
+  return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
+}
+const nPlaces = (n) => `${n} ${plural(n, "miejsce", "miejsca", "miejsc")}`;
+const nDays = (n) => `${n} ${n === 1 ? "dzień" : "dni"}`;
+const pad = (n) => String(n).padStart(2, "0");
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+const isSaved = (id) => S.saved.includes(id);
+const trip = (id) => S.trips.find((t) => t.id === id);
+const curTrip = () => trip(V.tripId);
+const dayColor = (i) => DAY_COLORS[i % DAY_COLORS.length];
+
+let toastTimer;
+function toast(msg) {
+  const el = $("#toast");
+  el.textContent = msg;
+  el.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.hidden = true; }, 3500);
+}
+
+// ---------- Podróże: dni, status, daty ----------
+
+function dayCount(t) {
+  if (t.start && t.end) {
+    return Math.round((new Date(t.end + "T00:00") - new Date(t.start + "T00:00")) / 864e5) + 1;
+  }
+  return t.draftDays || 1;
+}
+// Dopasowuje liczbę dni do dat. Punkty z usuniętych dni wracają do „Do zaplanowania”.
+function syncDays(t) {
+  const n = dayCount(t);
+  let moved = 0;
+  while (t.days.length < n) t.days.push([]);
+  while (t.days.length > n) {
+    const d = t.days.pop();
+    moved += d.length;
+    t.unassigned.push(...d.map((s) => s.placeId));
+  }
+  return moved;
+}
+const tripPlaceIds = (t) => [...t.unassigned, ...t.days.flat().map((s) => s.placeId)];
+function status(t) {
+  if (t.archived) return "archived";
+  if (!t.start) return "draft";
+  const today = todayStr();
+  if (t.start > today) return "upcoming";
+  if (t.end < today) return "finished";
+  return "ongoing";
+}
+const STATUS = [["upcoming", "Nadchodzące"], ["ongoing", "W trakcie"], ["finished", "Zakończone"], ["draft", "Szkice"], ["archived", "Archiwum"]];
+const statusLabel = (t) => Object.fromEntries(STATUS)[status(t)];
+function fmtDate(s) {
+  return new Date(s + "T00:00").toLocaleDateString("pl-PL", { day: "numeric", month: "short", year: "numeric" });
+}
+const dateRange = (t) => (t.start ? `${fmtDate(t.start)} – ${fmtDate(t.end)}` : "Szkic bez dat");
+function dayLabel(t, i) {
+  if (!t.start) return `Dzień ${i + 1}`;
+  const d = new Date(t.start + "T00:00");
+  d.setDate(d.getDate() + i);
+  return `Dzień ${i + 1} · ${d.toLocaleDateString("pl-PL", { weekday: "short", day: "numeric", month: "numeric" })}`;
+}
+
+// Odległość w przybliżeniu płaskim; wystarcza do grupowania pobliskich punktów.
+function dist(a, b) {
+  const kx = Math.cos(((a.lat + b.lat) / 2) * Math.PI / 180);
+  return Math.hypot((a.lon - b.lon) * kx, a.lat - b.lat);
+}
+// Łańcuch „najbliższy sąsiad”: kolejne miejsca leżą blisko poprzednich.
+function nearestChain(places) {
+  const rest = places.filter((p) => p.lat != null);
+  const noCoords = places.filter((p) => p.lat == null);
+  const out = [];
+  let cur = rest.shift();
+  while (cur) {
+    out.push(cur);
+    if (!rest.length) break;
+    let best = 0;
+    rest.forEach((p, i) => { if (dist(cur, p) < dist(cur, rest[best])) best = i; });
+    cur = rest.splice(best, 1)[0];
+  }
+  return [...out, ...noCoords];
+}
+
+// Miejsca z katalogu pasujące do kierunku podróży (miasto, region albo kraj).
+function candidatesFor(destination) {
+  const d = norm(destination.trim());
+  return d ? PLACES.filter((p) => norm(p.city) === d || norm(p.country) === d) : [];
+}
+function destHint(destination) {
+  if (!destination.trim()) return "Wybierz kierunek z listy albo wpisz własny.";
+  const n = candidatesFor(destination).length;
+  return n
+    ? `W katalogu jest ${nPlaces(n)} dla tego kierunku. „Zaplanuj automatycznie” może z nich dobierać.`
+    : "W katalogu nie ma miejsc dla tego kierunku. Plan ułożysz ręcznie z miejsc, które dodasz.";
+}
+
+// Automatyczne planowanie. „distribute” rozkłada listę „Do zaplanowania” na dni,
+// „plan” najpierw dobiera brakujące miejsca z katalogu (najpierw zapisane, potem popularne).
+// Stan sprzed zmiany trafia do V.undo, żeby można było cofnąć.
+function runAuto(t, mode, n) {
+  const before = { tripId: t.id, days: clone(t.days), unassigned: [...t.unassigned] };
+  let added = [];
+  let note = "";
+  if (mode === "plan") {
+    const cands = candidatesFor(t.destination);
+    if (!cands.length) {
+      note = `W katalogu nie ma miejsc dla kierunku „${t.destination}”, więc nic nie dobrano. Zmień kierunek w edycji podróży albo dodaj miejsca ręcznie. `;
+    } else {
+      const inTrip = new Set(tripPlaceIds(t));
+      const free = t.days.reduce((a, d) => a + Math.max(0, n - d.length), 0);
+      const need = Math.max(0, free - t.unassigned.length);
+      const excluded = new Set(t.excluded || []);
+      const extra = cands.filter((p) => !inTrip.has(p.id) && !excluded.has(p.id))
+        .sort((a, b) => isSaved(b.id) - isSaved(a.id) || b.flags.includes("p") - a.flags.includes("p"));
+      added = extra.slice(0, need).map((p) => p.id);
+      t.unassigned.push(...added);
+      if (added.length < need) note = `W katalogu zabrakło kolejnych miejsc dla „${t.destination}”. `;
+    }
+  }
+  if (!t.unassigned.length) {
+    if (note) return note.trim();
+    return mode === "plan"
+      ? `Dni są już pełne (najwyżej ${n} dziennie). Zwiększ liczbę atrakcji dziennie, żeby dobrać więcej miejsc.`
+      : "Nie ma czego rozkładać: lista „Do zaplanowania” jest pusta.";
+  }
+  const autoIds = new Set(added);
+  const chain = nearestChain(t.unassigned.map((id) => byId[id]));
+  let placed = 0;
+  for (const d of t.days) {
+    while (d.length < n && chain.length) {
+      const p = chain.shift();
+      d.push({ placeId: p.id, time: "", note: "", auto: autoIds.has(p.id) });
+      placed++;
+    }
+  }
+  t.unassigned = chain.map((p) => p.id);
+  V.undo = before;
+  const parts = [];
+  if (mode === "plan") parts.push(added.length ? `Dobrano z katalogu ${nPlaces(added.length)} (najpierw zapisane, potem popularne).` : "Nie dobrano nowych miejsc.");
+  parts.push(`Rozłożono na dni ${nPlaces(placed)}: najwyżej ${n} dziennie, a punkty leżące blisko siebie trafiły do tego samego dnia.`);
+  if (chain.length) parts.push(`Nie zmieściło się ${nPlaces(chain.length)}. Zwiększ liczbę atrakcji dziennie albo liczbę dni.`);
+  parts.push("Każdy punkt możesz przesunąć, przenieść do innego dnia albo usunąć.");
+  return note + parts.join(" ");
+}
+
+// ---------- Elementy wspólne ----------
+
+function img(p, big) {
+  const c = CATS[p.cat];
+  return `<div class="pimg${big ? " big" : ""}" style="background:${c.bg}" role="img" aria-label="${esc(c.label)}: ${esc(p.name)}"><span>${c.icon}</span></div>`;
+}
+function heart(p) {
+  const on = isSaved(p.id);
+  return `<button class="heart${on ? " on" : ""}" data-action="toggle-save" data-id="${p.id}" aria-pressed="${on}"
+    aria-label="${on ? "Usuń z zapisanych" : "Zapisz"}: ${esc(p.name)}" title="${on ? "Usuń z zapisanych" : "Zapisz"}">${on ? "♥" : "♡"}</button>`;
+}
+function placeCard(p, selectable) {
+  const colls = S.collections.filter((c) => c.placeIds.includes(p.id));
+  const sel = selectable && V.sel.includes(p.id);
+  return `<article class="pcard${sel ? " selected" : ""}">
+    <button class="pimg-btn" data-action="open-place" data-id="${p.id}" tabindex="-1" aria-hidden="true">${img(p)}</button>
+    ${heart(p)}
+    ${selectable ? `<label class="pick"><input type="checkbox" data-change="select" data-id="${p.id}" ${sel ? "checked" : ""}><span class="sr">Zaznacz: ${esc(p.name)}</span></label>` : ""}
+    <div class="pbody">
+      <div class="pcat">${CATS[p.cat].label}</div>
+      <h3><button class="linkish" data-action="open-place" data-id="${p.id}">${esc(p.name)}</button></h3>
+      <div class="ploc">${esc(p.city)}, ${esc(p.country)}</div>
+      ${colls.length ? `<div class="tags">${colls.map((c) => `<span class="tag">${esc(c.name)}</span>`).join("")}</div>` : ""}
+    </div>
+  </article>`;
+}
+const grid = (list, selectable) => `<div class="grid">${list.map((p) => placeCard(p, selectable)).join("")}</div>`;
+
+// ---------- Widok: Odkrywaj ----------
+
+const VIEWS = {};
+VIEWS.explore = () => `
+  <section class="hero">
+    <p class="eyebrow">Odkrywaj</p>
+    <h1>Dokąd tym razem?</h1>
+    <p class="lead">Zbieraj miejsca, które Cię inspirują, a potem zamień je w plan wyjazdu i trasę na mapie.</p>
+    <form class="searchbar" data-form="hero-search" role="search">
+      <input name="q" type="search" placeholder="Miejsce, miasto, kraj lub kategoria" aria-label="Szukaj miejsc">
+      <button class="btn primary">Szukaj</button>
+    </form>
+  </section>
+  <section>
+    <h2>Kategorie</h2>
+    <div class="chips">${Object.entries(CATS).map(([k, c]) =>
+      `<button class="chip" data-action="cat" data-cat="${k}">${c.icon} ${c.label}</button>`).join("")}</div>
+  </section>
+  <section>
+    <h2>Wyróżnione kierunki</h2>
+    <div class="dest-grid">${DESTS.map((d) => {
+      const first = PLACES.find((p) => p.city === d.city);
+      return `<button class="dest" data-action="dest" data-city="${esc(d.city)}" style="background-image:${CATS[first.cat].bg}">
+        <span class="dest-country">${esc(d.country)}</span><span class="dest-name">${esc(d.city)}</span>
+        <span class="dest-text">${esc(d.text)}</span></button>`;
+    }).join("")}</div>
+  </section>
+  <section><h2>Popularne miejsca</h2>${grid(PLACES.filter((p) => p.flags.includes("p")).slice(0, 8))}</section>
+  <section><h2>Na jesień i zimę</h2><p class="muted">Sezonowe inspiracje na chłodniejsze miesiące.</p>${grid(PLACES.filter((p) => p.flags.includes("s")).slice(0, 8))}</section>
+  <section><h2>Mniej znane miejsca</h2><p class="muted">Tam, gdzie zwykle jest mniej turystów.</p>${grid(PLACES.filter((p) => p.flags.includes("h")).slice(0, 8))}</section>`;
+
+// ---------- Widok: Szukaj ----------
+
+function searchResults() {
+  // Każde słowo musi pasować; obcięcie końcówki pozwala znaleźć np. „widokowy” w „widokowe”.
+  const words = norm(V.q.trim()).split(/\s+/).filter(Boolean).map((w) => w.slice(0, Math.max(4, w.length - 2)));
+  const r = PLACES.filter((p) => {
+    if (V.cat && p.cat !== V.cat) return false;
+    if (V.country && p.country !== V.country) return false;
+    if (V.city && p.city !== V.city) return false;
+    const hay = norm([p.name, p.city, p.country, CATS[p.cat].label].join(" "));
+    return words.every((w) => hay.includes(w));
+  });
+  return V.sort === "az"
+    ? [...r].sort((a, b) => a.name.localeCompare(b.name, "pl"))
+    : [...r].sort((a, b) => b.flags.includes("p") - a.flags.includes("p"));
+}
+function resultsHtml() {
+  const r = searchResults();
+  if (!r.length) {
+    return `<div class="empty"><h3>Nic nie znaleźliśmy</h3>
+      <p class="muted">Sprawdź pisownię albo zmień filtry. Spróbuj na przykład:</p>
+      <div class="chips">${["Rzym", "kawiarnia", "natura", "Lizbona", "punkt widokowy"].map((s) =>
+        `<button class="chip" data-action="suggest" data-q="${s}">${s}</button>`).join("")}</div>
+      <button class="btn" data-action="clear-filters">Wyczyść wyszukiwanie i filtry</button></div>`;
+  }
+  return `<p class="muted">${nPlaces(r.length)}</p>${grid(r)}`;
+}
+VIEWS.search = () => {
+  const countries = [...new Set(PLACES.map((p) => p.country))].sort((a, b) => a.localeCompare(b, "pl"));
+  const cities = [...new Set(PLACES.filter((p) => !V.country || p.country === V.country).map((p) => p.city))].sort((a, b) => a.localeCompare(b, "pl"));
+  const opt = (v, label, cur) => `<option value="${esc(v)}" ${v === cur ? "selected" : ""}>${esc(label)}</option>`;
+  return `<p class="eyebrow">Szukaj</p><h1>Znajdź miejsce</h1>
+    <div class="filters">
+      <label>Szukaj<input id="q" type="search" value="${esc(V.q)}" data-input="q" placeholder="Nazwa, miasto, kraj lub kategoria"></label>
+      <label>Kategoria<select data-change="filter" data-key="cat">${opt("", "Wszystkie", V.cat)}${Object.entries(CATS).map(([k, c]) => opt(k, c.label, V.cat)).join("")}</select></label>
+      <label>Kraj<select data-change="filter" data-key="country">${opt("", "Wszystkie", V.country)}${countries.map((c) => opt(c, c, V.country)).join("")}</select></label>
+      <label>Miasto lub region<select data-change="filter" data-key="city">${opt("", "Wszystkie", V.city)}${cities.map((c) => opt(c, c, V.city)).join("")}</select></label>
+      <label>Sortuj<select data-change="filter" data-key="sort">${opt("popular", "Popularne", V.sort)}${opt("az", "Alfabetycznie", V.sort)}</select></label>
+    </div>
+    <div id="results">${resultsHtml()}</div>`;
+};
+
+// ---------- Widok: Zapisane ----------
+
+function visibleSaved() {
+  if (V.coll === "all") return S.saved.map((id) => byId[id]);
+  const c = S.collections.find((x) => x.id === V.coll);
+  return c ? c.placeIds.filter(isSaved).map((id) => byId[id]) : [];
+}
+VIEWS.saved = () => {
+  if (V.coll !== "all" && !S.collections.some((c) => c.id === V.coll)) V.coll = "all";
+  V.sel = V.sel.filter(isSaved);
+  const list = visibleSaved();
+  const coll = S.collections.find((c) => c.id === V.coll);
+  return `<p class="eyebrow">Zapisane</p><h1>Twoje inspiracje</h1>
+    <p class="muted">Zaznacz kilka miejsc, żeby utworzyć z nich podróż. Usunięcie miejsca z podróży nie usuwa go stąd.</p>
+    <div class="chips" style="margin:16px 0 8px">
+      <button class="chip${V.coll === "all" ? " active" : ""}" data-action="coll-filter" data-coll="all">Wszystkie (${S.saved.length})</button>
+      ${S.collections.map((c) => `<button class="chip${V.coll === c.id ? " active" : ""}" data-action="coll-filter" data-coll="${c.id}">${esc(c.name)} (${c.placeIds.filter(isSaved).length})</button>`).join("")}
+      <button class="chip" data-action="new-coll">+ Nowa kolekcja</button>
+    </div>
+    ${coll ? `<div class="row"><span class="muted small">Kolekcja „${esc(coll.name)}”</span>
+      <button class="btn small" data-action="rename-coll">Zmień nazwę</button>
+      <button class="btn small danger" data-action="delete-coll">Usuń kolekcję</button></div>` : ""}
+    ${S.saved.length ? `<div class="selbar">
+      <strong>Zaznaczone: ${V.sel.length}</strong>
+      <button class="btn primary small" data-action="trip-from-sel" ${V.sel.length ? "" : "disabled"}>Utwórz podróż z wybranych</button>
+      <button class="btn small" data-action="select-all">Zaznacz wszystkie widoczne</button>
+      ${V.sel.length ? `<button class="btn small" data-action="clear-sel">Odznacz</button>` : ""}
+    </div>` : ""}
+    ${list.length ? grid(list, true) : `<div class="empty">
+      <h3>${S.saved.length ? "Ta kolekcja jest pusta" : "Nie masz jeszcze zapisanych miejsc"}</h3>
+      <p class="muted">${S.saved.length ? "Otwórz szczegóły miejsca i zaznacz tę kolekcję." : "Kliknij serce przy miejscu w zakładce Odkrywaj albo Szukaj."}</p>
+      <button class="btn primary" data-action="go" data-view="explore">Odkrywaj miejsca</button></div>`}`;
+};
+
+// ---------- Widok: Podróże ----------
+
+VIEWS.trips = () => {
+  const counts = Object.fromEntries(STATUS.map(([k]) => [k, S.trips.filter((t) => status(t) === k).length]));
+  const list = S.trips.filter((t) => status(t) === V.tripsTab);
+  return `<div class="row" style="justify-content:space-between">
+      <div><p class="eyebrow">Podróże</p><h1>Moje podróże</h1></div>
+      <button class="btn primary" data-action="new-trip">+ Nowa podróż</button></div>
+    <div class="tabs" role="tablist">${STATUS.map(([k, l]) =>
+      `<button class="chip${V.tripsTab === k ? " active" : ""}" role="tab" aria-selected="${V.tripsTab === k}" data-action="trips-tab" data-tab="${k}">${l} (${counts[k]})</button>`).join("")}</div>
+    ${list.length ? `<div class="trip-list">${list.map((t) => `
+      <article class="card trip-card">
+        <div>
+          <h3><button class="linkish" data-action="open-trip" data-id="${t.id}">${esc(t.name)}</button></h3>
+          <div class="muted small">${esc(t.destination)} · ${dateRange(t)}</div>
+          <div class="tags"><span class="tag">${nDays(t.days.length)}</span><span class="tag">${nPlaces(tripPlaceIds(t).length)}</span></div>
+        </div>
+        <div class="row">
+          <button class="btn primary small" data-action="open-trip" data-id="${t.id}">Otwórz</button>
+          <button class="btn small" data-action="edit-trip" data-id="${t.id}">Edytuj</button>
+          <button class="btn small" data-action="dup-trip" data-id="${t.id}">Duplikuj</button>
+          <button class="btn small" data-action="archive-trip" data-id="${t.id}">${t.archived ? "Przywróć" : "Archiwizuj"}</button>
+          <button class="btn small danger" data-action="delete-trip" data-id="${t.id}">Usuń</button>
+        </div>
+      </article>`).join("")}</div>`
+    : `<div class="empty"><h3>Brak podróży w tej zakładce</h3>
+      <p class="muted">Utwórz podróż od zera albo zaznacz miejsca w zakładce Zapisane i wybierz „Utwórz podróż z wybranych”.</p>
+      <div class="row" style="justify-content:center"><button class="btn primary" data-action="new-trip">+ Nowa podróż</button>
+      <button class="btn" data-action="go" data-view="saved">Przejdź do Zapisanych</button></div></div>`}
+    <p class="muted small" style="margin-top:32px">Dane prototypu są zapisane tylko w tej przeglądarce.
+      <button class="btn small" data-action="reset-data">Wyczyść dane</button></p>`;
+};
+
+// ---------- Widok: podróż (plan i mapa) ----------
+
+function stopHtml(t, i, j, s) {
+  const p = byId[s.placeId];
+  const key = `${i}:${j}`;
+  return `<li class="stop${V.active === key ? " active" : ""}">
+    <span class="num" style="background:${dayColor(i)}">${j + 1}</span>
+    <div class="stop-main">
+      <button class="linkish" data-action="focus-stop" data-key="${key}">${esc(p.name)}</button>
+      <div class="muted small">${CATS[p.cat].label}${p.lat == null ? " · brak lokalizacji" : ""}${s.auto ? ` <span class="tag">dobrane automatycznie</span>` : ""}</div>
+      <div class="stop-extra">
+        <label class="grow">Notatka <input type="text" value="${esc(s.note)}" data-change="stop-note" data-key="${key}" placeholder="opcjonalnie"></label>
+      </div>
+    </div>
+    <div class="stop-ctrl">
+      <button class="icon" data-action="up" data-key="${key}" ${j === 0 ? "disabled" : ""} aria-label="Przesuń wyżej: ${esc(p.name)}">↑</button>
+      <button class="icon" data-action="down" data-key="${key}" ${j === t.days[i].length - 1 ? "disabled" : ""} aria-label="Przesuń niżej: ${esc(p.name)}">↓</button>
+      <select data-change="move" data-key="${key}" aria-label="Przenieś ${esc(p.name)} do innego dnia">
+        <option value="">Przenieś do…</option>
+        ${t.days.map((_, k) => (k === i ? "" : `<option value="${k}">${dayLabel(t, k)}</option>`)).join("")}
+        <option value="u">Do zaplanowania</option>
+      </select>
+      <button class="icon danger" data-action="remove-stop" data-key="${key}" aria-label="Usuń z podróży: ${esc(p.name)}" title="Usuń z podróży">×</button>
+    </div>
+  </li>`;
+}
+function planHtml(t) {
+  const unassigned = t.unassigned.map((id) => {
+    const p = byId[id];
+    const key = `u:${id}`;
+    return `<li class="stop${V.active === key ? " active" : ""}">
+      <span class="num empty" aria-hidden="true">•</span>
+      <div class="stop-main"><button class="linkish" data-action="focus-stop" data-key="${key}">${esc(p.name)}</button>
+        <div class="muted small">${CATS[p.cat].label} · ${esc(p.city)}</div></div>
+      <div class="stop-ctrl">
+        <select data-change="assign" data-id="${id}" aria-label="Przypisz ${esc(p.name)} do dnia">
+          <option value="">Przypisz do dnia…</option>
+          ${t.days.map((_, k) => `<option value="${k}">${dayLabel(t, k)}</option>`).join("")}
+        </select>
+        <button class="icon danger" data-action="remove-un" data-id="${id}" aria-label="Usuń z podróży: ${esc(p.name)}" title="Usuń z podróży">×</button>
+      </div></li>`;
+  }).join("");
+  return `
+    <div class="card toolbar">
+      <button class="btn" data-action="add-places">+ Dodaj miejsca</button>
+      <form class="auto" data-form="auto">
+        <label>Atrakcji dziennie
+          <select name="n">${[1, 2, 3, 4, 5, 6].map((n) => `<option ${n === V.autoN ? "selected" : ""}>${n}</option>`).join("")}</select>
+        </label>
+        <button class="btn" name="mode" value="distribute">Rozłóż automatycznie</button>
+        <button class="btn primary" name="mode" value="plan">Zaplanuj automatycznie</button>
+      </form>
+      <p class="muted small" style="flex-basis:100%;margin:0">„Rozłóż” przydziela do dni miejsca z listy „Do zaplanowania”.
+        „Zaplanuj” dodatkowo dobiera brakujące miejsca z katalogu dla kierunku „${esc(t.destination)}”. Potem wszystko możesz zmienić.</p>
+    </div>
+    ${V.notice ? `<div class="notice row" style="justify-content:space-between"><span style="flex:1;min-width:200px">${esc(V.notice)}</span>
+      ${V.undo && V.undo.tripId === t.id ? `<button class="btn small" data-action="undo-auto">Cofnij</button>` : ""}</div>` : ""}
+    <section class="card" style="margin-bottom:0">
+      <div class="day-head"><h2>Do zaplanowania <span class="count">${t.unassigned.length}</span></h2></div>
+      ${t.unassigned.length ? `<ul class="stops">${unassigned}</ul>`
+        : `<p class="muted small" style="margin:0">Wszystkie miejsca są przypisane do dni. Kolejne dodasz przyciskiem „+ Dodaj miejsca”.</p>`}
+    </section>
+    ${t.days.map((d, i) => `
+      <section class="card day" style="--day:${dayColor(i)};margin-bottom:0">
+        <div class="day-head"><h2>${dayLabel(t, i)}</h2><span class="muted small">${nPlaces(d.length)}</span></div>
+        ${d.length ? `<ol class="stops">${d.map((s, j) => stopHtml(t, i, j, s)).join("")}</ol>`
+          : `<p class="muted small" style="margin:0">Brak punktów. Przypisz miejsca z listy „Do zaplanowania”.</p>`}
+      </section>`).join("")}`;
+}
+
+function mapHtml(t) {
+  if (V.mapDay !== "all" && Number(V.mapDay) >= t.days.length) V.mapDay = "all";
+  const days = V.mapDay === "all" ? t.days.map((_, i) => i) : [Number(V.mapDay)];
+  const pts = [];
+  days.forEach((i) => t.days[i].forEach((s, j) => pts.push({ key: `${i}:${j}`, p: byId[s.placeId], day: i, num: j + 1 })));
+  if (V.mapDay === "all") t.unassigned.forEach((id) => pts.push({ key: `u:${id}`, p: byId[id], day: -1 }));
+  const located = pts.filter((x) => x.p.lat != null);
+  const missing = pts.filter((x) => x.p.lat == null);
+
+  const W = 600, H = 440, PAD = 46;
+  let svgBody;
+  if (!located.length) {
+    svgBody = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="#6f655b" font-size="16">Brak punktów do pokazania na mapie</text>`;
+  } else {
+    // Rzut równoodległościowy: wystarcza na skalę miasta lub regionu.
+    const midLat = located.reduce((a, x) => a + x.p.lat, 0) / located.length;
+    const kx = Math.cos(midLat * Math.PI / 180);
+    const xs = located.map((x) => x.p.lon * kx), ys = located.map((x) => x.p.lat);
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    const spanX = Math.max(maxX - minX, 1e-4), spanY = Math.max(maxY - minY, 1e-4);
+    const scale = Math.min((W - 2 * PAD) / spanX, (H - 2 * PAD) / spanY);
+    const offX = (W - 2 * PAD - spanX * scale) / 2, offY = (H - 2 * PAD - spanY * scale) / 2;
+    const proj = (p) => [PAD + offX + (p.lon * kx - minX) * scale, PAD + offY + (maxY - p.lat) * scale];
+
+    let grid = "";
+    for (let x = 0; x <= W; x += 50) grid += `<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#e0d7c8" />`;
+    for (let y = 0; y <= H; y += 50) grid += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#e0d7c8" />`;
+
+    // Trasa osobno dla każdego dnia, w kolejności z planu.
+    const routes = days.map((i) => {
+      const line = t.days[i].map((s) => byId[s.placeId]).filter((p) => p.lat != null).map(proj);
+      return line.length > 1
+        ? `<polyline points="${line.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ")}" fill="none" stroke="${dayColor(i)}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" opacity="0.85" />`
+        : "";
+    }).join("");
+
+    // Aktywny punkt rysujemy na końcu, żeby był na wierzchu.
+    const ordered = [...located.filter((x) => x.key !== V.active), ...located.filter((x) => x.key === V.active)];
+    const pins = ordered.map((x) => {
+      const [cx, cy] = proj(x.p);
+      const act = x.key === V.active;
+      const r = act ? 15 : 12;
+      const label = x.day >= 0 ? `${dayLabel(t, x.day)}, punkt ${x.num}: ${x.p.name}` : `Do zaplanowania: ${x.p.name}`;
+      return `<g class="pin" data-action="focus-stop" data-key="${x.key}" tabindex="0" role="button" aria-label="${esc(label)}">
+        <title>${esc(label)}</title>
+        ${act ? `<circle cx="${cx}" cy="${cy}" r="${r + 6}" fill="none" stroke="#403A34" stroke-width="2" />` : ""}
+        <circle class="dot" cx="${cx}" cy="${cy}" r="${r}" fill="${x.day >= 0 ? dayColor(x.day) : "#FFFDF9"}" stroke="${x.day >= 0 ? "#FFFDF9" : "#B6A58F"}" stroke-width="2" ${x.day < 0 ? 'stroke-dasharray="3 2"' : ""} />
+        <text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="${act ? 13 : 11}" font-weight="700" fill="${x.day >= 0 ? "#fff" : "#7d6c58"}">${x.day >= 0 ? x.num : "•"}</text>
+        ${act ? `<text x="${cx}" y="${cy - r - 10}" text-anchor="middle" font-size="13" font-weight="600" fill="#403A34" stroke="#F7F4EE" stroke-width="4" paint-order="stroke">${esc(x.p.name)}</text>` : ""}
+      </g>`;
+    }).join("");
+    svgBody = `${grid}<text x="${W - 14}" y="24" text-anchor="end" font-size="13" fill="#6f655b">N ↑</text>${routes}${pins}`;
+  }
+
+  const listItems = pts.map((x) => `<li><button class="${x.key === V.active ? "active" : ""}" data-action="focus-stop" data-key="${x.key}">
+      <span class="num${x.day < 0 ? " empty" : ""}" style="${x.day >= 0 ? `background:${dayColor(x.day)}` : ""}">${x.day >= 0 ? x.num : "•"}</span>
+      <span>${esc(x.p.name)}${x.day >= 0 && V.mapDay === "all" ? ` <span class="muted small">· dzień ${x.day + 1}</span>` : ""}</span></button></li>`).join("");
+
+  return `<div class="card map-card">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Mapa</h2>
+      <label style="flex-direction:row;align-items:center;gap:8px">Pokaż
+        <select data-change="map-day">
+          <option value="all" ${V.mapDay === "all" ? "selected" : ""}>Cała podróż</option>
+          ${t.days.map((_, i) => `<option value="${i}" ${String(i) === String(V.mapDay) ? "selected" : ""}>${dayLabel(t, i)}</option>`).join("")}
+        </select></label>
+    </div>
+    <div class="legend">${days.map((i) => `<span style="--c:${dayColor(i)}">Dzień ${i + 1}</span>`).join("")}${V.mapDay === "all" && t.unassigned.length ? `<span style="--c:#FFFDF9">Do zaplanowania</span>` : ""}</div>
+    <svg class="map-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="Schematyczna mapa podróży">${svgBody}</svg>
+    <p class="muted small" style="margin:8px 0 0">Mapa schematyczna bez podkładu. Trasa łączy punkty liniami prostymi w kolejności z planu, osobno dla każdego dnia. Odległości i czasy przejazdu nie są wyznaczane.</p>
+    ${missing.length ? `<p class="notice small">Brak współrzędnych, więc nie pokazano na mapie: ${missing.map((x) => esc(x.p.name)).join(", ")}.</p>` : ""}
+    ${pts.length ? `<ol class="map-list" aria-label="Punkty na mapie">${listItems}</ol>` : ""}
+  </div>`;
+}
+
+VIEWS.trip = () => {
+  const t = curTrip();
+  if (!t) { V.view = "trips"; return VIEWS.trips(); }
+  return `<button class="btn small" data-action="go" data-view="trips">← Podróże</button>
+    <header class="trip-head">
+      <div>
+        <p class="eyebrow">${statusLabel(t)}</p>
+        <h1>${esc(t.name)}</h1>
+        <p class="muted" style="margin:0">${esc(t.destination)} · ${dateRange(t)} · ${nDays(t.days.length)} · ${nPlaces(tripPlaceIds(t).length)}</p>
+        ${t.description ? `<p style="margin:8px 0 0">${esc(t.description)}</p>` : ""}
+      </div>
+      <button class="btn" data-action="edit-trip" data-id="${t.id}">Edytuj podróż</button>
+    </header>
+    <div class="pane-toggle" role="tablist">
+      <button role="tab" aria-selected="${V.pane === "plan"}" data-action="pane" data-pane="plan">Plan dni</button>
+      <button role="tab" aria-selected="${V.pane === "map"}" data-action="pane" data-pane="map">Mapa</button>
+    </div>
+    <div class="trip-grid pane-${V.pane}">
+      <div class="plan-col">${planHtml(t)}</div>
+      <div class="map-col">${mapHtml(t)}</div>
+    </div>`;
+};
+
+// ---------- Okna (szczegóły miejsca, formularze) ----------
+
+const MODALS = {};
+const shell = (title, body, opts = {}) => `<div class="overlay"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+  ${opts.top || ""}<button class="icon close" data-action="close-modal" aria-label="Zamknij">×</button>
+  <div class="modal-body">${body}</div></div></div>`;
+
+MODALS.place = (m) => {
+  const p = byId[m.id];
+  const saved = isSaved(p.id);
+  const open = S.trips.filter((t) => !t.archived);
+  const inTrips = S.trips.filter((t) => tripPlaceIds(t).includes(p.id));
+  return shell(p.name, `
+    <div class="pcat">${CATS[p.cat].label}</div>
+    <h2 style="margin:4px 0">${esc(p.name)}</h2>
+    <p class="muted" style="margin:0">${esc(p.city)}, ${esc(p.country)}</p>
+    <p>${esc(p.desc)}</p>
+    <dl class="meta">
+      <dt>Kategoria</dt><dd>${CATS[p.cat].label}</dd>
+      <dt>Lokalizacja</dt><dd>${esc(p.city)}, ${esc(p.country)}</dd>
+      <dt>Współrzędne</dt><dd>${p.lat != null ? `${p.lat.toFixed(4)}, ${p.lon.toFixed(4)}` : "brak – uzupełnij lokalizację"}</dd>
+    </dl>
+    <button class="btn ${saved ? "" : "primary"}" data-action="toggle-save" data-id="${p.id}">${saved ? "♥ Zapisano · usuń z zapisanych" : "♡ Zapisz"}</button>
+    <h3>Kolekcje</h3>
+    ${S.collections.length ? `<ul class="check-list">${S.collections.map((c) => `<li><label>
+        <input type="checkbox" data-change="coll-toggle" data-coll="${c.id}" data-id="${p.id}" ${c.placeIds.includes(p.id) && saved ? "checked" : ""}>
+        ${esc(c.name)}</label></li>`).join("")}</ul>` : `<p class="muted small">Nie masz jeszcze kolekcji.</p>`}
+    <form class="row" data-form="quick-coll" data-id="${p.id}">
+      <input type="text" name="name" placeholder="Nowa kolekcja, np. Włochy" aria-label="Nazwa nowej kolekcji" style="flex:1">
+      <button class="btn small">Utwórz i dodaj</button>
+    </form>
+    <h3>Dodaj do podróży</h3>
+    ${open.length ? `<form class="row" data-form="add-to-trip" data-id="${p.id}">
+        <select name="trip" aria-label="Wybierz podróż" style="flex:1">${open.map((t) => `<option value="${t.id}">${esc(t.name)}</option>`).join("")}</select>
+        <button class="btn small">Dodaj</button></form>`
+      : `<p class="muted small">Nie masz jeszcze podróży. <button class="linkish" style="text-decoration:underline" data-action="new-trip">Utwórz podróż</button></p>`}
+    ${inTrips.length ? `<p class="muted small">W podróżach: ${inTrips.map((t) => `„${esc(t.name)}”`).join(", ")}</p>` : ""}`,
+    { top: img(p, true) });
+};
+
+MODALS.trip = (m) => {
+  const t = m.tripId ? trip(m.tripId) : null;
+  const sel = m.fromSel ? V.sel.map((id) => byId[id]) : [];
+  // Domyślny kierunek: najczęstsze miasto wśród zaznaczonych miejsc.
+  const counts = {};
+  sel.forEach((p) => { counts[p.city] = (counts[p.city] || 0) + 1; });
+  const topCity = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || "";
+  const v = t || { name: topCity ? `Wyjazd: ${topCity}` : "", destination: topCity, start: "", end: "", draftDays: 3, description: "" };
+  const title = t ? "Edytuj podróż" : m.fromSel ? `Nowa podróż z ${nPlaces(sel.length)}` : "Nowa podróż";
+  const opt = (val, label) => `<option value="${esc(val)}" ${norm(val) === norm(v.destination) ? "selected" : ""}>${esc(label)}</option>`;
+  return shell(title, `
+    <h2>${esc(title)}</h2>
+    ${m.fromSel ? `<p class="muted small">${sel.map((p) => esc(p.name)).join(", ")}</p>` : ""}
+    <form class="form-grid" data-form="trip" novalidate>
+      <label>Nazwa podróży<input type="text" name="name" value="${esc(v.name)}" required></label>
+      <div class="form-grid" style="gap:6px">
+        <span class="lbl" id="dest-label">Miejsce lub kierunek</span>
+        <select data-change="dest-pick" aria-label="Wybierz kierunek z listy">
+          <option value="">Wybierz z listy…</option>
+          <optgroup label="Miasta i regiony">${DESTS.map((d) => opt(d.city, `${d.city} (${d.country})`)).join("")}</optgroup>
+          <optgroup label="Kraje">${COUNTRIES.map((c) => opt(c, c)).join("")}</optgroup>
+        </select>
+        <input type="text" name="destination" id="dest-input" data-input="dest" value="${esc(v.destination)}" placeholder="…albo wpisz własny, np. Rzym" aria-labelledby="dest-label" required>
+        <p class="muted small" id="dest-hint" style="margin:0">${destHint(v.destination)}</p>
+      </div>
+      <div class="two">
+        <label>Data rozpoczęcia<input type="date" name="start" value="${esc(v.start)}"></label>
+        <label>Data zakończenia<input type="date" name="end" value="${esc(v.end)}"></label>
+      </div>
+      <label>Liczba dni szkicu (gdy nie podasz dat)<input type="number" name="draftDays" min="1" max="30" value="${v.draftDays || 3}"></label>
+      <label>Opis (opcjonalnie)<textarea name="description" rows="2">${esc(v.description)}</textarea></label>
+      ${t ? "" : `<label>Atrakcji dziennie (dla planu automatycznego)
+        <select name="autoN">${[1, 2, 3, 4, 5, 6].map((n) => `<option ${n === V.autoN ? "selected" : ""}>${n}</option>`).join("")}</select></label>`}
+      <p class="error" id="form-error" role="alert" hidden></p>
+      <div class="row">
+        ${t ? `<button class="btn primary">Zapisz zmiany</button>`
+          : `<button class="btn primary" name="mode" value="create">Utwórz podróż</button>
+             <button class="btn" name="mode" value="auto">Utwórz i zaplanuj automatycznie</button>`}
+        <button type="button" class="btn" data-action="close-modal">Anuluj</button></div>
+    </form>`);
+};
+
+MODALS.collection = (m) => {
+  const c = m.id ? S.collections.find((x) => x.id === m.id) : null;
+  return shell(c ? "Zmień nazwę kolekcji" : "Nowa kolekcja", `
+    <h2>${c ? "Zmień nazwę kolekcji" : "Nowa kolekcja"}</h2>
+    <form class="form-grid" data-form="collection" novalidate>
+      <label>Nazwa<input type="text" name="name" value="${esc(c ? c.name : "")}" placeholder="np. Weekendowe wyjazdy"></label>
+      <p class="error" id="form-error" role="alert" hidden></p>
+      <div class="row"><button class="btn primary">${c ? "Zapisz" : "Utwórz kolekcję"}</button>
+        <button type="button" class="btn" data-action="close-modal">Anuluj</button></div>
+    </form>`);
+};
+
+function addListHtml() {
+  const t = curTrip();
+  const inTrip = new Set(tripPlaceIds(t));
+  const words = norm(V.modal.q || "").split(/\s+/).filter(Boolean);
+  const list = PLACES
+    .filter((p) => words.every((w) => norm(`${p.name} ${p.city} ${p.country} ${CATS[p.cat].label}`).includes(w)))
+    .sort((a, b) => isSaved(b.id) - isSaved(a.id) || a.name.localeCompare(b.name, "pl"));
+  if (!list.length) return `<p class="muted">Brak wyników.</p>`;
+  return `<ul class="check-list">${list.map((p) => `<li><label>
+      <input type="checkbox" data-change="add-pick" data-id="${p.id}" ${inTrip.has(p.id) ? "checked disabled" : V.modal.picks.includes(p.id) ? "checked" : ""}>
+      <span>${isSaved(p.id) ? "♥ " : ""}${esc(p.name)} <span class="muted small">· ${esc(p.city)}${inTrip.has(p.id) ? " · już w podróży" : ""}</span></span>
+    </label></li>`).join("")}</ul>`;
+}
+MODALS.add = (m) => shell("Dodaj miejsca do podróży", `
+  <h2>Dodaj miejsca</h2>
+  <p class="muted small">Zapisane miejsca (♥) są na górze listy. Dodane trafią do „Do zaplanowania”.</p>
+  <input type="search" data-input="add-q" value="${esc(m.q)}" placeholder="Szukaj w katalogu" aria-label="Szukaj miejsc do dodania" style="width:100%">
+  <div id="add-list">${addListHtml()}</div>
+  <div class="row"><button class="btn primary" id="add-confirm" data-action="add-confirm" ${m.picks.length ? "" : "disabled"}>Dodaj (${m.picks.length})</button>
+    <button class="btn" data-action="close-modal">Anuluj</button></div>`);
+
+function renderModal() {
+  const root = $("#modal-root");
+  const had = !!root.innerHTML;
+  root.innerHTML = V.modal ? MODALS[V.modal.type](V.modal) : "";
+  document.body.classList.toggle("modal-open", !!V.modal);
+  if (V.modal && !had) {
+    const first = root.querySelector('.modal-body input:not([type=checkbox]), .modal-body select, .modal-body textarea') || root.querySelector(".close");
+    first.focus();
+  }
+}
+function openModal(m) { V.modal = m; $("#modal-root").innerHTML = ""; renderModal(); }
+function closeModal() { V.modal = null; renderModal(); }
+
+// ---------- Renderowanie ----------
+
+function render() {
+  const nav = V.view === "trip" ? "trips" : V.view;
+  document.querySelectorAll("[data-nav]").forEach((b) => {
+    b.classList.toggle("active", b.dataset.nav === nav);
+    if (b.dataset.nav === nav) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+  });
+  document.querySelectorAll("[data-saved-count]").forEach((e) => { e.textContent = S.saved.length || ""; });
+  $("#storage-warning").hidden = storageOk;
+  $("#view").innerHTML = VIEWS[V.view]();
+  if (V.modal) renderModal();
+}
+function go(view, extra = {}) {
+  Object.assign(V, { view }, extra);
+  render();
+  window.scrollTo(0, 0);
+}
+// Każda zwykła zmiana kasuje możliwość cofnięcia automatycznego planu.
+function save() { V.undo = null; persist(); render(); }
+
+// ---------- Akcje ----------
+
+function toggleSave(id) {
+  const p = byId[id];
+  if (isSaved(id)) {
+    S.saved = S.saved.filter((x) => x !== id);
+    S.collections.forEach((c) => { c.placeIds = c.placeIds.filter((x) => x !== id); });
+    const inTrip = S.trips.some((t) => tripPlaceIds(t).includes(id));
+    toast(inTrip ? `Usunięto „${p.name}” z Zapisanych. W podróży nadal zostaje.` : `Usunięto „${p.name}” z Zapisanych.`);
+  } else {
+    S.saved.unshift(id);
+    toast(`Zapisano „${p.name}”. Znajdziesz je w zakładce Zapisane.`);
+  }
+  save();
+}
+function parseKey(key) { return key.split(":").map(Number); }
+
+const ACTIONS = {
+  go: (el) => go(el.dataset.view, el.dataset.view === "saved" ? {} : {}),
+  cat: (el) => go("search", { cat: el.dataset.cat, q: "", country: "", city: "" }),
+  dest: (el) => { const p = PLACES.find((x) => x.city === el.dataset.city); go("search", { city: p.city, country: p.country, cat: "", q: "" }); },
+  suggest: (el) => { Object.assign(V, { q: el.dataset.q, cat: "", country: "", city: "" }); render(); },
+  "clear-filters": () => { Object.assign(V, { q: "", cat: "", country: "", city: "" }); render(); },
+  "toggle-save": (el) => toggleSave(el.dataset.id),
+  "open-place": (el) => openModal({ type: "place", id: el.dataset.id }),
+  "close-modal": () => closeModal(),
+
+  "coll-filter": (el) => { V.coll = el.dataset.coll; V.sel = []; render(); },
+  "new-coll": () => openModal({ type: "collection" }),
+  "rename-coll": () => openModal({ type: "collection", id: V.coll }),
+  "delete-coll": () => {
+    const c = S.collections.find((x) => x.id === V.coll);
+    if (!confirm(`Usunąć kolekcję „${c.name}”? Miejsca zostaną w Zapisanych.`)) return;
+    S.collections = S.collections.filter((x) => x.id !== c.id);
+    V.coll = "all";
+    toast(`Usunięto kolekcję „${c.name}”.`);
+    save();
+  },
+  "select-all": () => { V.sel = [...new Set([...V.sel, ...visibleSaved().map((p) => p.id)])]; render(); },
+  "clear-sel": () => { V.sel = []; render(); },
+  "trip-from-sel": () => openModal({ type: "trip", fromSel: true }),
+
+  "new-trip": () => openModal({ type: "trip" }),
+  "edit-trip": (el) => openModal({ type: "trip", tripId: el.dataset.id }),
+  "open-trip": (el) => go("trip", { tripId: el.dataset.id, mapDay: "all", active: null, notice: null, undo: null, pane: "plan" }),
+  "undo-auto": () => {
+    const t = curTrip();
+    t.days = V.undo.days;
+    t.unassigned = V.undo.unassigned;
+    V.notice = "Cofnięto automatyczne planowanie.";
+    V.active = null;
+    save();
+  },
+  "trips-tab": (el) => { V.tripsTab = el.dataset.tab; render(); },
+  "dup-trip": (el) => {
+    const t = clone(trip(el.dataset.id));
+    Object.assign(t, { id: uid(), name: `${t.name} (kopia)`, archived: false });
+    S.trips.unshift(t);
+    V.tripsTab = status(t);
+    toast(`Utworzono kopię „${t.name}”.`);
+    save();
+  },
+  "archive-trip": (el) => {
+    const t = trip(el.dataset.id);
+    t.archived = !t.archived;
+    toast(t.archived ? `Przeniesiono „${t.name}” do archiwum.` : `Przywrócono „${t.name}”.`);
+    save();
+  },
+  "delete-trip": (el) => {
+    const t = trip(el.dataset.id);
+    if (!confirm(`Usunąć podróż „${t.name}”? Tej operacji nie da się cofnąć. Zapisane miejsca zostaną w Zapisanych.`)) return;
+    S.trips = S.trips.filter((x) => x.id !== t.id);
+    toast(`Usunięto podróż „${t.name}”.`);
+    save();
+  },
+
+  pane: (el) => { V.pane = el.dataset.pane; render(); },
+  "focus-stop": (el) => {
+    const key = el.dataset.key;
+    V.active = V.active === key ? null : key;
+    // Punkt z innego dnia: przełącz mapę na cały plan, żeby był widoczny.
+    if (V.active && V.mapDay !== "all" && !key.startsWith(`${V.mapDay}:`)) V.mapDay = "all";
+    render();
+  },
+  up: (el) => moveWithin(el.dataset.key, -1),
+  down: (el) => moveWithin(el.dataset.key, 1),
+  "remove-stop": (el) => {
+    const t = curTrip();
+    const [i, j] = parseKey(el.dataset.key);
+    const [s] = t.days[i].splice(j, 1);
+    afterRemove(s.placeId);
+  },
+  "remove-un": (el) => {
+    const t = curTrip();
+    t.unassigned = t.unassigned.filter((x) => x !== el.dataset.id);
+    afterRemove(el.dataset.id);
+  },
+  "add-places": () => openModal({ type: "add", q: "", picks: [] }),
+  "add-confirm": () => {
+    const t = curTrip();
+    const n = V.modal.picks.length;
+    t.unassigned.push(...V.modal.picks);
+    t.excluded = (t.excluded || []).filter((id) => !V.modal.picks.includes(id));
+    V.modal = null;
+    renderModal();
+    toast(`Dodano ${nPlaces(n)} do listy „Do zaplanowania”.`);
+    save();
+  },
+  "reset-data": () => {
+    if (!confirm("Usunąć wszystkie zapisane miejsca, kolekcje i podróże z tej przeglądarki? Tej operacji nie da się cofnąć.")) return;
+    S = emptyState();
+    V.sel = [];
+    persist();
+    go("explore");
+    toast("Dane wyczyszczone.");
+  }
+};
+
+function moveWithin(key, dir) {
+  const t = curTrip();
+  const [i, j] = parseKey(key);
+  const d = t.days[i];
+  const k = j + dir;
+  if (k < 0 || k >= d.length) return;
+  [d[j], d[k]] = [d[k], d[j]];
+  V.active = V.active === key ? `${i}:${k}` : null;
+  save();
+}
+// Miejsca usunięte z podróży nie są potem dobierane przez „Zaplanuj automatycznie”.
+function afterRemove(id) {
+  const t = curTrip();
+  t.excluded = [...new Set([...(t.excluded || []), id])];
+  V.active = null;
+  const name = byId[id].name;
+  toast(isSaved(id) ? `Usunięto „${name}” z podróży. Miejsce zostaje w Zapisanych.` : `Usunięto „${name}” z podróży.`);
+  save();
+}
+
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("overlay")) { closeModal(); return; }
+  const el = e.target.closest("[data-action]");
+  if (!el || el.disabled) return;
+  const fn = ACTIONS[el.dataset.action];
+  if (fn) { e.preventDefault(); fn(el); }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && V.modal) closeModal();
+  // Pinezki na mapie działają też z klawiatury.
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("g[data-action]")) {
+    e.preventDefault();
+    ACTIONS[e.target.dataset.action](e.target);
+  }
+});
+
+document.addEventListener("input", (e) => {
+  const k = e.target.dataset.input;
+  if (k === "q") { V.q = e.target.value; $("#results").innerHTML = resultsHtml(); }
+  if (k === "add-q") { V.modal.q = e.target.value; $("#add-list").innerHTML = addListHtml(); }
+  if (k === "dest") $("#dest-hint").textContent = destHint(e.target.value);
+});
+
+document.addEventListener("change", (e) => {
+  const el = e.target;
+  const kind = el.dataset.change;
+  if (!kind) return;
+  const t = curTrip();
+  switch (kind) {
+    case "filter":
+      V[el.dataset.key] = el.value;
+      if (el.dataset.key === "country" && V.city && !PLACES.some((p) => p.city === V.city && p.country === V.country)) V.city = "";
+      render();
+      break;
+    case "select":
+      V.sel = el.checked ? [...V.sel, el.dataset.id] : V.sel.filter((x) => x !== el.dataset.id);
+      render();
+      break;
+    case "coll-toggle": {
+      const c = S.collections.find((x) => x.id === el.dataset.coll);
+      const id = el.dataset.id;
+      if (el.checked) {
+        if (!isSaved(id)) S.saved.unshift(id);
+        if (!c.placeIds.includes(id)) c.placeIds.push(id);
+      } else {
+        c.placeIds = c.placeIds.filter((x) => x !== id);
+      }
+      save();
+      break;
+    }
+    case "add-pick":
+      V.modal.picks = el.checked ? [...V.modal.picks, el.dataset.id] : V.modal.picks.filter((x) => x !== el.dataset.id);
+      $("#add-confirm").disabled = !V.modal.picks.length;
+      $("#add-confirm").textContent = `Dodaj (${V.modal.picks.length})`;
+      break;
+    case "assign":
+      if (el.value === "") return;
+      t.unassigned = t.unassigned.filter((x) => x !== el.dataset.id);
+      t.days[Number(el.value)].push({ placeId: el.dataset.id, time: "", note: "" });
+      V.active = `${el.value}:${t.days[Number(el.value)].length - 1}`;
+      save();
+      break;
+    case "move": {
+      if (el.value === "") return;
+      const [i, j] = parseKey(el.dataset.key);
+      const [s] = t.days[i].splice(j, 1);
+      if (el.value === "u") t.unassigned.push(s.placeId);
+      else t.days[Number(el.value)].push(s);
+      V.active = el.value === "u" ? `u:${s.placeId}` : `${el.value}:${t.days[Number(el.value)].length - 1}`;
+      save();
+      break;
+    }
+    case "stop-note": {
+      // Bez ponownego rysowania, żeby nie gubić kursora.
+      const [i, j] = parseKey(el.dataset.key);
+      t.days[i][j].note = el.value;
+      persist();
+      break;
+    }
+    case "dest-pick": {
+      if (!el.value) return;
+      const input = $("#dest-input");
+      const name = el.form.elements.name;
+      // Nazwa podąża za kierunkiem, dopóki użytkownik jej sam nie zmienił.
+      if (!name.value.trim() || name.value === `Wyjazd: ${input.value}`) name.value = `Wyjazd: ${el.value}`;
+      input.value = el.value;
+      $("#dest-hint").textContent = destHint(el.value);
+      break;
+    }
+    case "map-day":
+      V.mapDay = el.value;
+      V.active = null;
+      render();
+      break;
+  }
+});
+
+document.addEventListener("submit", (e) => {
+  const f = e.target;
+  const kind = f.dataset.form;
+  if (!kind) return;
+  e.preventDefault();
+  const fd = new FormData(f);
+  const fail = (msg) => { const er = $("#form-error"); er.textContent = msg; er.hidden = false; };
+
+  if (kind === "hero-search") {
+    go("search", { q: (fd.get("q") || "").trim(), cat: "", country: "", city: "" });
+    const q = $("#q");
+    q.focus();
+    q.setSelectionRange(q.value.length, q.value.length);
+  }
+
+  if (kind === "trip") {
+    const name = fd.get("name").trim();
+    const destination = fd.get("destination").trim();
+    const start = fd.get("start"), end = fd.get("end");
+    const draftDays = Math.max(1, Math.min(30, Number(fd.get("draftDays")) || 3));
+    const description = fd.get("description").trim();
+    if (!name) return fail("Podaj nazwę podróży.");
+    if (!destination) return fail("Podaj miejsce lub kierunek.");
+    if (!!start !== !!end) return fail("Podaj obie daty albo zostaw obie puste, żeby zrobić szkic bez dat.");
+    if (start && end < start) return fail("Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.");
+    if (start && dayCount({ start, end }) > 30) return fail("Podróż może mieć najwyżej 30 dni.");
+
+    const m = V.modal;
+    if (m.tripId) {
+      const t = trip(m.tripId);
+      Object.assign(t, { name, destination, start, end, draftDays, description });
+      const moved = syncDays(t);
+      V.modal = null;
+      renderModal();
+      toast(moved ? `Zapisano zmiany. ${nPlaces(moved)} z usuniętych dni wróciło do „Do zaplanowania”.` : "Zapisano zmiany.");
+      save();
+    } else {
+      const t = { id: uid(), name, destination, start, end, draftDays, description, archived: false,
+                  unassigned: m.fromSel ? [...V.sel] : [], days: [] };
+      syncDays(t);
+      S.trips.unshift(t);
+      if (m.fromSel) V.sel = [];
+      V.tripsTab = status(t);
+      V.modal = null;
+      renderModal();
+      V.undo = null;
+      let notice = null;
+      if (e.submitter && e.submitter.value === "auto") {
+        V.autoN = Number(fd.get("autoN")) || 3;
+        notice = runAuto(t, "plan", V.autoN);
+      }
+      persist();
+      go("trip", { tripId: t.id, mapDay: "all", active: null, notice, pane: "plan" });
+      toast(notice ? "Podróż utworzona i zaplanowana automatycznie." : "Podróż utworzona. Przypisz miejsca do dni.");
+    }
+  }
+
+  if (kind === "collection") {
+    const name = fd.get("name").trim();
+    if (!name) return fail("Podaj nazwę kolekcji.");
+    const id = V.modal.id;
+    if (S.collections.some((c) => c.id !== id && norm(c.name) === norm(name))) return fail("Kolekcja o tej nazwie już istnieje.");
+    if (id) {
+      S.collections.find((c) => c.id === id).name = name;
+      toast("Zmieniono nazwę kolekcji.");
+    } else {
+      const c = { id: uid(), name, placeIds: [] };
+      S.collections.push(c);
+      V.coll = c.id;
+      toast(`Utworzono kolekcję „${name}”. Dodawaj do niej miejsca w ich szczegółach.`);
+    }
+    V.modal = null;
+    renderModal();
+    save();
+  }
+
+  if (kind === "quick-coll") {
+    const name = fd.get("name").trim();
+    if (!name) return;
+    const id = f.dataset.id;
+    let c = S.collections.find((x) => norm(x.name) === norm(name));
+    if (!c) { c = { id: uid(), name, placeIds: [] }; S.collections.push(c); }
+    if (!isSaved(id)) S.saved.unshift(id);
+    if (!c.placeIds.includes(id)) c.placeIds.push(id);
+    toast(`Dodano do kolekcji „${c.name}”.`);
+    save();
+  }
+
+  if (kind === "add-to-trip") {
+    const t = trip(fd.get("trip"));
+    const id = f.dataset.id;
+    if (tripPlaceIds(t).includes(id)) { toast(`To miejsce jest już w podróży „${t.name}”.`); return; }
+    t.unassigned.push(id);
+    t.excluded = (t.excluded || []).filter((x) => x !== id);
+    toast(`Dodano do podróży „${t.name}” (lista „Do zaplanowania”).`);
+    save();
+  }
+
+  if (kind === "auto") {
+    const n = Number(fd.get("n"));
+    V.autoN = n;
+    V.undo = null;
+    V.notice = runAuto(curTrip(), e.submitter && e.submitter.value === "plan" ? "plan" : "distribute", n);
+    V.active = null;
+    persist();
+    render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
