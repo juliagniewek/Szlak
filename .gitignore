@@ -1,3 +1,11 @@
+# Sekrety (aplikacja ich nie używa, ale zasada obowiązuje)
+.env
+.env.*
+!.env.example
+
+# Zależności
+node_modules/
+
 # Pliki systemowe Windows i macOS
 Thumbs.db
 desktop.ini
