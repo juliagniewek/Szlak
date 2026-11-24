@@ -1,5 +1,5 @@
 # Specyfikacja MVP: szlak.
-Wersja 1 · 22.11.2026 · Źródła: brief.md, prototyp.html, design.md, specyfikacja-v1.md (wstępna specyfikacja z kartą decyzji), docs/wnioski-z-testow.md, odpowiedzi właścicielki projektu w rozmowie (22.11.2026)
+Wersja 1.1 · 24.11.2026 · Źródła: brief.md, prototyp.html, design.md, specyfikacja-v1.md (wstępna specyfikacja z kartą decyzji), docs/wnioski-z-testow.md, odpowiedzi właścicielki projektu w rozmowie (22.11.2026), odpowiedzi na pytania z Fazy A (24.11.2026, DEC-13–DEC-17)
 
 ## 1. Cel i użytkownicy
 szlak. to prosta aplikacja webowa dla osób, które same planują city break, wakacje albo krótki wyjazd, często w kilka osób. Dziś zapisują inspiracje w kilku aplikacjach, zakładkach i notatkach, a potem ręcznie przepisują je do planu i nie widzą, gdzie leżą zapisane miejsca. W aplikacji odkrywają i zapisują miejsca, zamieniają je w podróż, rozkładają na dni i oglądają trasę dnia na mapie. Wszystko w jednym miejscu, w przeglądarce na komputerze, bez zakładania konta.
@@ -66,6 +66,8 @@ Pozycja katalogu: prawdziwe miejsce w prawdziwym mieście lub regionie, z opisem
 | współrzędne | położenie na mapie | dwie liczby (szerokość, długość) | nie | 41.8902, 12.4922 | zwykłe | właścicielka | każdy |
 | oznaczenia | do sekcji ekranu Odkrywaj | tak/nie: popularne, na jesień i zimę, mniej znane | nie | popularne | zwykłe | właścicielka | aplikacja |
 | zdjęcie | zdjęcie z Wikimedia Commons | adres pliku | nie | Colosseo_2020.jpg | zwykłe | właścicielka | każdy |
+| autor zdjęcia | twórca zdjęcia według strony pliku na Commons (DEC-13) | tekst | tak, gdy jest zdjęcie | (z Commons) | zwykłe | właścicielka | każdy |
+| licencja zdjęcia | licencja według strony pliku na Commons (DEC-13) | tekst | tak, gdy jest zdjęcie | CC BY-SA 4.0 | zwykłe | właścicielka | każdy |
 
 Kierunek (do ekranu Odkrywaj i listy w formularzu) to miasto lub region z katalogu plus kraj. Dane startowe: 41 miejsc, 5 kierunków (Rzym, Lizbona, Kraków, Barcelona, Dolomity) z prototypu. Miejsca nie mają adresów ani nazw firm (DEC-8).
 
@@ -117,8 +119,8 @@ Usuwanie:
 **Poziom:** P0 — aplikacja nie ma kont i nie zbiera danych osobowych; dane użytkownika (zapisane miejsca, podróże) zostają w jego przeglądarce i nie są nigdzie wysyłane.
 **Dane osobowe w MVP:** brak pól osobowych. Pole „opis” podróży to wolny tekst, w który użytkownik może sam wpisać dane osobowe; zostaje ono tylko w jego przeglądarce.
 **Usługi zewnętrzne przetwarzające dane:**
-- GitHub Pages (hosting) → adres IP i dane przeglądarki odwiedzających; do sprawdzenia w aktualnych warunkach usługi.
-- Wikimedia Commons (zdjęcia) → przeglądarka pobiera zdjęcia, więc serwery Wikimedia widzą adres IP i adres strony; do sprawdzenia w aktualnych warunkach usługi. Dane użytkownika nie są tam wysyłane.
+- GitHub Pages (hosting) → GitHub zapisuje i przechowuje adres IP każdej osoby odwiedzającej stronę, w celach bezpieczeństwa; właścicielka nie może tego wyłączyć (sprawdzone 24.11.2026, źródła w docs/plan.md, sekcja 2).
+- Wikimedia Commons (zdjęcia) → przeglądarka pobiera zdjęcia, więc serwery Wikimedia widzą adres IP i adres strony. Dane użytkownika nie są tam wysyłane. Warunki: osadzanie zdjęć jest dozwolone, ale wymaga podania autora i licencji (DEC-13); działają tylko standardowe szerokości miniatur (sprawdzone 24.11.2026, docs/plan.md, sekcja 2).
 
 **Niezmienniki:**
 - N1: Zapisane miejsca, podróże i punkty planu nigdy nie opuszczają przeglądarki — test: przy zapisie miejsca, utworzeniu podróży i zmianie planu aplikacja nie wysyła żadnego żądania sieciowego (jedyne żądania to pobieranie zdjęć).
@@ -178,7 +180,8 @@ Usuwanie:
 - Komunikaty błędów zrozumiałe dla użytkownika, po polsku, przy polu, którego dotyczą.
 - Brak połączenia: aplikacja działa, zdjęcia zastępuje ikona kategorii (A4).
 - Krótki komunikat (toast) po zapisie, usunięciu i utworzeniu podróży.
-- Propozycja zmiany w design.md dla właścicielki: przyciski-ikony (strzałki, ×, serce) mają w prototypie 34–38 px; wymaganie 44×44 px oznacza ich powiększenie albo większy obszar kliknięcia.
+- Przyciski-ikony (strzałki, ×, serce) wyglądają jak w prototypie (34–38 px), ale ich obszar kliknięcia ma co najmniej 44×44 px (DEC-14, dopisane do design.md).
+- Stopka z informacją o danych i odnośnikiem „O danych” na każdym ekranie (DEC-15).
 
 ## 10. Funkcje
 | ID | Funkcja | Priorytet | Złożoność → poziom | Zależy od | Karta |
@@ -205,6 +208,11 @@ Usuwanie:
 - DEC-10 · 22.11.2026: Bardzo prosta wersja w mniej niż tydzień: planowanie automatyczne, kolekcje, archiwum, duplikowanie i notatki trafiają do „Później”; wyszukiwanie i mapa są MVP-2 — „bez jakichś trudnych rzeczy, taka podstawowa aplikacja” — źródło: właścicielka; podział na MVP-1 i MVP-2 zaproponował agent (Q1). Zmienia brief: brief miał „Rozłóż/Zaplanuj automatycznie” i mapę w ścieżce prototypu.
 - DEC-11 · 22.11.2026: Katalog miejsc jest w danych startowych, bez ekranu edycji — źródło: prototyp.
 - DEC-12 · 22.11.2026: Repozytorium publiczne, bo GitHub Pages na darmowym planie tego wymaga; w repozytorium nie ma danych ani kluczy — źródło: właścicielka (repozytorium Szlak).
+- DEC-13 · 24.11.2026: Każde zdjęcie ma w katalogu autora i licencję; w oknie szczegółów miejsca pod zdjęciem jest podpis „Zdjęcie: [autor], [licencja]” z odnośnikiem do strony pliku na Commons, a na dole ekranu Odkrywaj odnośnik „Źródła zdjęć” z pełną listą. Zdjęcie bez jasnej licencji zostaje usunięte (karta pokazuje ikonę, A4) — powód: licencje CC wymagają podania autora i licencji — źródło: właścicielka (P1 z Fazy A).
+- DEC-14 · 24.11.2026: Przyciski-ikony zachowują wygląd z prototypu, a obszar kliknięcia ma co najmniej 44×44 px — źródło: właścicielka (P2 z Fazy A).
+- DEC-15 · 24.11.2026: Stopka „Twoje dane zostają tylko w tej przeglądarce i znikną po jej wyczyszczeniu.” z odnośnikiem „O danych” (co zostaje w przeglądarce, że GitHub zapisuje adresy IP odwiedzających, że Wikimedia widzi adres IP przy pobieraniu zdjęć) — w F01 — powód: wymaga tego bramka prawdziwych danych — źródło: właścicielka (P3 z Fazy A).
+- DEC-16 · 24.11.2026: Lista podróży pokazuje status (nadchodząca, w trakcie, zakończona, szkic bez dat) jako małą etykietę — w F04 — źródło: właścicielka (P4 z Fazy A).
+- DEC-17 · 24.11.2026: Mapa trasy (F06) zostaje w MVP-2 (odpowiedź na Q1); aplikacja będzie pod adresem `juliagniewek.github.io/Szlak/`, prototyp zostaje pod `/Szlak/prototyp.html` — źródło: właścicielka (P5 z Fazy A).
 - A1: Podróż ma od 1 do 30 dni; szkic bez dat ma domyślnie 3 dni — zaakceptowane: 22.11.2026
 - A2: Nazwa i kierunek do 60 znaków, opis do 300 znaków — zaakceptowane: 22.11.2026
 - A3: Usunięcie zapisu miejsca nie usuwa go z podróży, a usunięcie z podróży nie usuwa zapisu — zaakceptowane: 22.11.2026
@@ -214,7 +222,7 @@ Usuwanie:
 - A7: Usunięcie podróży wymaga potwierdzenia i nie da się go cofnąć — zaakceptowane: 22.11.2026
 
 ## 12. Pytania otwarte i ryzyka
-- Q1: Czy mapa trasy (F06) ma być w MVP-1, skoro brief kończy ścieżkę na trasie, czy zostaje w MVP-2 jak proponuje agent? — blokuje: nic (decyduje o kolejności) — termin: przed Fazą A — kto odpowie: właścicielka.
+- Q1: Czy mapa trasy (F06) ma być w MVP-1, skoro brief kończy ścieżkę na trasie, czy zostaje w MVP-2 jak proponuje agent? — odpowiedź 24.11.2026: MVP-2 (DEC-17).
 - R1: Nie wiadomo, czy testerzy przeszli główną ścieżkę bez pomocy — założenie o użyteczności z briefu jest niesprawdzone — sprawdzamy w teście MVP z 2–3 osobami przed publikacją.
 - R2: Dane tylko w jednej przeglądarce — użytkownik może je stracić przy czyszczeniu przeglądarki — informacja na stronie i w README; kopie i synchronizacja są w „Później”.
 - R3: Zdjęcia z zewnętrznego serwera — mogą zniknąć albo się zmienić — ikona zastępcza (A4).
@@ -223,9 +231,9 @@ Usuwanie:
 ## 13. Jak budować z tą specyfikacją
 **Zadania właściciela poza kodem:**
 1. Instalacja Trail-code w nowej sesji (prompt „Instalacja i stosowanie Trail-code” 1.3) — przed Fazą A. Wymaga Node.js.
-2. Odpowiedź na Q1 — przed Fazą A.
+2. Odpowiedź na Q1 — przed Fazą A. Zrobione 24.11.2026 (DEC-17).
 3. Przegląd repozytorium pod kątem kluczy i prawdziwych danych przed każdym wysłaniem kodu (push) — repozytorium jest publiczne (DEC-12).
-4. Decyzja, pod jakim adresem GitHub Pages będzie aplikacja — przed publikacją.
+4. Decyzja, pod jakim adresem GitHub Pages będzie aplikacja — przed publikacją. Zrobione 24.11.2026: `juliagniewek.github.io/Szlak/` (DEC-17).
 
 **Przed Fazą A — Trail-code.** Instalacja w nowej sesji. Jeśli się nie uda, praca idzie dalej bez narzędzia, a wnioski trafiają do sekcji „Wnioski” w docs/plan.md.
 

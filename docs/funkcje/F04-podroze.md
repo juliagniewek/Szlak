@@ -13,7 +13,7 @@ Użytkownik zamienia zapisane miejsca w podróż albo tworzy podróż od zera, a
 2. „Utwórz podróż z wybranych” albo „+ Nowa podróż” na E6 otwiera E5: nazwa, kierunek (lista „Wybierz z listy…” z 5 kierunkami i 4 krajami oraz pole do wpisania), data rozpoczęcia i zakończenia, liczba dni szkicu (gdy bez dat), opis.
 3. Przy tworzeniu z wybranych kierunek podpowiada najczęstsze miasto zaznaczonych miejsc, a nazwa „Wyjazd: [kierunek]”. Wybór z listy wpisuje kierunek do pola.
 4. Zapis tworzy podróż; zaznaczone miejsca trafiają do „Do zaplanowania”; aplikacja otwiera E7 z komunikatem „Podróż utworzona. Przypisz miejsca do dni.”
-5. E6: lista podróży (najnowsza na górze): nazwa, kierunek, daty albo „Szkic bez dat”, liczba dni i miejsc, przyciski „Otwórz”, „Edytuj”, „Usuń”. Stan pusty: „Nie masz jeszcze podróży” z przyciskami „+ Nowa podróż” i „Przejdź do Zapisanych”.
+5. E6: lista podróży (najnowsza na górze): nazwa, kierunek, daty albo „Szkic bez dat”, mała etykieta statusu („Nadchodząca”, „W trakcie”, „Zakończona”, „Szkic”; DEC-16), liczba dni i miejsc, przyciski „Otwórz”, „Edytuj”, „Usuń”. Stan pusty: „Nie masz jeszcze podróży” z przyciskami „+ Nowa podróż” i „Przejdź do Zapisanych”.
 6. E3 (szczegóły miejsca) dostaje „Dodaj do podróży” z listą podróży; miejsce trafia do „Do zaplanowania”.
 
 ## Dane
@@ -27,6 +27,7 @@ Tworzy, zmienia i usuwa Podróż; tworzy Punkty planu z dniem „do zaplanowania
 - F04-KA5 [test]: Gdy skrócę podróż z 3 do 2 dni, a dzień 3 miał 2 punkty, to oba wracają do „Do zaplanowania” i widzę „Zapisano zmiany. 2 miejsca z usuniętych dni wróciły do „Do zaplanowania”.” (A6).
 - F04-KA6 [test]: Gdy usunę podróż i potwierdzę, to znika z E6, a jej miejsca zostają w Zapisanych (N2, A7); gdy anuluję, nic się nie zmienia.
 - F04-KA7 [test]: Gdy nazwa podróży to `<b>test</b>`, to na liście widać dokładnie ten tekst, a nie pogrubienie.
+- F04-KA8 [test]: Gdy dzisiaj jest 24.11.2026, to podróż 04–06.12.2026 ma etykietę „Nadchodząca”, podróż 20–30.11.2026 „W trakcie”, podróż 01–03.11.2026 „Zakończona”, a podróż bez dat „Szkic” (DEC-16).
 
 ## Przypadki brzegowe i błędy
 - Kierunek spoza listy („Paryż”): zapis możliwy.

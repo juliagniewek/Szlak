@@ -1,11 +1,11 @@
 # Plan techniczny: szlak.
-Wersja 1 · 24.11.2026 · Faza A · Podstawa: docs/specyfikacja.md (v1, 22.11.2026), karty F00–F06, AGENTS.md, design.md, prototyp.html
+Wersja 1.1 · 24.11.2026 · Faza A · Podstawa: docs/specyfikacja.md (v1.1, 24.11.2026), karty F00–F06, AGENTS.md, design.md, prototyp.html
 
-Pierwszeństwo bez zmian: decyzje DEC > specyfikacja > karta > ten plan. Ten plan dopowiada tylko to, co specyfikacja zostawiła Fazie A (sekcja 8, „Decyzje dla Fazy A”). Pytania do właścicielki są na końcu (sekcja 12).
+Pierwszeństwo bez zmian: decyzje DEC > specyfikacja > karta > ten plan. Ten plan dopowiada tylko to, co specyfikacja zostawiła Fazie A (sekcja 8, „Decyzje dla Fazy A”). Pytania z Fazy A i odpowiedzi właścicielki są na końcu (sekcja 12); decyzje trafiły do specyfikacji jako DEC-13–DEC-17.
 
 ## 1. Przegląd specyfikacji
 
-Werdykt ogólny: **WARNING** — specyfikację można budować; jedna sprawa (podpisy zdjęć) wymaga decyzji przed F00, kilka drobnych ma propozycję domyślną.
+Werdykt ogólny: **WARNING** — specyfikację można budować. Stan po odpowiedziach z 24.11.2026: FAIL 9 i WARNING 6, 10, 11, 12 rozwiązane decyzjami DEC-13–DEC-17 w specyfikacji v1.1.
 
 | # | Obszar | Wynik | Uzasadnienie |
 |---|---|---|---|
@@ -42,7 +42,7 @@ Werdykt ogólny: **WARNING** — specyfikację można budować; jedna sprawa (po
 ### 3.1 Kierunek
 Aplikacja statyczna: HTML, CSS i JavaScript w modułach ES, bez kroku budowania, bez bibliotek, bez serwera i bazy (DEC-2, DEC-10). Dane użytkownika w `localStorage`. Publikacja: katalog główny gałęzi `main` na GitHub Pages.
 
-### 3.2 Adres publikacji (propozycja, decyzja właścicielki przed publikacją)
+### 3.2 Adres publikacji (DEC-17)
 - Aplikacja: `index.html` w katalogu głównym → `https://juliagniewek.github.io/Szlak/`.
 - Prototyp zostaje bez zmian pod `.../Szlak/prototyp.html`.
 
@@ -86,11 +86,11 @@ Na GitHub Pages tryb się nie włącza.
 - Zdjęcia: tylko szerokości 500 (karty) i 960 (okno szczegółów); `alt` z nazwą miejsca; przy błędzie wczytania karta pokazuje gradient i ikonę kategorii (A4).
 
 ## 4. Kolejność kart i szacunek czasu
-Q1 bez odpowiedzi — przyjęte: F06 w MVP-2.
+Q1: F06 w MVP-2 (DEC-17).
 
 | Kolejność | Karta | Poziom | Szacunek | Status |
 |---|---|---|---|---|
-| 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | do zrobienia (czeka na P1) |
+| 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | do zrobienia |
 | 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | do zrobienia |
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | do zrobienia |
 | 4 | F04 Podróże | Średni | 1 wieczór | do zrobienia |
@@ -110,7 +110,7 @@ Jeśli F05 zajmie więcej niż wieczór, F03 i F06 idą do „Później” (R4, 
   opis: "…",                       // do 200 znaków
   wsp: [41.8902, 12.4922] | null,  // szerokość, długość
   oznaczenia: ["popularne"],       // popularne | jesien-zima | mniej-znane
-  zdjecie: { plik: "d/de/Colosseo_2020.jpg", autor: "…", licencja: "CC BY-SA 4.0" } | null }  // autor i licencja — jeśli P1 = tak
+  zdjecie: { plik: "d/de/Colosseo_2020.jpg", autor: "…", licencja: "CC BY-SA 4.0" } | null }  // autor i licencja: DEC-13
 ```
 Kierunki: `{ miasto, kraj, tekst, zdjecie }`. Sortowanie „Popularne” w F03 jak w prototypie: najpierw miejsca z oznaczeniem „popularne”, potem reszta, w kolejności katalogu.
 
@@ -153,19 +153,19 @@ Kierunki: `{ miasto, kraj, tekst, zdjecie }`. Sortowanie „Popularne” w F03 j
 
 ### F00 · Fundament i zabezpieczenia
 1. Pliki z sekcji 3.3 (puste widoki), `package.json`, `scripts/serwer.mjs`, `.nojekyll`, `index.html` z CSP i menu, `style.css` z wartościami design.md.
-2. `src/dane/katalog.js`: 41 miejsc i 5 kierunków z `PLACES`, `DESTS`, `PHOTOS` prototypu; jeśli P1 = tak — autor i licencja każdego zdjęcia z Commons (pobrane jednorazowo przez agenta; zdjęcie bez jasnej licencji zostaje usunięte i karta pokazuje ikonę).
+2. `src/dane/katalog.js`: 41 miejsc i 5 kierunków z `PLACES`, `DESTS`, `PHOTOS` prototypu; autor i licencja każdego zdjęcia z Commons (DEC-13) (pobrane jednorazowo przez agenta; zdjęcie bez jasnej licencji zostaje usunięte i karta pokazuje ikonę).
 3. `magazyn.js` z wersją, migracjami, kopią uszkodzonych danych, atrapą blokady; `zestaw-testowy.js` i przycisk w trybie `?dev`.
 4. `.gitignore` (dopisać brakujące wpisy Trail-code, jeśli są), reguły „deny” dla `.env` w `.claude/settings.json` dopisane obok hooka Trail-code (składnia z aktualnej dokumentacji Claude Code).
-5. Testy: katalog (KA2, KA6), zestaw testowy (KA3), `.env` ignorowany (KA4), magazyn (pusty start, uszkodzone dane, blokada), testy statyczne N1/N4 (sekcja 7).
+5. Testy: katalog (KA2, KA6, KA8), zestaw testowy (KA3), `.env` ignorowany (KA4), magazyn (pusty start, uszkodzone dane, blokada), testy statyczne N1/N4 (sekcja 7).
 6. README: „Jak uruchomić lokalnie”.
 Pliki: wszystkie z 3.3 poza widokami F01+, `.gitignore`, `.claude/settings.json`, README.md.
 
 ### F01 · Układ aplikacji i Odkrywaj
 1. `widoki/menu.js`: 3 sekcje (Szukaj od F03), ikona, kolor, wyróżnienie aktywnej; menu boczne / dolne (375 px).
-2. `widoki/odkrywaj.js`: kierunki, 3 sekcje po 8 kart, lista miejsc kierunku z powrotem; podpis źródła zdjęć według P1.
+2. `widoki/odkrywaj.js`: kierunki, 3 sekcje po 8 kart, lista miejsc kierunku z powrotem; „Źródła zdjęć” (DEC-13); stopka z „O danych” na każdym ekranie (DEC-15).
 3. Karta miejsca ze zdjęciem 500 px, zastępczy gradient z ikoną; miejsce na serce.
-4. `widoki/miejsce.js`: okno E3 (960 px), zamykanie ×, Esc, kliknięcie poza oknem, fokus wraca na kartę.
-5. Testy KA2–KA4 na HTML z widoków; apostrof i długa nazwa.
+4. `widoki/miejsce.js`: okno E3 (960 px) z podpisem zdjęcia (DEC-13), zamykanie ×, Esc, kliknięcie poza oknem, fokus wraca na kartę. Przyciski-ikony z obszarem 44×44 px (DEC-14).
+5. Testy KA2–KA4, KA7, KA8 na HTML z widoków; apostrof i długa nazwa.
 Pliki: `src/widoki/menu.js`, `odkrywaj.js`, `miejsce.js`, `src/app.js`, `style.css`, `tests/odkrywaj.test.js`.
 
 ### F02 · Zapisywanie miejsc
@@ -180,8 +180,8 @@ Pliki: `src/stan.js`, `src/widoki/zapisane.js`, `menu.js`, `odkrywaj.js`, `miejs
 1. `walidacja.js` i `daty.js`: reguły i komunikaty z KA3–KA4, liczba dni, status.
 2. `stan.js`: utwórz, edytuj (skracanie → punkty do dnia 0, licznik do komunikatu A6, odmiana „1 miejsce wróciło / 2 miejsca wróciły / 5 miejsc wróciło”), usuń.
 3. Zaznaczanie na E4 i pasek akcji; `widoki/formularz-podrozy.js` (E5) z podpowiedzią kierunku i nazwy.
-4. `widoki/podroze.js` (E6), stan pusty, potwierdzenie usunięcia; „Dodaj do podróży” w E3.
-5. Testy KA1–KA7, w tym `<b>test</b>` i podwójne kliknięcie „Utwórz”.
+4. `widoki/podroze.js` (E6) z etykietą statusu (DEC-16), stan pusty, potwierdzenie usunięcia; „Dodaj do podróży” w E3.
+5. Testy KA1–KA8, w tym `<b>test</b>` i podwójne kliknięcie „Utwórz”.
 Pliki: `src/walidacja.js`, `src/daty.js`, `src/stan.js`, `src/widoki/zapisane.js`, `formularz-podrozy.js`, `podroze.js`, `miejsce.js`, `tests/podroze.test.js`.
 
 ### F05 · Plan dni
@@ -220,7 +220,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Daty w testach: „dzisiaj” podawane do funkcji, np. 24.11.2026; zestaw testowy z F00.
 
 ## 8. Ryzyka
-- R-T1: Licencje zdjęć (FAIL 9) — bez podpisów publikacja narusza warunki CC. Rozwiązanie: P1 przed F00.
+- R-T1: Licencje zdjęć — rozwiązane DEC-13; F00 musi odczytać autora i licencję każdego pliku, a Faza C to sprawdzić.
 - R-T2: Wikimedia zmienia zasady miniatur (już raz zmieniło w 2025–2026) albo adres serwera — zdjęcia znikną, zostaną ikony (A4). Gdyby zdjęcia przestały działać, w CSP trzeba dopuścić nowy adres.
 - R-T3: Moduły ES nie działają po dwukliku w plik — README musi jasno mówić „`npm start`”.
 - R-T4: Wspólna pamięć przeglądarki z prototypem i innymi stronami `juliagniewek.github.io` — rozwiązane własnym kluczem; czyszczenie danych jednej strony czyści wszystkie.
@@ -231,7 +231,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 ## 9. Statusy
 | ID | Funkcja | Priorytet | Status |
 |---|---|---|---|
-| F00 | Fundament i zabezpieczenia | MVP-1 | do zrobienia (czeka na odpowiedź na P1) |
+| F00 | Fundament i zabezpieczenia | MVP-1 | do zrobienia |
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | do zrobienia |
 | F02 | Zapisywanie miejsc | MVP-1 | do zrobienia |
 | F04 | Podróże | MVP-1 | do zrobienia |
@@ -243,20 +243,21 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 ## 10. Później
 - F07 Planowanie automatyczne; kolekcje, archiwum, duplikowanie, notatki (DEC-10).
 - Eksport i import danych do pliku (kopia zapasowa) — odpowiedź na R2.
-- Zdjęcia skopiowane do repozytorium zamiast osadzania z Wikimedia (zalecane przez Commons, usuwa R3 i R-T2; wymaga sprawdzenia licencji każdego pliku).
+- Zdjęcia skopiowane do repozytorium zamiast osadzania z Wikimedia (zalecane przez Commons, usuwa R3 i R-T2).
 - Automatyczne testy w prawdziwej przeglądarce (wymagałyby narzędzia spoza DEC-10).
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 
 ## 11. Następny krok
-1. Właścicielka odpowiada na pytania P1–P5 (sekcja 12).
-2. Nowa sesja Fazy B: F00 · poziom Wysoki.
+Nowa sesja Fazy B: F00 · poziom Wysoki (polecenie w specyfikacji, sekcja 13).
 
 ## Wnioski
 Trail-code działa; wnioski z sesji są w `.trail/learnings/`.
 
-## 12. Pytania do właścicielki (praca zatrzymana do odpowiedzi)
-- **P1 (blokuje F00, FAIL 9):** Czy dodajemy do katalogu autora i licencję każdego zdjęcia oraz podpis pod zdjęciem w oknie szczegółów (np. „Zdjęcie: [autor], CC BY-SA 4.0” z odnośnikiem do strony pliku na Commons), a na dole Odkrywaj odnośnik „Źródła zdjęć” z pełną listą? To zmienia sekcję 6 specyfikacji (pole „zdjęcie”) i kartę F01. Propozycja: tak.
-- **P2:** Wymaganie 44×44 px dla przycisków-ikon (↑, ↓, ×, serce): czy wystarczy większy, niewidoczny obszar kliknięcia przy tym samym wyglądzie co w prototypie? Propozycja: tak, i dopisanie tego do design.md.
-- **P3:** Informacji „Twoje dane zostają tylko w tej przeglądarce i znikną po jej wyczyszczeniu” (wymaganej przez bramkę prawdziwych danych) nie buduje żadna karta. Czy dodać ją do F01 jako krótką stopkę z odnośnikiem „O danych” (tam też: GitHub zapisuje adresy IP odwiedzających, Wikimedia widzi adres IP przy pobieraniu zdjęć)? Propozycja: tak, w F01.
-- **P4:** Sekcja 6 mówi, że lista podróży pokazuje status (nadchodząca, w trakcie, zakończona, szkic bez dat), a karta F04 pokazuje tylko „Szkic bez dat”. Czy pokazać wszystkie cztery statusy na liście? Propozycja: tak, jako mała etykieta.
-- **P5 (Q1):** Czy mapa (F06) zostaje w MVP-2? Plan przyjmuje, że tak. Oraz: czy aplikacja ma być pod `juliagniewek.github.io/Szlak/`, a prototyp zostaje pod `/Szlak/prototyp.html`? Propozycja: tak.
+## 12. Pytania z Fazy A — odpowiedzi właścicielki (24.11.2026)
+- P1 podpisy zdjęć: tak → DEC-13 (sekcja 6 specyfikacji, F00, F01, design.md).
+- P2 obszar kliknięcia 44×44 px: tak, dopisane do design.md → DEC-14 (F01).
+- P3 stopka i „O danych”: tak, w F01 → DEC-15.
+- P4 status podróży: tak, jako mała etykieta → DEC-16 (F04).
+- P5 mapa w MVP-2, adres `juliagniewek.github.io/Szlak/`, prototyp zostaje: tak → DEC-17.
+
+Otwartych pytań brak.

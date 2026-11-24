@@ -10,7 +10,7 @@ Pusty, ale działający szkielet aplikacji, z danymi katalogu, stylami z design.
 
 ## Zachowanie
 1. Szkielet projektu według docs/plan.md (Faza A), uruchamiany lokalnie w przeglądarce.
-2. Dane startowe katalogu: 41 miejsc i 5 kierunków przeniesionych z prototypu (dane, nie kod), z polami z sekcji 6.
+2. Dane startowe katalogu: 41 miejsc i 5 kierunków przeniesionych z prototypu (dane, nie kod), z polami z sekcji 6, w tym autor i licencja każdego zdjęcia odczytane ze strony pliku na Commons (DEC-13). Zdjęcie bez jasnej licencji zostaje usunięte z danych.
 3. Zestaw testowy danych użytkownika do sprawdzania kolejnych kart: 3 zapisane miejsca (Koloseum, Panteon, Fontanna di Trevi) i podróż „Testowy wyjazd: Rzym” z datami 04–06.12.2026, z tymi miejscami w „Do zaplanowania”. Ładuje się jednym poleceniem lub przyciskiem dostępnym tylko w trybie deweloperskim.
 4. Jedno miejsce zapisu danych użytkownika w przeglądarce, z numerem wersji formatu.
 5. Atrapa przeglądarki blokującej zapis (do testu A5 w F02).
@@ -29,6 +29,7 @@ Tworzy dane startowe Miejsc (tylko do odczytu) i zestaw testowy Zapisanych miejs
 - F00-KA4 [test]: Gdy w folderze projektu powstanie plik `.env`, to `git status` go nie pokazuje.
 - F00-KA5 [ręcznie]: Gdy agent spróbuje odczytać `.env`, to narzędzie odmawia.
 - F00-KA6 [test]: Gdy miejsce w katalogu nie ma współrzędnych albo zdjęcia, to dane startowe ładują się bez błędu.
+- F00-KA8 [test]: Gdy miejsce albo kierunek ma zdjęcie, to ma też niepusty autor i licencję (DEC-13).
 - F00-KA7 [ręcznie]: Gdy projekt używa Trail-code, to `trail status` działa, a `trail map` pokazuje nowe pliki projektu.
 
 ## Przypadki brzegowe i błędy

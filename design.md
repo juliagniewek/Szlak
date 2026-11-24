@@ -73,6 +73,8 @@ Charakter: nowoczesny magazyn podróżniczy połączony z moodboardem. Spokojny 
   - przyciski ↑, ↓ i × oraz lista „Przenieś do…”.
 - **Pinezka na mapie:** kółko w kolorze dnia z numerem. Aktywna pinezka jest większa, ma obwódkę i podpis z nazwą.
 - **Komunikat (toast):** ciemna pigułka u dołu ekranu, znika po 3,5 s.
+- **Przyciski-ikony (↑, ↓, ×, serce):** wyglądają jak w prototypie (34–38 px), ale obszar kliknięcia ma co najmniej 44×44 px — niewidoczne powiększenie wokół ikony.
+- **Stopka:** mały tekst w kolorze pomocniczym na dole treści każdej sekcji: informacja, że dane zostają tylko w tej przeglądarce, i odnośnik „O danych”.
 
 ## Ikony
 
@@ -85,10 +87,12 @@ Proste ikony liniowe o jednolitej grubości kreski, jeden zestaw w całej aplika
 - Prawdziwe zdjęcia miejsc w ciepłej, naturalnej kolorystyce, bez mocnych filtrów.
 - Każde zdjęcie ma tekst alternatywny z nazwą miejsca.
 - Gdy zdjęcia brakuje, karta pokazuje gradient w kolorze kategorii z jej ikoną.
+- W szczegółach miejsca pod zdjęciem jest mały podpis „Zdjęcie: [autor], [licencja]” z odnośnikiem do strony pliku na Commons. Pełna lista źródeł jest pod odnośnikiem „Źródła zdjęć” na dole ekranu Odkrywaj.
 
 ## Dostępność
 
 - Kontrast tekstu co najmniej 4,5:1.
+- Każdy element klikalny ma obszar kliknięcia co najmniej 44×44 px.
 - Widoczny fokus: obrys 2 px w kolorze szałwiowym.
 - Wszystkie akcje działają z klawiatury, także pinezki na mapie.
 - Każde pole formularza ma etykietę.

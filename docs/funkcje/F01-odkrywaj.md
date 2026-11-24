@@ -14,6 +14,9 @@ Użytkownik ogląda inspiracje ze zdjęciami, otwiera szczegóły miejsca i zaws
 3. Kliknięcie kierunku pokazuje na E1 listę wszystkich miejsc tego kierunku z nagłówkiem „Miejsca: Lizbona” i przyciskiem powrotu.
 4. Kliknięcie karty miejsca otwiera E3: zdjęcie, kategoria, nazwa, miasto i kraj, opis, współrzędne. Zamknięcie: przycisk ×, klawisz Esc, kliknięcie poza oknem.
 5. Karta miejsca: zdjęcie 16:10, kategoria, nazwa, lokalizacja. Miejsce na serce zostaje (F02).
+6. Podpisy zdjęć (DEC-13): w E3 pod zdjęciem „Zdjęcie: [autor], [licencja]” z odnośnikiem do strony pliku na Commons; na dole E1 odnośnik „Źródła zdjęć” z listą wszystkich zdjęć (miejsce, autor, licencja, odnośnik).
+7. Stopka na każdym ekranie (DEC-15): „Twoje dane zostają tylko w tej przeglądarce i znikną po jej wyczyszczeniu.” i odnośnik „O danych”, który pokazuje: co zostaje w przeglądarce, że GitHub (hosting) zapisuje adresy IP odwiedzających, że Wikimedia widzi adres IP przy pobieraniu zdjęć.
+8. Przyciski-ikony mają obszar kliknięcia co najmniej 44×44 px przy wyglądzie z prototypu (DEC-14).
 
 ## Dane
 Czyta Miejsca i kierunki z danych startowych. Niczego nie zapisuje.
@@ -25,6 +28,8 @@ Czyta Miejsca i kierunki z danych startowych. Niczego nie zapisuje.
 - F01-KA4 [test]: Gdy miejsce nie ma zdjęcia (np. „Ogród Pomarańczowy na Awentynie”) albo zdjęcie się nie wczyta, to karta pokazuje gradient i ikonę kategorii, bez ikony zepsutego obrazka (A4).
 - F01-KA5 [ręcznie]: Gdy przejdę kolejno przez wszystkie sekcje menu, to za każdym razem wyróżniona jest tylko aktywna sekcja (W1).
 - F01-KA6 [ręcznie]: Gdy ustawię szerokość okna na 375 px, to strona nie przewija się w poziomie, a menu jest na dole.
+- F01-KA7 [test]: Gdy otworzę E3 „Koloseum”, to pod zdjęciem jest podpis z autorem i licencją oraz odnośnik do strony pliku na Commons; „Źródła zdjęć” wymienia każde zdjęcie z katalogu (DEC-13).
+- F01-KA8 [test]: Gdy otworzę dowolną sekcję, to widzę stopkę „Twoje dane zostają tylko w tej przeglądarce i znikną po jej wyczyszczeniu.”, a „O danych” wymienia GitHub i Wikimedia (DEC-15).
 
 ## Przypadki brzegowe i błędy
 - Długa nazwa („Trattoria z domowym makaronem na Zatybrzu”) zawija się w karcie, nie wychodzi poza nią.
