@@ -90,7 +90,7 @@ Q1: F06 w MVP-2 (DEC-17).
 
 | Kolejność | Karta | Poziom | Szacunek | Status |
 |---|---|---|---|---|
-| 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | poprawiona po rundzie 1 (W1–W3), czeka na Fazę C, rundę 2 |
+| 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | zweryfikowana: WARNING (runda 2, ostatnia); W1, W2, W3a naprawione, W3b czeka na decyzję |
 | 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | do zrobienia |
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | do zrobienia |
 | 4 | F04 Podróże | Średni | 1 wieczór | do zrobienia |
@@ -233,7 +233,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 ## 9. Statusy
 | ID | Funkcja | Priorytet | Status |
 |---|---|---|---|
-| F00 | Fundament i zabezpieczenia | MVP-1 | poprawiona po rundzie 1 (W1–W3), czeka na Fazę C, rundę 2 (docs/weryfikacja/F00.md) |
+| F00 | Fundament i zabezpieczenia | MVP-1 | zweryfikowana: WARNING, runda 2 (ostatnia); otwarte: rozmiar podpisów menu W3b, przed F01 (docs/weryfikacja/F00.md) |
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | do zrobienia |
 | F02 | Zapisywanie miejsc | MVP-1 | do zrobienia |
 | F04 | Podróże | MVP-1 | do zrobienia |
@@ -250,7 +250,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 
 ## 11. Następny krok
-Nowa sesja Fazy C: F00, runda 2 (ostatnia) — sprawdzenie poprawek W1–W3 z commita „F00: poprawki po weryfikacji (W1–W3)” (decyzje w docs/weryfikacja/F00.md, sekcja „Decyzje właścicielki po rundzie 1”). Do decyzji właścicielki zostają: rozmiar podpisów menu (druga część W3, przed F01) i kontrola elementów zapisanych danych (I2, przed F02). Potem nowa sesja Fazy B: F01 · poziom Średni.
+Właścicielka czyta wynik rundy 2 w docs/weryfikacja/F00.md (W1, W2 i kontrast z W3 naprawione, werdykt WARNING tylko z powodu otwartej decyzji) i rozstrzyga: (1) czy wymóg 16 px z sekcji 9 obejmuje podpisy menu (W3b, przed F01); (2) kontrolę elementów zapisanych danych (I2, przed F02). Przy pierwszej migracji danych trzeba rozstrzygnąć I8, a w F01 uważać na I10 (ciemna szałwia na piaskowym tle ma 4,13:1). Potem nowa sesja Fazy B: F01 · poziom Średni.
 
 ## Wnioski
 Trail-code działa; wnioski z sesji są w `.trail/learnings/`.
