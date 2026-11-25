@@ -250,7 +250,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 
 ## 11. Następny krok
-F01 zweryfikowana 25.11.2026 (runda 1): WARNING, wszystkie 8 kryteriów spełnionych (docs/weryfikacja/F01.md). Właścicielka decyduje o W1 (kliknięcie wewnątrz okna E3 obok podpisu zdjęcia zamyka okno), W2 (obszar kliknięcia × to koło o średnicy 44 px, DEC-14) i W3 (tekst 12–14 px i odnośniki w tekście wobec 16 px i 44 px z sekcji 9; potrzebna DEC). Jeśli poprawić: sesja poprawek F01 (Faza B), potem Faza C, runda 2 (ostatnia). W1 najlepiej teraz (najpóźniej przed F04), W2 i W3 przed F02. Uwagi I1–I4 do rozważenia przy F02. Nadal otwarte z F00: I2 (przed F02). Potem Faza B: F02 · poziom Średni.
+F01 zweryfikowana 25.11.2026 (runda 1): WARNING, wszystkie 8 kryteriów spełnionych (docs/weryfikacja/F01.md). Decyzje właścicielki: W1 i W2 poprawić na początku sesji F02 (zamykanie okna tylko poza prostokątem okna; `.przycisk-ikona` bez `border-radius`), W3 rozstrzygnięte przez DEC-20 (mały tekst zostaje). Bez osobnej rundy 2 dla F01. Następnie: Faza B: F02 · poziom Średni, z poprawkami W1, W2 i decyzją o I2 z F00; potem F04 i F05; na końcu jedna weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza też W1 i W2. Uwagi I1–I4 z F01 do rozważenia przy F02.
 
 ## Wnioski
 Trail-code działa; wnioski z sesji są w `.trail/learnings/`.

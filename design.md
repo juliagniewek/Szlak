@@ -93,7 +93,8 @@ Proste ikony liniowe o jednolitej grubości kreski, jeden zestaw w całej aplika
 ## Dostępność
 
 - Kontrast tekstu co najmniej 4,5:1. Mały tekst w kolorze szałwii ma odcień `--sage-dark`, bo `--sage` ma na kremowym tle tylko 3,73:1 (DEC-18).
-- Każdy element klikalny ma obszar kliknięcia co najmniej 44×44 px.
+- Każdy element klikalny ma obszar kliknięcia co najmniej 44×44 px. Wyjątek: odnośniki w zdaniu lub na liście (DEC-20).
+- Tekst ma co najmniej 16 px. Wyjątek (DEC-20): etykiety 12 px i mały tekst pomocniczy 12,8–14 px (lokalizacja, podpisy zdjęć, stopka, źródła zdjęć, karty kierunków), zawsze z kontrastem co najmniej 4,5:1.
 - Widoczny fokus: obrys 2 px w kolorze szałwiowym.
 - Wszystkie akcje działają z klawiatury, także pinezki na mapie.
 - Każde pole formularza ma etykietę.
