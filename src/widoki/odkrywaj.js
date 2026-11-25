@@ -53,12 +53,29 @@ export function serce(m, zapisane) {
         title="${zapisane ? "Usuń z Zapisanych" : "Zapisz"}">${ikona("serce", 20, zapisane)}</button>`;
 }
 
-/** Karta miejsca: zdjęcie 16:10 z sercem, kategoria, nazwa, lokalizacja. `zapisane` to zbiór id zapisanych miejsc. */
-export function kartaMiejsca(m, zapisane = new Set()) {
+/**
+ * Pole zaznaczenia na karcie (E4, F04): lewy górny róg zdjęcia, obszar kliknięcia 44×44 px.
+ * Nazwa miejsca w podpisie dla czytnika ekranu.
+ */
+function poleZaznaczenia(m, zaznaczone) {
   return html`
-    <article class="karta-miejsca">
+      <label class="zaznacz">
+        <input type="checkbox" data-zmiana="zaznacz" data-id="${m.id}"${zaznaczone ? html` checked` : ""}>
+        <span class="sr">Zaznacz: ${m.nazwa}</span>
+      </label>`;
+}
+
+/**
+ * Karta miejsca: zdjęcie 16:10 z sercem, kategoria, nazwa, lokalizacja. `zapisane` to zbiór id zapisanych miejsc.
+ * `zaznaczone` (tylko E4, F04): zbiór id zaznaczonych miejsc; gdy podany, karta ma pole zaznaczenia.
+ */
+export function kartaMiejsca(m, zapisane = new Set(), zaznaczone = null) {
+  const zaznaczona = zaznaczone?.has(m.id) ?? false;
+  return html`
+    <article class="karta-miejsca${zaznaczona ? " zaznaczona" : ""}">
       <button type="button" class="karta-zdjecie" data-akcja="otworz-miejsce" data-id="${m.id}" tabindex="-1" aria-hidden="true">${zdjecieMiejsca(m)}</button>
       ${serce(m, zapisane.has(m.id))}
+      ${zaznaczone ? poleZaznaczenia(m, zaznaczona) : ""}
       <div class="karta-tresc">
         <p class="etykieta">${KATEGORIE[m.kategoria].etykieta}</p>
         <h3><button type="button" class="jak-link" data-akcja="otworz-miejsce" data-id="${m.id}">${m.nazwa}</button></h3>
@@ -67,9 +84,9 @@ export function kartaMiejsca(m, zapisane = new Set()) {
     </article>`;
 }
 
-/** Siatka kart miejsc. */
-export function siatka(miejsca, zapisane = new Set()) {
-  return html`<div class="siatka">${miejsca.map((m) => kartaMiejsca(m, zapisane))}</div>`;
+/** Siatka kart miejsc. `zaznaczone`: jak w kartaMiejsca (E4). */
+export function siatka(miejsca, zapisane = new Set(), zaznaczone = null) {
+  return html`<div class="siatka">${miejsca.map((m) => kartaMiejsca(m, zapisane, zaznaczone))}</div>`;
 }
 
 function kartaKierunku(k) {

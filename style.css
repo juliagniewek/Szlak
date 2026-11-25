@@ -382,3 +382,128 @@ body:has(.okno[open]) { overflow: hidden; }
 }
 .pusty h2 { margin-bottom: 4px; }
 .pusty .btn { margin-top: 8px; }
+
+/* ---------- F04: zaznaczanie na E4, formularz podróży (E5), lista podróży (E6), podgląd E7 ---------- */
+
+/* Pasek zaznaczania nad kartami E4 */
+.pasek-zaznaczenia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-bottom: var(--odstep);
+  padding: 10px 14px;
+  background: var(--paper);
+  border: 1px solid var(--sand);
+  border-radius: var(--promien);
+}
+.pasek-zaznaczenia strong { margin-right: auto; }
+
+/* Pole zaznaczenia: lewy górny róg zdjęcia, obszar kliknięcia 44×44 px (DEC-14) */
+.zaznacz {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  background: radial-gradient(circle, rgba(255, 253, 249, 0.92) 0 17px, transparent 17.5px);
+}
+.zaznacz input { width: 20px; height: 20px; margin: 0; cursor: pointer; accent-color: var(--brown); }
+.karta-miejsca.zaznaczona { border-color: var(--sage); box-shadow: 0 0 0 2px var(--sage); }
+
+/* Formularz (E5): etykieta nad polem, pola 44 px wysokości, błąd przy polu */
+.formularz-podrozy form { display: grid; gap: 14px; margin-top: 12px; }
+.pole { display: grid; gap: 4px; }
+.pole label { font-weight: 600; }
+.pole label.maly { font-weight: 400; margin-top: 4px; }
+.pole p { margin: 0; }
+.pole input, .pole select, .pole textarea, .dodaj-do-podrozy select {
+  min-height: 44px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--taupe);
+  border-radius: 10px;
+  background: var(--paper);
+}
+.pole textarea { resize: vertical; }
+.pole [aria-invalid="true"] { border-color: var(--danger); border-width: 2px; }
+.blad-pola { color: var(--danger); font-weight: 600; margin: 0; }
+.dwa-pola { display: grid; gap: 14px; }
+@media (min-width: 500px) { .dwa-pola { grid-template-columns: 1fr 1fr; } }
+#okno-formularza .okno-tresc { padding-top: 20px; }
+#okno-formularza h2 { padding-right: 44px; }
+
+/* „Dodaj do podróży” w E3 */
+.dodaj-do-podrozy { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--sand); }
+.dodaj-do-podrozy p { margin: 6px 0 0; }
+.dodaj-do-podrozy select { flex: 1; width: auto; min-width: 0; }
+.rzad-przyciskow { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.dodaj-do-podrozy .rzad-przyciskow { justify-content: flex-start; flex-wrap: nowrap; }
+
+/* Lista podróży (E6) */
+.naglowek-z-akcja { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.lista-podrozy { display: grid; gap: 12px; }
+.karta-podrozy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding: 16px 18px;
+  background: var(--paper);
+  border: 1px solid var(--sand);
+  border-radius: var(--promien);
+}
+.karta-podrozy-tresc { min-width: 0; flex: 1 1 260px; }
+.karta-podrozy h2 { font-size: 1.25rem; margin: 2px 0 4px; overflow-wrap: anywhere; }
+.karta-podrozy h2 a { color: inherit; text-decoration: none; }
+.karta-podrozy h2 a:hover { text-decoration: underline; }
+.karta-podrozy .muted { margin: 0; overflow-wrap: anywhere; }
+.karta-podrozy-akcje { display: flex; flex-wrap: wrap; gap: 8px; }
+.znaczniki { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+.znacznik {
+  display: inline-block;
+  padding: 1px 10px;
+  border-radius: 999px;
+  background: var(--sand);
+  font-size: 0.875rem;
+  font-family: var(--sans);
+  font-weight: 400;
+}
+
+/* Etykieta statusu podróży (DEC-16): mała, w kolorach palety */
+.status {
+  display: inline-block;
+  margin: 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--taupe);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brown);
+}
+.status-nadchodzaca { border-color: var(--sage); color: var(--sage-dark); }
+.status-w-trakcie { background: var(--brown); border-color: var(--brown); color: var(--cream); }
+.status-zakonczona { color: var(--muted); }
+.status-szkic { border-style: dashed; color: var(--muted); }
+.naglowek-sekcji .status { margin-bottom: 6px; }
+
+/* Podgląd podróży (E7) do czasu F05 */
+.opis-podrozy { margin: 8px 0 0; max-width: 640px; overflow-wrap: anywhere; white-space: pre-line; }
+.lista-punktow { margin: 0; padding-left: 20px; }
+.lista-punktow li { margin: 4px 0; }
+.lista-dni { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.dzien {
+  padding: 12px 16px;
+  background: var(--paper);
+  border: 1px solid var(--sand);
+  border-top: 4px solid var(--dzien);
+  border-radius: var(--promien);
+}
+.dzien p { margin: 0; }

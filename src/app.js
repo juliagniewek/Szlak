@@ -4,16 +4,22 @@ import { html } from "./html.js";
 import { wczytaj, zapisz, zatwierdz, atrapaBlokujaca, KOMUNIKATY } from "./magazyn.js";
 import { zestawTestowy } from "./dane/zestaw-testowy.js";
 import { miejsce } from "./dane/katalog.js";
-import { przelaczZapis, czyZapisane, liczbaZapisanych, wPodrozy } from "./stan.js";
+import {
+  przelaczZapis, czyZapisane, liczbaZapisanych, wPodrozy, zapisaneMiejsca,
+  podroz, podrozeOdNajnowszej, podrozeZMiejscem, nowyIdPodrozy, utworzPodroz, edytujPodroz, usunPodroz, dodajDoPodrozy
+} from "./stan.js";
+import { walidujPodroz } from "./walidacja.js";
+import { dzisiaj } from "./daty.js";
 import { widokMenu, widokStopki, SEKCJE_MENU } from "./widoki/menu.js";
 import { widokOdkrywaj } from "./widoki/odkrywaj.js";
 import { widokMiejsca } from "./widoki/miejsce.js";
-import { widokZapisane, komunikatZapisu } from "./widoki/zapisane.js";
+import { widokZapisane, wybraneMiejsca, komunikatZapisu } from "./widoki/zapisane.js";
+import {
+  widokPodroze, widokPodrozy, adresPodrozy, KOMUNIKATY_PODROZY, komunikatEdycji, komunikatUsuniecia,
+  pytanieOUsuniecie, komunikatDodania
+} from "./widoki/podroze.js";
+import { widokFormularzaPodrozy, wartosciNowej, wartosciEdycji } from "./widoki/formularz-podrozy.js";
 
-// Sekcje, których ekrany zbudują kolejne karty (F04).
-const ZASLEPKI = {
-  podroze: { tytul: "Podróże", opis: "Tu będą Twoje podróże i plan dni." }
-};
 const DOMYSLNA = "odkrywaj";
 
 // Tryb deweloperski: tylko lokalnie i tylko z ?dev w adresie (plan 3.5). Na GitHub Pages się nie włącza.
@@ -25,6 +31,9 @@ const pamiec = trybDev && parametry.has("blokada") ? atrapaBlokujaca() : pobierz
 let { stan, ostrzezenie, trwaly } = wczytaj(pamiec);
 
 const okno = document.getElementById("okno");
+const oknoFormularza = document.getElementById("okno-formularza");
+/** Zaznaczone miejsca na E4 (F04). Stan ekranu: nie jest zapisywany. */
+let zaznaczone = new Set();
 let elementPrzedOknem = null; // tu wraca fokus po zamknięciu okna
 let idWOknie = null; // miejsce pokazane w oknie E3
 
@@ -64,9 +73,15 @@ function zbiorZapisanych() {
 
 function widokSekcji({ sekcja, parametr }) {
   if (sekcja === "odkrywaj") return widokOdkrywaj(parametr, zbiorZapisanych());
-  if (sekcja === "zapisane") return widokZapisane(stan);
-  const z = ZASLEPKI[sekcja];
-  return html`<h1>${z.tytul}</h1><p class="muted">${z.opis}</p>`;
+  if (sekcja === "zapisane") {
+    // Zaznaczenie dotyczy tylko miejsc, które nadal są na E4.
+    const naEkranie = new Set(zapisaneMiejsca(stan).map((m) => m.id));
+    zaznaczone = new Set([...zaznaczone].filter((id) => naEkranie.has(id)));
+    return widokZapisane(stan, zaznaczone);
+  }
+  // Podróże: lista E6 albo podróż E7 (#/podroze/<id>).
+  if (parametr !== null) return widokPodrozy(podroz(stan, parametr), dzisiaj());
+  return widokPodroze(stan, dzisiaj());
 }
 
 function render() {
@@ -109,7 +124,7 @@ function otworzMiejsce(id, zrodlo) {
   // Fokus wraca na nazwę w karcie (zdjęcie w karcie nie jest osiągalne klawiszem Tab).
   elementPrzedOknem = zrodlo.closest("article")?.querySelector(".jak-link") ?? zrodlo;
   idWOknie = id;
-  okno.innerHTML = widokMiejsca(m, czyZapisane(stan, id)).toString();
+  okno.innerHTML = trescOknaMiejsca(m);
   okno.showModal(); // fokus trafia na przycisk ×; Esc zamyka okno sam (zdarzenie cancel)
 }
 
@@ -123,6 +138,11 @@ okno.addEventListener("close", () => {
   elementPrzedOknem = null;
   idWOknie = null;
 });
+
+/** Treść okna E3 z bieżącym stanem zapisu i podróży. */
+function trescOknaMiejsca(m) {
+  return widokMiejsca(m, czyZapisane(stan, m.id), podrozeOdNajnowszej(stan), podrozeZMiejscem(stan, m.id)).toString();
+}
 
 /** Nagłówek bieżącego ekranu (fokus, gdy element, na którym był, zniknął, np. karta usunięta z Zapisanych). */
 function naglowekEkranu() {
@@ -165,7 +185,7 @@ function przelaczZapisMiejsca(id, przycisk) {
   render();
   if (okno.open) {
     const przewiniecie = okno.scrollTop;
-    okno.innerHTML = widokMiejsca(m, czyZapisane(stan, idWOknie)).toString();
+    okno.innerHTML = trescOknaMiejsca(m);
     okno.scrollTop = przewiniecie;
   }
   // Fokus zostaje na tym samym sercu po przebudowie widoku; gdy karta zniknęła (E4), trafia na nagłówek.
@@ -176,6 +196,176 @@ function przelaczZapisMiejsca(id, przycisk) {
   }
   pokazKomunikat(komunikatZapisu(m.nazwa, zapisano, wPodrozy(stan, id)));
 }
+
+// ---------- Podróże (F04) ----------
+
+/** Dane otwartego formularza E5: { tryb, id, miejsca } (miejsca tylko przy nowej podróży). */
+let formularz = null;
+let elementPrzedFormularzem = null; // tu wraca fokus po zamknięciu formularza
+let selektorPowrotu = null; // gdy ten element zniknie po przebudowie ekranu, szukamy go ponownie
+let fokusNaNaglowek = false; // po utworzeniu podróży fokus trafia na nagłówek E7
+
+/** Selektor przycisku po data-akcja i data-id, żeby znaleźć go po przebudowie ekranu. */
+function selektorPrzycisku(el) {
+  const { akcja, id } = el?.dataset ?? {};
+  if (!akcja) return null;
+  return `[data-akcja="${CSS.escape(akcja)}"]${id ? `[data-id="${CSS.escape(id)}"]` : ""}`;
+}
+
+function pokazFormularz(wartosci, bledy = {}, bladOgolny = null) {
+  oknoFormularza.innerHTML = widokFormularzaPodrozy({ ...formularz, wartosci, bledy, bladOgolny }).toString();
+}
+
+/** Otwiera E5. `miejsca` to miejsca z katalogu do „Do zaplanowania”; `p` to podróż do edycji. */
+function otworzFormularz({ miejsca = [], p = null, zrodlo = null }) {
+  // Z okna E3 (bez podróży) najpierw zamykamy E3; po E5 fokus wraca na kartę miejsca.
+  // Zdarzenie close przychodzi później, dlatego kartę bierzemy z elementPrzedOknem już teraz.
+  const powrot = okno.contains(zrodlo) ? elementPrzedOknem : zrodlo;
+  if (okno.open) okno.close();
+  elementPrzedFormularzem = powrot;
+  selektorPowrotu = selektorPrzycisku(powrot);
+  formularz = p
+    ? { tryb: "edycja", id: p.id, miejsca: [] }
+    : { tryb: "nowa", id: nowyIdPodrozy(new Date()), miejsca };
+  pokazFormularz(p ? wartosciEdycji(p) : wartosciNowej(miejsca));
+  oknoFormularza.showModal();
+  oknoFormularza.querySelector("#pole-nazwa")?.focus();
+}
+
+oknoFormularza.addEventListener("close", () => {
+  oknoFormularza.innerHTML = "";
+  formularz = null;
+  // Po utworzeniu podróży fokus ustawia hashchange na nagłówku E7.
+  if (!fokusNaNaglowek) {
+    const cel = elementPrzedFormularzem?.isConnected
+      ? elementPrzedFormularzem
+      : (selektorPowrotu && document.querySelector(`#widok ${selektorPowrotu}`)) ?? naglowekEkranu();
+    cel?.focus();
+  }
+  elementPrzedFormularzem = null;
+  selektorPowrotu = null;
+});
+
+/** Pola formularza E5 jako teksty (do walidacji i do ponownego pokazania po błędzie). */
+function polaFormularza(form) {
+  const dane = new FormData(form);
+  const pole = (n) => String(dane.get(n) ?? "");
+  return {
+    nazwa: pole("nazwa"), kierunek: pole("kierunek"), start: pole("start"),
+    koniec: pole("koniec"), dniSzkicu: pole("dniSzkicu"), opis: pole("opis")
+  };
+}
+
+function wyslijFormularzPodrozy(form) {
+  if (!formularz || form.dataset.id !== formularz.id) return; // np. drugie kliknięcie po zamknięciu okna
+  const pola = polaFormularza(form);
+  const { bledy, dane } = walidujPodroz(pola);
+  if (!dane) {
+    pokazFormularz(pola, bledy);
+    // Fokus na pierwsze pole z błędem; komunikat jest przy nim (aria-describedby).
+    oknoFormularza.querySelector('[aria-invalid="true"]')?.focus();
+    return;
+  }
+
+  if (formularz.tryb === "nowa") {
+    const { stan: nowy, utworzono } = utworzPodroz(stan, dane, {
+      id: formularz.id, teraz: new Date(), miejsca: formularz.miejsca.map((m) => m.id)
+    });
+    if (!utworzono) return; // ta podróż już powstała (podwójne kliknięcie)
+    if (!zatwierdz(pamiec, trwaly, nowy)) {
+      // Błąd zapisu: formularz zostaje z wpisanymi danymi, bez komunikatu o sukcesie.
+      pokazFormularz(pola, {}, KOMUNIKATY.bladZapisu);
+      return;
+    }
+    stan = nowy;
+    if (formularz.miejsca.length) zaznaczone = new Set();
+    const cel = adresPodrozy(formularz.id);
+    fokusNaNaglowek = true;
+    oknoFormularza.close();
+    if (location.hash === cel) {
+      fokusNaNaglowek = false;
+      render();
+      naglowekEkranu()?.focus();
+    } else {
+      location.hash = cel; // hashchange pokaże E7
+    }
+    pokazKomunikat(KOMUNIKATY_PODROZY.utworzona);
+    return;
+  }
+
+  const { stan: nowy, wrocilo } = edytujPodroz(stan, formularz.id, dane);
+  if (!zatwierdz(pamiec, trwaly, nowy)) {
+    pokazFormularz(pola, {}, KOMUNIKATY.bladZapisu);
+    return;
+  }
+  stan = nowy;
+  render();
+  oknoFormularza.close();
+  pokazKomunikat(komunikatEdycji(wrocilo));
+}
+
+function usunPodrozZPotwierdzeniem(id) {
+  const p = podroz(stan, id);
+  if (!p) return;
+  // Usunięcia nie da się cofnąć (A7), dlatego pytamy. Anulowanie niczego nie zmienia.
+  if (!window.confirm(pytanieOUsuniecie(p.nazwa))) return;
+  const nowy = usunPodroz(stan, id);
+  if (!zatwierdz(pamiec, trwaly, nowy)) {
+    pokazKomunikat(KOMUNIKATY.bladZapisu);
+    return;
+  }
+  stan = nowy;
+  render();
+  naglowekEkranu()?.focus();
+  pokazKomunikat(komunikatUsuniecia(p.nazwa));
+}
+
+function dodajMiejsceDoPodrozy(form) {
+  const idMiejsca = form.dataset.id;
+  const p = podroz(stan, String(new FormData(form).get("podroz") ?? ""));
+  const m = miejsce(idMiejsca);
+  if (!p || !m) return;
+  const { stan: nowy, dodano } = dodajDoPodrozy(stan, p.id, idMiejsca);
+  if (dodano) {
+    if (!zatwierdz(pamiec, trwaly, nowy)) {
+      pokazKomunikat(KOMUNIKATY.bladZapisu);
+      return;
+    }
+    stan = nowy;
+    render();
+    // Odświeżenie okna: lista „W podróżach”; wybrana podróż i fokus zostają.
+    okno.innerHTML = trescOknaMiejsca(m);
+    const lista = okno.querySelector("#pole-podroz");
+    if (lista) lista.value = p.id;
+    okno.querySelector('[data-formularz="dodaj-do-podrozy"] button')?.focus();
+  }
+  pokazKomunikat(komunikatDodania(p.nazwa, dodano));
+}
+
+/** Zaznaczanie na E4: przebudowa ekranu, fokus zostaje na tym samym polu. */
+function zaznacz(id, wlacz) {
+  if (wlacz) zaznaczone.add(id);
+  else zaznaczone.delete(id);
+  render();
+  document.querySelector(`#widok [data-zmiana="zaznacz"][data-id="${CSS.escape(id)}"]`)?.focus();
+}
+
+function zaznaczWszystkie(wszystkie, przycisk) {
+  zaznaczone = wszystkie ? new Set(zapisaneMiejsca(stan).map((m) => m.id)) : new Set();
+  const selektor = selektorPrzycisku(przycisk);
+  render();
+  // „Odznacz” jest wyłączony przy zerze, wtedy fokus idzie na „Zaznacz wszystkie”.
+  const cel = document.querySelector(`#widok ${selektor}:not(:disabled)`)
+    ?? document.querySelector('#widok [data-akcja="zaznacz-wszystkie"]');
+  cel?.focus();
+}
+
+oknoFormularza.addEventListener("click", (zdarzenie) => {
+  if (zdarzenie.target !== oknoFormularza) return;
+  const r = oknoFormularza.getBoundingClientRect();
+  const { clientX: x, clientY: y } = zdarzenie;
+  if (x < r.left || x > r.right || y < r.top || y > r.bottom) oknoFormularza.close();
+});
 
 // Kliknięcie w przyciemnione tło trafia w samo <dialog>. W <dialog> trafia jednak też kliknięcie
 // w margines elementu wewnątrz okna, dlatego okno zamyka się tylko wtedy, gdy punkt kliknięcia
@@ -197,7 +387,39 @@ document.addEventListener("click", (zdarzenie) => {
   if (akcja === "otworz-miejsce") otworzMiejsce(cel.dataset.id, cel);
   else if (akcja === "zamknij-okno") okno.close();
   else if (akcja === "przelacz-zapis") przelaczZapisMiejsca(cel.dataset.id, cel);
+  else if (akcja === "nowa-podroz") {
+    const m = cel.dataset.id ? miejsce(cel.dataset.id) : null;
+    otworzFormularz({ miejsca: m ? [m] : [], zrodlo: cel });
+  } else if (akcja === "podroz-z-wybranych") otworzFormularz({ miejsca: wybraneMiejsca(stan, zaznaczone), zrodlo: cel });
+  else if (akcja === "edytuj-podroz") {
+    const p = podroz(stan, cel.dataset.id);
+    if (p) otworzFormularz({ p, zrodlo: cel });
+  } else if (akcja === "usun-podroz") usunPodrozZPotwierdzeniem(cel.dataset.id);
+  else if (akcja === "zamknij-formularz") oknoFormularza.close();
+  else if (akcja === "zaznacz-wszystkie") zaznaczWszystkie(true, cel);
+  else if (akcja === "odznacz") zaznaczWszystkie(false, cel);
   else if (akcja === "zestaw-testowy" && trybDev) zaladujZestaw();
+});
+
+// Pola wyboru i listy (F04): zaznaczanie miejsc na E4, wybór kierunku z listy w E5.
+document.addEventListener("change", (zdarzenie) => {
+  const cel = zdarzenie.target.closest("[data-zmiana]");
+  if (!cel) return;
+  if (cel.dataset.zmiana === "zaznacz") zaznacz(cel.dataset.id, cel.checked);
+  else if (cel.dataset.zmiana === "wybierz-kierunek" && cel.value) {
+    // Wybór z listy wpisuje kierunek do pola (F04, pkt 3).
+    const pole = oknoFormularza.querySelector("#pole-kierunek");
+    if (pole) pole.value = cel.value;
+  }
+});
+
+// Formularze: E5 (podróż) i „Dodaj do podróży” w E3. Strona nigdzie ich nie wysyła (CSP: form-action 'none').
+document.addEventListener("submit", (zdarzenie) => {
+  const form = zdarzenie.target;
+  if (!form.dataset.formularz) return;
+  zdarzenie.preventDefault();
+  if (form.dataset.formularz === "podroz") wyslijFormularzPodrozy(form);
+  else if (form.dataset.formularz === "dodaj-do-podrozy") dodajMiejsceDoPodrozy(form);
 });
 
 // Zdjęcie, które się nie wczytało (brak internetu, plik usunięty z Commons), znika i zostaje gradient z ikoną (A4).
@@ -210,8 +432,13 @@ document.addEventListener("error", (zdarzenie) => {
 
 window.addEventListener("hashchange", () => {
   if (okno.open) okno.close();
+  if (oknoFormularza.open) oknoFormularza.close();
   render();
   window.scrollTo(0, 0);
+  if (fokusNaNaglowek) {
+    fokusNaNaglowek = false;
+    naglowekEkranu()?.focus();
+  }
 });
 
 pokazOstrzezenie(ostrzezenie);

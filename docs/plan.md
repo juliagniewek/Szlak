@@ -53,7 +53,7 @@ style.css                  wartości z design.md jako zmienne CSS
 .nojekyll                  GitHub Pages publikuje pliki bez Jekylla
 package.json               tylko skrypty "test" i "start"; bez zależności
 src/
-  app.js                   start, nawigacja (#/odkrywaj, #/zapisane, #/podroze, #/podroz/<id>, #/szukaj), zdarzenia, toast
+  app.js                   start, nawigacja (#/odkrywaj, #/zapisane, #/podroze, #/podroze/<id>, #/szukaj), zdarzenia, toast
   magazyn.js               JEDYNE miejsce zapisu i odczytu danych użytkownika (localStorage), wersja, migracje, atrapa blokady
   stan.js                  operacje na danych użytkownika jako czyste funkcje (zapis miejsca, podróże, plan)
   walidacja.js             reguły pól z sekcji 6 i A1–A2, komunikaty błędów
@@ -93,7 +93,7 @@ Q1: F06 w MVP-2 (DEC-17).
 | 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | zweryfikowana: WARNING (runda 2, ostatnia); W1, W2, W3a naprawione, W3b: menu 16 px (DEC-19) |
 | 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | zweryfikowana: WARNING (runda 1), czeka na decyzje właścicielki |
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | do zrobienia |
-| 4 | F04 Podróże | Średni | 1 wieczór | do zrobienia |
+| 4 | F04 Podróże | Średni | 1 wieczór | zbudowana 25.11.2026 |
 | 5 | F05 Plan dni | Wysoki | 1 wieczór | do zrobienia |
 | 6 | F03 Wyszukiwanie i filtry (MVP-2) | Średni | 0,5 wieczoru | do zrobienia |
 | 7 | F06 Mapa trasy (MVP-2) | Wysoki | 1 wieczór | do zrobienia |
@@ -187,6 +187,14 @@ Dodatkowo w sesji F02 (25.11.2026): `style.css` (serce, licznik, toast, stan pus
 4. `widoki/podroze.js` (E6) z etykietą statusu (DEC-16), stan pusty, potwierdzenie usunięcia; „Dodaj do podróży” w E3.
 5. Testy KA1–KA8, w tym `<b>test</b>` i podwójne kliknięcie „Utwórz”.
 Pliki: `src/walidacja.js`, `src/daty.js`, `src/stan.js`, `src/widoki/zapisane.js`, `formularz-podrozy.js`, `podroze.js`, `miejsce.js`, `tests/podroze.test.js`.
+Dodatkowo w sesji F04 (25.11.2026): `src/app.js` (formularz, zaznaczanie, usuwanie z potwierdzeniem `confirm`), `index.html` (drugie okno `<dialog id="okno-formularza">` na E5), `src/widoki/odkrywaj.js` (pole zaznaczenia na karcie), `style.css`.
+- Adres podróży to `#/podroze/<id>` (nie `#/podroz/<id>`), bo nawigacja w `app.js` zna tylko sekcje menu; dzięki temu w menu świeci się „Podróże”.
+- Karta każe po zapisie otworzyć E7, a E7 buduje F05. Dlatego `widokPodrozy()` w `widoki/podroze.js` to na razie podgląd tylko do odczytu (nagłówek, „Do zaplanowania”, dni z miejscami); F05 zastępuje go pełnym planem.
+- Podwójne kliknięcie „Utwórz podróż”: id podróży powstaje przy otwarciu formularza (`data-id`), a `utworzPodroz()` nie tworzy drugiej podróży z tym samym id.
+- Błędy formularza są przy polach (`aria-invalid`, `aria-describedby`), fokus trafia na pierwsze pole z błędem. Limity długości sprawdza walidacja (bez `maxlength`), żeby komunikat z KA3 był widoczny.
+- Z okna E3 bez podróży przycisk „Utwórz podróż” otwiera E5 z tym miejscem (trafi do „Do zaplanowania”).
+- Status liczony z „dzisiaj” w strefie czasowej przeglądarki (`dzisiaj()` w `daty.js`); daty i liczba dni w UTC.
+- Zaznaczenie na E4 jest stanem ekranu w `app.js` (nie jest zapisywane); po utworzeniu podróży z wybranych znika.
 
 ### F05 · Plan dni
 1. `stan.js`: `przypiszDoDnia`, `przesun(góra/dół)`, `przeniesDoDnia` (na koniec dnia), `usunPunkt`, `dodajPunkty`.
@@ -238,7 +246,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 | F00 | Fundament i zabezpieczenia | MVP-1 | zweryfikowana: WARNING, runda 2 (ostatnia); W3b: menu 16 px (DEC-19) (docs/weryfikacja/F00.md) |
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F01.md); W1 i W2 poprawione w sesji F02 (sprawdza weryfikacja MVP) |
 | F02 | Zapisywanie miejsc | MVP-1 | zbudowana, czeka na weryfikację MVP-1 |
-| F04 | Podróże | MVP-1 | do zrobienia |
+| F04 | Podróże | MVP-1 | zbudowana, czeka na weryfikację MVP-1 |
 | F05 | Plan dni | MVP-1 | do zrobienia |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia |
 | F06 | Mapa trasy | MVP-2 | do zrobienia |
@@ -253,7 +261,9 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 
 ## 11. Następny krok
-F02 zbudowana 25.11.2026: serce na kartach i w E3, licznik w menu, komunikaty, ekran Zapisane, A5 i błąd zapisu; testy 73/73. W tej samej sesji: poprawki W1 i W2 z weryfikacji F01, I2 z F00 rozstrzygnięte (plan 5.3: uszkodzone elementy pomijane, kopia i komunikat), odwołanie do DEC-20 w sekcji 9 specyfikacji. I1 i I4 z F01 przeniesione do „Później”. Następnie: Faza B: F04 · Podróże (poziom Średni), potem F05; na końcu jedna weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02 oraz W1 i W2 z F01.
+F04 zbudowana 25.11.2026: zaznaczanie na E4, formularz E5 z walidacją i podpowiedzią kierunku, lista E6 ze statusem, usuwanie z potwierdzeniem, „Dodaj do podróży” w E3, podgląd E7 do czasu F05; testy 95/95. Następnie: Faza B: F05 · Plan dni (poziom Wysoki), która zastępuje podgląd E7 w `widoki/podroze.js`; potem weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02, F04 oraz W1 i W2 z F01.
+
+Wcześniej: F02 zbudowana 25.11.2026: serce na kartach i w E3, licznik w menu, komunikaty, ekran Zapisane, A5 i błąd zapisu; testy 73/73. W tej samej sesji: poprawki W1 i W2 z weryfikacji F01, I2 z F00 rozstrzygnięte (plan 5.3: uszkodzone elementy pomijane, kopia i komunikat), odwołanie do DEC-20 w sekcji 9 specyfikacji. I1 i I4 z F01 przeniesione do „Później”. Następnie: Faza B: F04 · Podróże (poziom Średni), potem F05; na końcu jedna weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02 oraz W1 i W2 z F01.
 
 ## Wnioski
 Trail-code działa; wnioski z sesji są w `.trail/learnings/`.
