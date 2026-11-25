@@ -90,7 +90,7 @@ Q1: F06 w MVP-2 (DEC-17).
 
 | Kolejność | Karta | Poziom | Szacunek | Status |
 |---|---|---|---|---|
-| 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | zbudowana, czeka na weryfikację |
+| 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | zweryfikowana: WARNING (runda 1), czeka na decyzje właścicielki |
 | 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | do zrobienia |
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | do zrobienia |
 | 4 | F04 Podróże | Średni | 1 wieczór | do zrobienia |
@@ -231,7 +231,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 ## 9. Statusy
 | ID | Funkcja | Priorytet | Status |
 |---|---|---|---|
-| F00 | Fundament i zabezpieczenia | MVP-1 | zbudowana, czeka na weryfikację (Faza C) |
+| F00 | Fundament i zabezpieczenia | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F00.md) |
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | do zrobienia |
 | F02 | Zapisywanie miejsc | MVP-1 | do zrobienia |
 | F04 | Podróże | MVP-1 | do zrobienia |
@@ -248,7 +248,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 
 ## 11. Następny krok
-Nowa sesja Fazy C: weryfikacja F00 (kryteria F00-KA1–KA8, lista kontrolna ze specyfikacji, sekcja 7). Potem nowa sesja Fazy B: F01 · poziom Średni.
+Właścicielka czyta docs/weryfikacja/F00.md i decyduje o znaleziskach W1–W3: poprawić teraz czy zostawić. Jeśli poprawić: sesja poprawek F00 (Faza B), potem Faza C, runda 2 (ostatnia). Następnie nowa sesja Fazy B: F01 · poziom Średni; W3 (kontrast etykiet i rozmiar podpisów menu) trzeba rozstrzygnąć przed F01, a W2 i I2 przed F02.
 
 ## Wnioski
 Trail-code działa; wnioski z sesji są w `.trail/learnings/`.

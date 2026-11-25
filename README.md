@@ -12,7 +12,7 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 ## Stan funkcji
 | ID | Funkcja | Priorytet | Status | Weryfikacja |
 |---|---|---|---|---|
-| F00 | Fundament i zabezpieczenia | MVP-1 | zbudowana, czeka na weryfikację | [uzupełnia: Faza C] |
+| F00 | Fundament i zabezpieczenia | MVP-1 | zbudowana, zweryfikowana (runda 1) | WARNING, 25.11.2026: [docs/weryfikacja/F00.md](docs/weryfikacja/F00.md) |
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | do zrobienia | [uzupełnia: Faza C] |
 | F02 | Zapisywanie miejsc | MVP-1 | do zrobienia | [uzupełnia: Faza C] |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
