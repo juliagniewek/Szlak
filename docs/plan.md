@@ -1,5 +1,5 @@
 # Plan techniczny: szlak.
-Wersja 1.1 · 24.11.2026 · Faza A · Podstawa: docs/specyfikacja.md (v1.1, 24.11.2026), karty F00–F06, AGENTS.md, design.md, prototyp.html
+Wersja 1.2 · 25.11.2026 · Faza A; w 1.2 zmieniona sekcja 5.3 po weryfikacji F00 (W2) · Podstawa: docs/specyfikacja.md (v1.2, 25.11.2026), karty F00–F06, AGENTS.md, design.md, prototyp.html
 
 Pierwszeństwo bez zmian: decyzje DEC > specyfikacja > karta > ten plan. Ten plan dopowiada tylko to, co specyfikacja zostawiła Fazie A (sekcja 8, „Decyzje dla Fazy A”). Pytania z Fazy A i odpowiedzi właścicielki są na końcu (sekcja 12); decyzje trafiły do specyfikacji jako DEC-13–DEC-17.
 
@@ -90,7 +90,7 @@ Q1: F06 w MVP-2 (DEC-17).
 
 | Kolejność | Karta | Poziom | Szacunek | Status |
 |---|---|---|---|---|
-| 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | zweryfikowana: WARNING (runda 1), czeka na decyzje właścicielki |
+| 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | poprawiona po rundzie 1 (W1–W3), czeka na Fazę C, rundę 2 |
 | 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | do zrobienia |
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | do zrobienia |
 | 4 | F04 Podróże | Średni | 1 wieczór | do zrobienia |
@@ -137,11 +137,13 @@ Kierunki: `{ miasto, kraj, tekst, zdjecie }`. Sortowanie „Popularne” w F03 j
 
 ### 5.3 Wersje i uszkodzone dane (`magazyn.js`)
 - Brak klucza → puste dane, bez komunikatu.
-- `wersja` mniejsza niż obecna → migracja krok po kroku (`migracje[1]` zmienia 1→2 itd.), potem zapis.
-- Niepoprawny JSON, nieznany kształt albo `wersja` większa niż obecna → oryginalny tekst trafia do klucza `szlak.app.kopia` (jeśli kopii jeszcze nie ma), aplikacja startuje z pustymi danymi i pokazuje: „Nie udało się odczytać zapisanych danych. Ich kopia została zachowana w przeglądarce.” Dane nie są kasowane po cichu (F00).
+- `wersja` mniejsza niż obecna → kopia oryginału (zasada kopii niżej), migracja krok po kroku (`migracje[1]` zmienia 1→2 itd.), potem zapis.
+- Niepoprawny JSON, nieznany kształt albo `wersja` większa niż obecna → oryginalny tekst trafia do kopii, aplikacja startuje z pustymi danymi i pokazuje: „Nie udało się odczytać zapisanych danych. Ich kopia została zachowana w przeglądarce.” Dane nie są kasowane po cichu (F00).
+- Zasada kopii: pierwsza kopia ma klucz `szlak.app.kopia`; gdy ten klucz zawiera już inny tekst, oryginał trafia do pierwszego wolnego klucza `szlak.app.kopia.2`, `szlak.app.kopia.3`… Istniejących kopii nic nie nadpisuje, a tekstu, który już jest w którejś kopii, aplikacja nie zapisuje drugi raz. Zmiana po weryfikacji F00 (W2): wcześniej kopia powstawała tylko wtedy, gdy klucza `szlak.app.kopia` jeszcze nie było, więc dane uszkodzone drugi raz ginęły przy pierwszym zapisie, mimo komunikatu o kopii.
+- Kopii nie da się zapisać (np. brak miejsca) → zmiany nie są zapisywane (`trwaly: false`) i komunikat: „Nie udało się odczytać zapisanych danych. Zmiany nie będą zapisywane, żeby ich nie nadpisać.”
 - Przeglądarka blokuje zapis (próbny zapis przy starcie się nie udaje) → tryb tylko w pamięci i ostrzeżenie z A5.
 - Błąd zapisu w trakcie (np. brak miejsca) → operacja nie zostaje przyjęta: stan wraca do poprzedniego, komunikat „Nie udało się zapisać zmian. Spróbuj ponownie.”, bez komunikatu o sukcesie (F02, F04, F05).
-- API: `wczytaj(storage) → { stan, ostrzezenie }`, `zapisz(storage, stan) → true | false`. `storage` jest parametrem, więc testy podają atrapę.
+- API: `wczytaj(storage) → { stan, ostrzezenie, trwaly }` (`trwaly: false` = zmian nie zapisujemy: blokada zapisu albo brak kopii uszkodzonych danych), `zapisz(storage, stan) → true | false`. `storage` jest parametrem, więc testy podają atrapę.
 
 ### 5.4 Miejsce usunięte z katalogu
 - Zapis i punkty planu zostają w pamięci (nic nie jest kasowane).
@@ -231,7 +233,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 ## 9. Statusy
 | ID | Funkcja | Priorytet | Status |
 |---|---|---|---|
-| F00 | Fundament i zabezpieczenia | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F00.md) |
+| F00 | Fundament i zabezpieczenia | MVP-1 | poprawiona po rundzie 1 (W1–W3), czeka na Fazę C, rundę 2 (docs/weryfikacja/F00.md) |
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | do zrobienia |
 | F02 | Zapisywanie miejsc | MVP-1 | do zrobienia |
 | F04 | Podróże | MVP-1 | do zrobienia |
@@ -248,7 +250,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 
 ## 11. Następny krok
-Właścicielka czyta docs/weryfikacja/F00.md i decyduje o znaleziskach W1–W3: poprawić teraz czy zostawić. Jeśli poprawić: sesja poprawek F00 (Faza B), potem Faza C, runda 2 (ostatnia). Następnie nowa sesja Fazy B: F01 · poziom Średni; W3 (kontrast etykiet i rozmiar podpisów menu) trzeba rozstrzygnąć przed F01, a W2 i I2 przed F02.
+Nowa sesja Fazy C: F00, runda 2 (ostatnia) — sprawdzenie poprawek W1–W3 z commita „F00: poprawki po weryfikacji (W1–W3)” (decyzje w docs/weryfikacja/F00.md, sekcja „Decyzje właścicielki po rundzie 1”). Do decyzji właścicielki zostają: rozmiar podpisów menu (druga część W3, przed F01) i kontrola elementów zapisanych danych (I2, przed F02). Potem nowa sesja Fazy B: F01 · poziom Średni.
 
 ## Wnioski
 Trail-code działa; wnioski z sesji są w `.trail/learnings/`.

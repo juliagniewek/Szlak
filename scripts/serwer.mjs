@@ -7,6 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const KATALOG = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const KATALOG_PRAWDZIWY = await fs.realpath(KATALOG);
 const PORT = Number(process.env.PORT) || 8000;
 const TYPY = {
   ".html": "text/html; charset=utf-8",
@@ -25,6 +26,12 @@ function odpowiedz(res, kod, tekst) {
   res.end(tekst);
 }
 
+/** true, gdy ścieżka (względem folderu projektu) wychodzi poza projekt albo prowadzi do pliku/katalogu ukrytego. */
+function zabroniona(wzgledna) {
+  const czesci = wzgledna.split(path.sep);
+  return czesci[0] === ".." || path.isAbsolute(wzgledna) || czesci.some((c) => c.startsWith("."));
+}
+
 const serwer = http.createServer(async (req, res) => {
   let sciezka;
   try {
@@ -34,13 +41,15 @@ const serwer = http.createServer(async (req, res) => {
   }
   if (sciezka.endsWith("/")) sciezka += "index.html";
   const plik = path.resolve(KATALOG, "." + sciezka);
-  const czesci = path.relative(KATALOG, plik).split(path.sep);
   // Poza folderem projektu albo plik/katalog ukryty (.env, .git, .claude, .trail) → brak dostępu.
-  if (czesci[0] === ".." || path.isAbsolute(path.relative(KATALOG, plik)) || czesci.some((c) => c.startsWith("."))) {
-    return odpowiedz(res, 404, "Nie znaleziono");
-  }
+  if (zabroniona(path.relative(KATALOG, plik))) return odpowiedz(res, 404, "Nie znaleziono");
   try {
-    const tresc = await fs.readFile(plik);
+    // To samo sprawdzenie na prawdziwej ścieżce: na Windows pliki z kropką mają też krótkie nazwy
+    // (.git → GIT~1), które omijają sprawdzanie kropki. realpath zamienia je na pełne nazwy
+    // i rozwija dowiązania (weryfikacja F00, W1).
+    const prawdziwy = await fs.realpath(plik);
+    if (zabroniona(path.relative(KATALOG_PRAWDZIWY, prawdziwy))) return odpowiedz(res, 404, "Nie znaleziono");
+    const tresc = await fs.readFile(prawdziwy);
     res.writeHead(200, {
       "Content-Type": TYPY[path.extname(plik).toLowerCase()] || "application/octet-stream",
       "Cache-Control": "no-store"

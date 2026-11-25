@@ -18,13 +18,14 @@ Charakter: nowoczesny magazyn podróżniczy połączony z moodboardem. Spokojny 
 | `--paper` | `#FFFDF9` | karty, okna, pola formularzy |
 | `--sand` | `#E6DED1` | obramowania, tło aktywnej pozycji menu |
 | `--taupe` | `#B6A58F` | obrys przycisków i pól, elementy pomocnicze |
-| `--sage` | `#7B8069` | akcent: etykiety kategorii, liczniki, zaznaczenie |
+| `--sage` | `#7B8069` | akcent: ikony, paski, obrysy, zaznaczenie, fokus (nie do małego tekstu) |
+| `--sage-dark` | `#666B57` | tekst w kolorze szałwii: etykiety kategorii, liczniki, mały tekst w kolorze sekcji Odkrywaj (kontrast co najmniej 4,5:1 na kremowym i białym tle, DEC-18) |
 | `--brown` | `#403A34` | tekst główny, przycisk główny |
 | `--muted` | `#6F655B` | tekst pomocniczy (kontrast co najmniej 4,5:1 na kremowym tle) |
 | `--danger` | `#9B3B2E` | usuwanie |
 
 **Kolory sekcji** (po peer teście): każda sekcja ma własny akcent, użyty w menu, w nagłówku sekcji i w aktywnej zakładce.
-- Odkrywaj: szałwia `#7B8069`
+- Odkrywaj: szałwia `#7B8069` (mały tekst w tym kolorze: `--sage-dark` `#666B57`, DEC-18)
 - Szukaj: niebieskoszary `#4F6D8A`
 - Zapisane: terakota `#B5452F`
 - Podróże: ciemny brąz `#403A34`
@@ -38,7 +39,7 @@ Charakter: nowoczesny magazyn podróżniczy połączony z moodboardem. Spokojny 
   - H2: 22 px
   - H3: 17 px
 - **Tekst:** krój bezszeryfowy (system-ui, Segoe UI lub Roboto), 16 px, interlinia 1,5.
-- **Etykiety kategorii:** 12 px, wersaliki, odstęp liter 0,1 em, kolor szałwiowy.
+- **Etykiety kategorii:** 12 px, wersaliki, odstęp liter 0,1 em, kolor ciemnej szałwii (`--sage-dark`).
 
 ## Układ
 
@@ -91,7 +92,7 @@ Proste ikony liniowe o jednolitej grubości kreski, jeden zestaw w całej aplika
 
 ## Dostępność
 
-- Kontrast tekstu co najmniej 4,5:1.
+- Kontrast tekstu co najmniej 4,5:1. Mały tekst w kolorze szałwii ma odcień `--sage-dark`, bo `--sage` ma na kremowym tle tylko 3,73:1 (DEC-18).
 - Każdy element klikalny ma obszar kliknięcia co najmniej 44×44 px.
 - Widoczny fokus: obrys 2 px w kolorze szałwiowym.
 - Wszystkie akcje działają z klawiatury, także pinezki na mapie.

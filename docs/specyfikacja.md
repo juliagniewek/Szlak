@@ -1,5 +1,5 @@
 # Specyfikacja MVP: szlak.
-Wersja 1.1 · 24.11.2026 · Źródła: brief.md, prototyp.html, design.md, specyfikacja-v1.md (wstępna specyfikacja z kartą decyzji), docs/wnioski-z-testow.md, odpowiedzi właścicielki projektu w rozmowie (22.11.2026), odpowiedzi na pytania z Fazy A (24.11.2026, DEC-13–DEC-17)
+Wersja 1.2 · 25.11.2026 · Źródła: brief.md, prototyp.html, design.md, specyfikacja-v1.md (wstępna specyfikacja z kartą decyzji), docs/wnioski-z-testow.md, odpowiedzi właścicielki projektu w rozmowie (22.11.2026), odpowiedzi na pytania z Fazy A (24.11.2026, DEC-13–DEC-17), decyzja po weryfikacji F00 (25.11.2026, DEC-18)
 
 ## 1. Cel i użytkownicy
 szlak. to prosta aplikacja webowa dla osób, które same planują city break, wakacje albo krótki wyjazd, często w kilka osób. Dziś zapisują inspiracje w kilku aplikacjach, zakładkach i notatkach, a potem ręcznie przepisują je do planu i nie widzą, gdzie leżą zapisane miejsca. W aplikacji odkrywają i zapisują miejsca, zamieniają je w podróż, rozkładają na dni i oglądają trasę dnia na mapie. Wszystko w jednym miejscu, w przeglądarce na komputerze, bez zakładania konta.
@@ -213,6 +213,7 @@ Usuwanie:
 - DEC-15 · 24.11.2026: Stopka „Twoje dane zostają tylko w tej przeglądarce i znikną po jej wyczyszczeniu.” z odnośnikiem „O danych” (co zostaje w przeglądarce, że GitHub zapisuje adresy IP odwiedzających, że Wikimedia widzi adres IP przy pobieraniu zdjęć) — w F01 — powód: wymaga tego bramka prawdziwych danych — źródło: właścicielka (P3 z Fazy A).
 - DEC-16 · 24.11.2026: Lista podróży pokazuje status (nadchodząca, w trakcie, zakończona, szkic bez dat) jako małą etykietę — w F04 — źródło: właścicielka (P4 z Fazy A).
 - DEC-17 · 24.11.2026: Mapa trasy (F06) zostaje w MVP-2 (odpowiedź na Q1); aplikacja będzie pod adresem `juliagniewek.github.io/Szlak/`, prototyp zostaje pod `/Szlak/prototyp.html` — źródło: właścicielka (P5 z Fazy A).
+- DEC-18 · 25.11.2026: Mały tekst w kolorze szałwii (etykiety kategorii, liczniki, mały tekst w kolorze sekcji Odkrywaj) ma ciemniejszy odcień `--sage-dark` #666B57 (kontrast 5,03:1 na kremowym tle); `--sage` #7B8069 zostaje dla ikon, pasków, obrysów i fokusu (dopisane do design.md) — powód: `--sage` ma na kremowym tle 3,73:1 zamiast wymaganych 4,5:1 (sekcja 9) — źródło: właścicielka (W3 z weryfikacji F00).
 - A1: Podróż ma od 1 do 30 dni; szkic bez dat ma domyślnie 3 dni — zaakceptowane: 22.11.2026
 - A2: Nazwa i kierunek do 60 znaków, opis do 300 znaków — zaakceptowane: 22.11.2026
 - A3: Usunięcie zapisu miejsca nie usuwa go z podróży, a usunięcie z podróży nie usuwa zapisu — zaakceptowane: 22.11.2026

@@ -137,4 +137,9 @@ test("lokalny serwer nie wydaje plików ukrytych (.env, .git) ani spoza projektu
   for (const s of ["/.env", "/.git/config", "/.claude/settings.json", "/%2e%2e/%2e%2e/Windows/win.ini", "/src/../.git/HEAD"]) {
     assert.equal(await pobierz(s), 404, s);
   }
+  // Krótkie nazwy Windows (8.3) tych samych plików ukrytych (weryfikacja F00, W1).
+  // Na systemach bez krótkich nazw takie adresy i tak nie istnieją, więc też dają 404.
+  for (const s of ["/GIT~1/HEAD", "/GIT~1/config", "/git~1/HEAD", "/CLAUDE~1/settings.json", "/GITIGN~1", "/TRAIL~1/hook.cjs"]) {
+    assert.equal(await pobierz(s), 404, s);
+  }
 });

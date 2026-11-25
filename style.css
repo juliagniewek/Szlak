@@ -6,7 +6,8 @@
   --paper: #FFFDF9;   /* karty, okna, pola formularzy */
   --sand: #E6DED1;    /* obramowania, tło aktywnej pozycji menu */
   --taupe: #B6A58F;   /* obrys przycisków i pól */
-  --sage: #7B8069;    /* akcent: etykiety kategorii, liczniki, zaznaczenie */
+  --sage: #7B8069;    /* akcent: ikony, paski, obrysy, zaznaczenie, fokus (nie do małego tekstu) */
+  --sage-dark: #666B57; /* tekst w kolorze szałwii: etykiety, liczniki (kontrast ≥ 4,5:1, DEC-18) */
   --brown: #403A34;   /* tekst główny, przycisk główny */
   --muted: #6F655B;   /* tekst pomocniczy */
   --danger: #9B3B2E;  /* usuwanie */
@@ -58,12 +59,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .muted { color: var(--muted); }
 .maly { font-size: 0.875rem; }
-/* Etykieta kategorii: 12 px, wersaliki, odstęp 0,1 em, kolor szałwiowy */
+/* Etykieta kategorii: 12 px, wersaliki, odstęp 0,1 em, ciemna szałwia (kontrast ≥ 4,5:1, DEC-18) */
 .etykieta {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--sage);
+  color: var(--sage-dark);
   font-weight: 700;
   margin: 0 0 6px;
 }

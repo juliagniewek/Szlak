@@ -61,6 +61,35 @@ test("istniejąca kopia nie jest nadpisywana", () => {
   assert.equal(pamiec.getItem(KLUCZ_KOPII), "zepsute 1");
 });
 
+test("drugie uszkodzenie: nowe dane trafiają do kolejnej kopii i zostają po zapisie (plan 5.3, W2)", () => {
+  const pamiec = atrapaPamieci({ [KLUCZ]: "zepsute 2", [KLUCZ_KOPII]: "zepsute 1" });
+  const wynik = wczytaj(pamiec);
+  assert.equal(wynik.ostrzezenie, KOMUNIKATY.uszkodzone);
+  assert.equal(wynik.trwaly, true);
+  assert.equal(pamiec.getItem(KLUCZ_KOPII), "zepsute 1");
+  assert.equal(pamiec.getItem("szlak.app.kopia.2"), "zepsute 2");
+  // Pierwszy zapis zmian użytkownika zastępuje dane, ale żadnej kopii.
+  assert.equal(zapisz(pamiec, wynik.stan), true);
+  assert.equal(pamiec.getItem(KLUCZ_KOPII), "zepsute 1");
+  assert.equal(pamiec.getItem("szlak.app.kopia.2"), "zepsute 2");
+});
+
+test("ten sam uszkodzony tekst przy kolejnych startach nie tworzy nowych kopii", () => {
+  const pamiec = atrapaPamieci({ [KLUCZ]: "zepsute" });
+  for (let i = 0; i < 3; i++) wczytaj(pamiec);
+  assert.equal(pamiec.getItem(KLUCZ_KOPII), "zepsute");
+  assert.equal(pamiec.getItem("szlak.app.kopia.2"), null);
+});
+
+test("migracja przy istniejącej kopii: oryginał sprzed migracji trafia do kolejnej kopii", () => {
+  const stary = JSON.stringify({ wersja: 1, zapisane: [], podroze: [] });
+  const pamiec = atrapaPamieci({ [KLUCZ]: stary, [KLUCZ_KOPII]: "zepsute 1" });
+  const wynik = wczytaj(pamiec, { wersja: 2, migracje: { 1: (d) => ({ ...d, wersja: 2 }) } });
+  assert.equal(wynik.stan.wersja, 2);
+  assert.equal(pamiec.getItem(KLUCZ_KOPII), "zepsute 1");
+  assert.equal(pamiec.getItem("szlak.app.kopia.2"), stary);
+});
+
 test("migracja ze starszej wersji: dane przeniesione, zapisane w nowej wersji, kopia oryginału", () => {
   const stary = JSON.stringify({ wersja: 1, zapisane: [{ miejsce: "rzym-koloseum", zapisano: "2026-11-20T18:00:00.000Z" }], podroze: [] });
   const pamiec = atrapaPamieci({ [KLUCZ]: stary });

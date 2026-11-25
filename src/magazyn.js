@@ -4,8 +4,13 @@
 
 /** Klucz własny aplikacji. Prototyp pod tym samym adresem używa „szlak-dane-v1” w innym formacie. */
 export const KLUCZ = "szlak.app.dane";
-/** Tu trafia oryginalny tekst danych, których nie udało się odczytać (nie kasujemy ich po cichu). */
+/**
+ * Tu trafia oryginalny tekst danych, których nie udało się odczytać (nie kasujemy ich po cichu).
+ * Gdy ten klucz zawiera już inny tekst, kolejne kopie mają numery: szlak.app.kopia.2, .3… (plan 5.3).
+ */
 export const KLUCZ_KOPII = "szlak.app.kopia";
+/** Zabezpieczenie przed nieskończoną pętlą przy dziwnej pamięci; w praktyce kopii jest najwyżej kilka. */
+const MAKS_KOPII = 50;
 const KLUCZ_PROBY = "szlak.app.proba";
 
 /** Obecna wersja formatu danych. */
@@ -50,11 +55,27 @@ function zapisDziala(storage) {
   }
 }
 
-/** Zachowuje oryginalny tekst w kopii. Istniejącej kopii nie nadpisuje. Zwraca true, gdy kopia jest. */
+/** Klucz n-tej kopii: 1 → szlak.app.kopia, 2 → szlak.app.kopia.2 itd. */
+function kluczKopii(n) {
+  return n === 1 ? KLUCZ_KOPII : `${KLUCZ_KOPII}.${n}`;
+}
+
+/**
+ * Zachowuje oryginalny tekst w pierwszej wolnej kopii (plan 5.3, weryfikacja F00 W2).
+ * Istniejących kopii nie nadpisuje, a tekstu, który już jest w którejś kopii, nie zapisuje drugi raz.
+ * Zwraca true, gdy tekst jest bezpieczny w kopii; false, gdy kopii nie da się zapisać.
+ */
 function zachowajKopie(storage, tekst) {
   try {
-    if (storage.getItem(KLUCZ_KOPII) === null) storage.setItem(KLUCZ_KOPII, tekst);
-    return true;
+    for (let n = 1; n <= MAKS_KOPII; n++) {
+      const istniejaca = storage.getItem(kluczKopii(n));
+      if (istniejaca === tekst) return true;
+      if (istniejaca === null) {
+        storage.setItem(kluczKopii(n), tekst);
+        return true;
+      }
+    }
+    return false;
   } catch {
     return false;
   }
