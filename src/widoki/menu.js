@@ -10,15 +10,21 @@ export const SEKCJE_MENU = [
 ];
 
 /** Pozycje menu; tylko aktywna sekcja ma aria-current="page" (wyróżnienie tłem, pogrubieniem i paskiem). */
-export function widokMenu(aktywna) {
+export function widokMenu(aktywna, liczbaZapisanych = 0) {
   return html`
     <p class="logo">szlak<span>.</span></p>
     ${SEKCJE_MENU.map((s) => html`
       <a class="menu-pozycja" href="#/${s.id}" data-sekcja="${s.id}" style="--sekcja: var(--sekcja-${s.id})"${
         s.id === aktywna ? html` aria-current="page"` : ""}>
-        ${ikona(s.ikona)}<span>${s.tytul}</span>
+        ${ikona(s.ikona)}<span>${s.tytul}${s.id === "zapisane" ? licznik(liczbaZapisanych) : ""}</span>
       </a>`)}
   `;
+}
+
+/** Licznik zapisanych miejsc przy „Zapisane” (F02); przy zerze go nie ma, jak w prototypie. */
+function licznik(liczba) {
+  if (!liczba) return "";
+  return html` <span class="licznik"><span class="sr">(zapisane miejsca: </span>${liczba}<span class="sr">)</span></span>`;
 }
 
 export const TEKST_STOPKI = "Twoje dane zostają tylko w tej przeglądarce i znikną po jej wyczyszczeniu.";

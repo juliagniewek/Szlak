@@ -141,9 +141,10 @@ Kierunki: `{ miasto, kraj, tekst, zdjecie }`. Sortowanie „Popularne” w F03 j
 - Niepoprawny JSON, nieznany kształt albo `wersja` większa niż obecna → oryginalny tekst trafia do kopii, aplikacja startuje z pustymi danymi i pokazuje: „Nie udało się odczytać zapisanych danych. Ich kopia została zachowana w przeglądarce.” Dane nie są kasowane po cichu (F00).
 - Zasada kopii: pierwsza kopia ma klucz `szlak.app.kopia`; gdy ten klucz zawiera już inny tekst, oryginał trafia do pierwszego wolnego klucza `szlak.app.kopia.2`, `szlak.app.kopia.3`… Istniejących kopii nic nie nadpisuje, a tekstu, który już jest w którejś kopii, aplikacja nie zapisuje drugi raz. Zmiana po weryfikacji F00 (W2): wcześniej kopia powstawała tylko wtedy, gdy klucza `szlak.app.kopia` jeszcze nie było, więc dane uszkodzone drugi raz ginęły przy pierwszym zapisie, mimo komunikatu o kopii.
 - Kopii nie da się zapisać (np. brak miejsca) → zmiany nie są zapisywane (`trwaly: false`) i komunikat: „Nie udało się odczytać zapisanych danych. Zmiany nie będą zapisywane, żeby ich nie nadpisać.”
+- Uszkodzone elementy list (decyzja właścicielki do I2 z weryfikacji F00, 25.11.2026): przy wczytaniu `magazyn.js` sprawdza każdy zapis (`miejsce` i `zapisano` jako tekst, poprawna data, bez powtórzeń miejsca), każdą podróż (`id`, `nazwa`, lista `punkty`) i każdy punkt (`miejsce`, `dzien` jako liczba całkowita ≥ 0). Uszkodzone elementy są pomijane, reszta zostaje; oryginalny tekst trafia do kopii (zasada wyżej) i pojawia się komunikat: „Część zapisanych danych była uszkodzona i została pominięta. Ich kopia została zachowana w przeglądarce.” Gdy kopii nie da się zapisać → `trwaly: false` i komunikat o braku kopii. Pozostałe pola podróży (daty, długości tekstów) sprawdza walidacja z F04. Dzięki temu widoki F02–F06 dostają zawsze elementy o poprawnym kształcie.
 - Przeglądarka blokuje zapis (próbny zapis przy starcie się nie udaje) → tryb tylko w pamięci i ostrzeżenie z A5.
 - Błąd zapisu w trakcie (np. brak miejsca) → operacja nie zostaje przyjęta: stan wraca do poprzedniego, komunikat „Nie udało się zapisać zmian. Spróbuj ponownie.”, bez komunikatu o sukcesie (F02, F04, F05).
-- API: `wczytaj(storage) → { stan, ostrzezenie, trwaly }` (`trwaly: false` = zmian nie zapisujemy: blokada zapisu albo brak kopii uszkodzonych danych), `zapisz(storage, stan) → true | false`. `storage` jest parametrem, więc testy podają atrapę.
+- API: `wczytaj(storage) → { stan, ostrzezenie, trwaly }` (`trwaly: false` = zmian nie zapisujemy: blokada zapisu albo brak kopii uszkodzonych danych), `zapisz(storage, stan) → true | false`, `zatwierdz(storage, trwaly, nowyStan) → true | false` (F02: zapis po operacji; w trybie tylko w pamięci zawsze `true`). `storage` jest parametrem, więc testy podają atrapę.
 
 ### 5.4 Miejsce usunięte z katalogu
 - Zapis i punkty planu zostają w pamięci (nic nie jest kasowane).
@@ -177,6 +178,7 @@ Pliki: `src/widoki/menu.js`, `odkrywaj.js`, `miejsce.js`, `src/app.js`, `style.c
 4. Obsługa A5 i błędu zapisu przez `magazyn.js`.
 5. Testy KA1–KA6 (KA6: atrapy `fetch`, `XMLHttpRequest`, `sendBeacon` nie zostają wywołane).
 Pliki: `src/stan.js`, `src/widoki/zapisane.js`, `menu.js`, `odkrywaj.js`, `miejsce.js`, `src/app.js`, `tests/zapisane.test.js`.
+Dodatkowo w sesji F02 (25.11.2026): `style.css` (serce, licznik, toast, stan pusty; W2), `index.html` (element komunikatu), `src/magazyn.js` i `tests/magazyn.test.js` (I2 z F00, `zatwierdz`). Toast ma atrybut `popover`, żeby był widoczny także nad otwartym oknem E3. Licznik przy „Zapisane” nie pokazuje się przy zerze (jak w prototypie). W E3 serce to przycisk z ikoną i tekstem „Zapisz” / „Zapisano · usuń z Zapisanych” (jak w prototypie).
 
 ### F04 · Podróże
 1. `walidacja.js` i `daty.js`: reguły i komunikaty z KA3–KA4, liczba dni, status.
@@ -234,8 +236,8 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 | ID | Funkcja | Priorytet | Status |
 |---|---|---|---|
 | F00 | Fundament i zabezpieczenia | MVP-1 | zweryfikowana: WARNING, runda 2 (ostatnia); W3b: menu 16 px (DEC-19) (docs/weryfikacja/F00.md) |
-| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F01.md) |
-| F02 | Zapisywanie miejsc | MVP-1 | do zrobienia |
+| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F01.md); W1 i W2 poprawione w sesji F02 (sprawdza weryfikacja MVP) |
+| F02 | Zapisywanie miejsc | MVP-1 | zbudowana, czeka na weryfikację MVP-1 |
 | F04 | Podróże | MVP-1 | do zrobienia |
 | F05 | Plan dni | MVP-1 | do zrobienia |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia |
@@ -244,13 +246,14 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 
 ## 10. Później
 - F07 Planowanie automatyczne; kolekcje, archiwum, duplikowanie, notatki (DEC-10).
+- Uwagi z weryfikacji F01, nieobjęte kartą F02 (decyzja właścicielki): I1 — po wyborze sekcji z klawiatury fokus wraca na początek strony (można przenosić fokus na nagłówek ekranu; nagłówek E4 ma już `tabindex="-1"`); I4 — odnośnik „Źródła zdjęć” także na ekranie Zapisane.
 - Eksport i import danych do pliku (kopia zapasowa) — odpowiedź na R2.
 - Zdjęcia skopiowane do repozytorium zamiast osadzania z Wikimedia (zalecane przez Commons, usuwa R3 i R-T2).
 - Automatyczne testy w prawdziwej przeglądarce (wymagałyby narzędzia spoza DEC-10).
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 
 ## 11. Następny krok
-F01 zweryfikowana 25.11.2026 (runda 1): WARNING, wszystkie 8 kryteriów spełnionych (docs/weryfikacja/F01.md). Decyzje właścicielki: W1 i W2 poprawić na początku sesji F02 (zamykanie okna tylko poza prostokątem okna; `.przycisk-ikona` bez `border-radius`), W3 rozstrzygnięte przez DEC-20 (mały tekst zostaje). Bez osobnej rundy 2 dla F01. Następnie: Faza B: F02 · poziom Średni, z poprawkami W1, W2 i decyzją o I2 z F00; potem F04 i F05; na końcu jedna weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza też W1 i W2. Uwagi I1–I4 z F01 do rozważenia przy F02.
+F02 zbudowana 25.11.2026: serce na kartach i w E3, licznik w menu, komunikaty, ekran Zapisane, A5 i błąd zapisu; testy 73/73. W tej samej sesji: poprawki W1 i W2 z weryfikacji F01, I2 z F00 rozstrzygnięte (plan 5.3: uszkodzone elementy pomijane, kopia i komunikat), odwołanie do DEC-20 w sekcji 9 specyfikacji. I1 i I4 z F01 przeniesione do „Później”. Następnie: Faza B: F04 · Podróże (poziom Średni), potem F05; na końcu jedna weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02 oraz W1 i W2 z F01.
 
 ## Wnioski
 Trail-code działa; wnioski z sesji są w `.trail/learnings/`.

@@ -1,5 +1,5 @@
 # Specyfikacja MVP: szlak.
-Wersja 1.2 · 25.11.2026 · Źródła: brief.md, prototyp.html, design.md, specyfikacja-v1.md (wstępna specyfikacja z kartą decyzji), docs/wnioski-z-testow.md, odpowiedzi właścicielki projektu w rozmowie (22.11.2026), odpowiedzi na pytania z Fazy A (24.11.2026, DEC-13–DEC-17), decyzja po weryfikacji F00 (25.11.2026, DEC-18, DEC-19)
+Wersja 1.2 · 25.11.2026 · Źródła: brief.md, prototyp.html, design.md, specyfikacja-v1.md (wstępna specyfikacja z kartą decyzji), docs/wnioski-z-testow.md, odpowiedzi właścicielki projektu w rozmowie (22.11.2026), odpowiedzi na pytania z Fazy A (24.11.2026, DEC-13–DEC-17), decyzje po weryfikacji F00 i F01 (25.11.2026, DEC-18–DEC-20)
 
 ## 1. Cel i użytkownicy
 szlak. to prosta aplikacja webowa dla osób, które same planują city break, wakacje albo krótki wyjazd, często w kilka osób. Dziś zapisują inspiracje w kilku aplikacjach, zakładkach i notatkach, a potem ręcznie przepisują je do planu i nie widzą, gdzie leżą zapisane miejsca. W aplikacji odkrywają i zapisują miejsca, zamieniają je w podróż, rozkładają na dni i oglądają trasę dnia na mapie. Wszystko w jednym miejscu, w przeglądarce na komputerze, bez zakładania konta.
@@ -176,7 +176,7 @@ Usuwanie:
 
 ## 9. Wymagania ogólne
 - Wygląd zgodny z design.md: paleta, kolory sekcji, typografia, karty, ikony liniowe, zdjęcia z zastępczą ikoną kategorii.
-- Dostępność: kontrast WCAG AA, tekst co najmniej 16 px, elementy klikalne co najmniej 44×44 px, obsługa klawiatury (także pinezek na mapie), widoczny fokus, etykieta przy każdym polu formularza, tekst alternatywny zdjęć.
+- Dostępność: kontrast WCAG AA, tekst co najmniej 16 px, elementy klikalne co najmniej 44×44 px (wyjątki dla etykiet, małego tekstu pomocniczego i odnośników w tekście: DEC-20), obsługa klawiatury (także pinezek na mapie), widoczny fokus, etykieta przy każdym polu formularza, tekst alternatywny zdjęć.
 - Komunikaty błędów zrozumiałe dla użytkownika, po polsku, przy polu, którego dotyczą.
 - Brak połączenia: aplikacja działa, zdjęcia zastępuje ikona kategorii (A4).
 - Krótki komunikat (toast) po zapisie, usunięciu i utworzeniu podróży.

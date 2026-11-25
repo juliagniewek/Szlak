@@ -1,7 +1,8 @@
 // E3 Szczegóły miejsca (F01): treść okna <dialog id="okno"> z index.html.
 // Otwieranie, zamykanie (×, Esc, kliknięcie poza oknem) i powrót fokusu obsługuje app.js.
-// Serce (F02) i „Dodaj do podróży” (F04) dochodzą w kolejnych kartach.
+// Serce (przycisk zapisu, F02) jest pod danymi miejsca; „Dodaj do podróży” (F04) dojdzie obok.
 import { html } from "../html.js";
+import { ikona } from "../ikony.js";
 import { KATEGORIE, adresStronyPliku } from "../dane/katalog.js";
 import { zdjecieMiejsca } from "./odkrywaj.js";
 
@@ -19,7 +20,15 @@ function podpisZdjecia(zdjecie) {
       <a href="${adresStronyPliku(zdjecie)}" target="_blank" rel="noopener noreferrer">strona pliku na Wikimedia Commons</a></p>`;
 }
 
-export function widokMiejsca(m) {
+/** Przycisk zapisu w E3: serce i tekst; stan zapisu w aria-pressed (F02). */
+function przyciskZapisu(m, zapisane) {
+  return html`
+    <button type="button" class="btn${zapisane ? "" : " glowny"} zapisz" data-akcja="przelacz-zapis" data-id="${m.id}"
+      aria-pressed="${zapisane ? "true" : "false"}">${ikona("serce", 18, zapisane)}${zapisane ? "Zapisano · usuń z Zapisanych" : "Zapisz"}</button>`;
+}
+
+/** Treść okna E3. `zapisane` = czy miejsce jest zapisane (F02). */
+export function widokMiejsca(m, zapisane = false) {
   const kategoria = KATEGORIE[m.kategoria].etykieta;
   const lokalizacja = `${m.miasto}, ${m.kraj}`;
   return html`
@@ -36,6 +45,7 @@ export function widokMiejsca(m) {
         <dt>Lokalizacja</dt><dd>${lokalizacja}</dd>
         <dt>Współrzędne</dt><dd>${formatWspolrzednych(m.wsp) ?? "brak"}</dd>
       </dl>
+      <div class="okno-akcje">${przyciskZapisu(m, zapisane)}</div>
     </div>
   `;
 }

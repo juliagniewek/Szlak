@@ -42,11 +42,23 @@ export function zdjecieMiejsca(m, duze = false) {
     </div>`;
 }
 
-/** Karta miejsca: zdjęcie 16:10, kategoria, nazwa, lokalizacja. Serce w prawym górnym rogu dochodzi w F02. */
-export function kartaMiejsca(m) {
+/**
+ * Serce na karcie (F02): przycisk-ikona 44×44 px w prawym górnym rogu zdjęcia.
+ * Stan zapisu jest w aria-pressed, a podpis stały, więc czytnik ekranu mówi np. „Zapisz: Koloseum, wciśnięty”.
+ */
+export function serce(m, zapisane) {
+  return html`
+      <button type="button" class="przycisk-ikona serce" data-akcja="przelacz-zapis" data-id="${m.id}"
+        aria-pressed="${zapisane ? "true" : "false"}" aria-label="Zapisz: ${m.nazwa}"
+        title="${zapisane ? "Usuń z Zapisanych" : "Zapisz"}">${ikona("serce", 20, zapisane)}</button>`;
+}
+
+/** Karta miejsca: zdjęcie 16:10 z sercem, kategoria, nazwa, lokalizacja. `zapisane` to zbiór id zapisanych miejsc. */
+export function kartaMiejsca(m, zapisane = new Set()) {
   return html`
     <article class="karta-miejsca">
       <button type="button" class="karta-zdjecie" data-akcja="otworz-miejsce" data-id="${m.id}" tabindex="-1" aria-hidden="true">${zdjecieMiejsca(m)}</button>
+      ${serce(m, zapisane.has(m.id))}
       <div class="karta-tresc">
         <p class="etykieta">${KATEGORIE[m.kategoria].etykieta}</p>
         <h3><button type="button" class="jak-link" data-akcja="otworz-miejsce" data-id="${m.id}">${m.nazwa}</button></h3>
@@ -55,8 +67,9 @@ export function kartaMiejsca(m) {
     </article>`;
 }
 
-function siatka(miejsca) {
-  return html`<div class="siatka">${miejsca.map(kartaMiejsca)}</div>`;
+/** Siatka kart miejsc. */
+export function siatka(miejsca, zapisane = new Set()) {
+  return html`<div class="siatka">${miejsca.map((m) => kartaMiejsca(m, zapisane))}</div>`;
 }
 
 function kartaKierunku(k) {
@@ -93,12 +106,15 @@ function widokZrodel() {
     </details>`;
 }
 
-/** E1 Odkrywaj. Gdy podano miasto, pokazuje listę wszystkich miejsc tego kierunku. */
-export function widokOdkrywaj(miasto = null) {
-  return miasto === null ? widokGlowny() : widokKierunku(miasto);
+/**
+ * E1 Odkrywaj. Gdy podano miasto, pokazuje listę wszystkich miejsc tego kierunku.
+ * `zapisane` to zbiór id zapisanych miejsc (wypełnione serca, F02).
+ */
+export function widokOdkrywaj(miasto = null, zapisane = new Set()) {
+  return miasto === null ? widokGlowny(zapisane) : widokKierunku(miasto, zapisane);
 }
 
-function widokGlowny() {
+function widokGlowny(zapisane) {
   return html`
     <header class="naglowek-sekcji">
       <p class="etykieta">Odkrywaj</p>
@@ -113,14 +129,14 @@ function widokGlowny() {
       <section class="sekcja">
         <h2>${s.tytul}</h2>
         ${s.opis ? html`<p class="muted">${s.opis}</p>` : ""}
-        ${siatka(miejscaSekcji(s.oznaczenie))}
+        ${siatka(miejscaSekcji(s.oznaczenie), zapisane)}
       </section>`)}
     <p class="maly muted podpis-zdjec">Zdjęcia: Wikimedia Commons (licencje Creative Commons i domena publiczna).</p>
     ${widokZrodel()}
   `;
 }
 
-function widokKierunku(miasto) {
+function widokKierunku(miasto, zapisane) {
   const miejsca = miejscaKierunku(miasto);
   return html`
     <header class="naglowek-sekcji">
@@ -129,7 +145,7 @@ function widokKierunku(miasto) {
       <h1>Miejsca: ${miasto}</h1>
     </header>
     ${miejsca.length
-      ? siatka(miejsca)
+      ? siatka(miejsca, zapisane)
       : html`<p class="muted">Nie ma takiego kierunku w katalogu.</p>`}
     ${widokZrodel()}
   `;

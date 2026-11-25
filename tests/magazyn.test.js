@@ -148,6 +148,51 @@ test("uszkodzone dane, gdy kopii nie da się zrobić: zmiany nie są zapisywane,
   assert.equal(wynik.ostrzezenie, KOMUNIKATY.uszkodzoneBezKopii);
 });
 
+test("I2: uszkodzone elementy list są pomijane, reszta zostaje, oryginał trafia do kopii i jest komunikat", () => {
+  const dobryZapis = { miejsce: "rzym-koloseum", zapisano: "2026-11-20T18:00:00.000Z" };
+  const dobraPodroz = zestawTestowy().podroze[0];
+  const tekst = JSON.stringify({
+    wersja: WERSJA,
+    zapisane: [null, dobryZapis, { miejsce: "rzym-panteon" }, { miejsce: 5, zapisano: "x" }, { ...dobryZapis }],
+    podroze: [{}, { ...dobraPodroz, punkty: [...dobraPodroz.punkty, null, { miejsce: "rzym-forum", dzien: -1 }] }, "napis"]
+  });
+  const pamiec = atrapaPamieci({ [KLUCZ]: tekst });
+  const wynik = wczytaj(pamiec);
+  assert.equal(wynik.ostrzezenie, "Część zapisanych danych była uszkodzona i została pominięta. Ich kopia została zachowana w przeglądarce.");
+  assert.equal(wynik.trwaly, true);
+  assert.deepEqual(wynik.stan.zapisane, [dobryZapis], "null, brak daty, zły typ i powtórzenie pominięte");
+  assert.deepEqual(wynik.stan.podroze, [dobraPodroz], "zła podróż i złe punkty pominięte, dobra podróż cała");
+  assert.equal(pamiec.getItem(KLUCZ_KOPII), tekst, "oryginał w kopii");
+  assert.equal(pamiec.getItem(KLUCZ), tekst, "samo wczytanie nie zmienia danych");
+});
+
+test("I2: przykład z weryfikacji F00 ({zapisane:[null], podroze:[{}]}) daje puste listy z komunikatem", () => {
+  const pamiec = atrapaPamieci({ [KLUCZ]: JSON.stringify({ wersja: 1, zapisane: [null], podroze: [{}] }) });
+  const wynik = wczytaj(pamiec);
+  assert.deepEqual(wynik.stan, pusteDane());
+  assert.equal(wynik.ostrzezenie, KOMUNIKATY.czesciowoUszkodzone);
+});
+
+test("I2: gdy kopii nie da się zapisać, zmiany nie są zapisywane (jak przy uszkodzonych danych)", () => {
+  const pamiec = atrapaPamieci({ [KLUCZ]: JSON.stringify({ wersja: 1, zapisane: [null], podroze: [] }) });
+  const zwykly = pamiec.setItem;
+  pamiec.setItem = (k, v) => {
+    if (k.startsWith(KLUCZ_KOPII)) throw new Error("QuotaExceededError");
+    zwykly(k, v);
+  };
+  const wynik = wczytaj(pamiec);
+  assert.equal(wynik.trwaly, false);
+  assert.equal(wynik.ostrzezenie, KOMUNIKATY.uszkodzoneBezKopii);
+});
+
+test("I2: poprawne dane (zestaw testowy) wczytują się bez komunikatu i bez kopii", () => {
+  const pamiec = atrapaPamieci({ [KLUCZ]: JSON.stringify(zestawTestowy()) });
+  const wynik = wczytaj(pamiec);
+  assert.equal(wynik.ostrzezenie, null);
+  assert.deepEqual(wynik.stan, zestawTestowy());
+  assert.equal(pamiec.getItem(KLUCZ_KOPII), null);
+});
+
 test("błąd zapisu w trakcie (np. brak miejsca) → zapisz zwraca false", () => {
   const pamiec = atrapaPamieci();
   pamiec.setItem = () => { throw new Error("QuotaExceededError"); };
