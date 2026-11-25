@@ -13,7 +13,7 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 | ID | Funkcja | Priorytet | Status | Weryfikacja |
 |---|---|---|---|---|
 | F00 | Fundament i zabezpieczenia | MVP-1 | zbudowana, zweryfikowana (2 rundy); W3b rozstrzygnięte: podpisy menu 16 px (DEC-19) | runda 2 (ostatnia): WARNING, 25.11.2026 — W1, W2 i kontrast z W3 naprawione ([docs/weryfikacja/F00.md](docs/weryfikacja/F00.md)) |
-| F01 | Układ aplikacji i Odkrywaj | MVP-1 | do zrobienia | [uzupełnia: Faza C] |
+| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zbudowana 25.11.2026, czeka na weryfikację | [uzupełnia: Faza C] |
 | F02 | Zapisywanie miejsc | MVP-1 | do zrobienia | [uzupełnia: Faza C] |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
 | F04 | Podróże | MVP-1 | do zrobienia | [uzupełnia: Faza C] |

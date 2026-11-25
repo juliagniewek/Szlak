@@ -91,7 +91,7 @@ Q1: F06 w MVP-2 (DEC-17).
 | Kolejność | Karta | Poziom | Szacunek | Status |
 |---|---|---|---|---|
 | 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | zweryfikowana: WARNING (runda 2, ostatnia); W1, W2, W3a naprawione, W3b: menu 16 px (DEC-19) |
-| 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | do zrobienia |
+| 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | zbudowana, czeka na weryfikację (Faza C) |
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | do zrobienia |
 | 4 | F04 Podróże | Średni | 1 wieczór | do zrobienia |
 | 5 | F05 Plan dni | Wysoki | 1 wieczór | do zrobienia |
@@ -234,7 +234,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 | ID | Funkcja | Priorytet | Status |
 |---|---|---|---|
 | F00 | Fundament i zabezpieczenia | MVP-1 | zweryfikowana: WARNING, runda 2 (ostatnia); W3b: menu 16 px (DEC-19) (docs/weryfikacja/F00.md) |
-| F01 | Układ aplikacji i Odkrywaj | MVP-1 | do zrobienia |
+| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zbudowana 25.11.2026, czeka na weryfikację (Faza C) |
 | F02 | Zapisywanie miejsc | MVP-1 | do zrobienia |
 | F04 | Podróże | MVP-1 | do zrobienia |
 | F05 | Plan dni | MVP-1 | do zrobienia |
@@ -250,7 +250,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 
 ## 11. Następny krok
-Właścicielka czyta wynik rundy 2 w docs/weryfikacja/F00.md (W1, W2 i kontrast z W3 naprawione, werdykt WARNING tylko z powodu otwartej decyzji) i rozstrzyga kontrolę elementów zapisanych danych (I2, przed F02). W3b rozstrzygnięte 25.11.2026: podpisy menu 16 px (DEC-19, zmienione w style.css i design.md). Przy pierwszej migracji danych trzeba rozstrzygnąć I8, a w F01 uważać na I10 (ciemna szałwia na piaskowym tle ma 4,13:1). Potem nowa sesja Fazy B: F01 · poziom Średni.
+F01 zbudowana 25.11.2026: menu i stopka z „O danych” (`src/widoki/menu.js`), E1 z kierunkami, sekcjami i „Źródłami zdjęć” (`src/widoki/odkrywaj.js`), okno E3 jako `<dialog>` (`src/widoki/miejsce.js`), testy w `tests/odkrywaj.test.js`. „O danych” i „Źródła zdjęć” to rozwijane odnośniki (`<details>`), bez osobnego okna. Następnie: Faza C dla F01 (weryfikacja), potem decyzja o I2 z weryfikacji F00 i Faza B: F02 · poziom Średni.
 
 ## Wnioski
 Trail-code działa; wnioski z sesji są w `.trail/learnings/`.

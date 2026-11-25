@@ -13,30 +13,20 @@
 </head>
 <body>
 <div class="aplikacja">
-  <nav class="menu" aria-label="Główna nawigacja">
-    <p class="logo">szlak<span>.</span></p>
-    <a class="menu-pozycja" href="#/odkrywaj" data-sekcja="odkrywaj" style="--sekcja: var(--sekcja-odkrywaj)">
-      <svg class="ikona" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>
-      <span>Odkrywaj</span>
-    </a>
-    <a class="menu-pozycja" href="#/zapisane" data-sekcja="zapisane" style="--sekcja: var(--sekcja-zapisane)">
-      <svg class="ikona" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
-      <span>Zapisane</span>
-    </a>
-    <a class="menu-pozycja" href="#/podroze" data-sekcja="podroze" style="--sekcja: var(--sekcja-podroze)">
-      <svg class="ikona" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18"/></svg>
-      <span>Podróże</span>
-    </a>
-  </nav>
+  <!-- Menu wypełnia src/widoki/menu.js (aktywna sekcja wynika z adresu #/...). -->
+  <nav class="menu" id="menu" aria-label="Główna nawigacja"></nav>
 
   <main>
     <div class="tresc">
       <p class="logo logo-gora">szlak<span>.</span></p>
       <p id="ostrzezenie" class="komunikat" role="alert" hidden></p>
       <div id="widok"></div>
+      <div id="stopka"></div>
     </div>
   </main>
 </div>
+<!-- Okno szczegółów miejsca (E3); treść z src/widoki/miejsce.js. -->
+<dialog id="okno" class="okno" aria-labelledby="okno-tytul"></dialog>
 <noscript><p class="komunikat">Aplikacja wymaga włączonego JavaScriptu.</p></noscript>
 </body>
 </html>

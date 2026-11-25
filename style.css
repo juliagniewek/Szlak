@@ -155,6 +155,7 @@ main { flex: 1; min-width: 0; padding: 20px var(--odstep) 96px; }
   font-weight: 600;
   text-decoration: none;
 }
+a.btn { color: var(--brown); } /* przycisk-odnośnik (np. powrót z listy kierunku) bez koloru odnośnika */
 .btn:hover { background: var(--sand); }
 .btn.glowny { background: var(--brown); border-color: var(--brown); color: var(--cream); }
 .btn.glowny:hover { background: #2c2824; }
@@ -178,3 +179,135 @@ main { flex: 1; min-width: 0; padding: 20px var(--odstep) 96px; }
   background: var(--paper);
 }
 .panel-dev .maly { margin: 0 0 12px; }
+
+/* ---------- F01: Odkrywaj, karty, okno szczegółów, stopka ---------- */
+
+/* Nagłówek sekcji: etykieta w kolorze sekcji (mały tekst → --sage-dark, DEC-18) */
+.naglowek-sekcji { padding: 8px 0; }
+.naglowek-sekcji .btn { margin-bottom: 16px; }
+.wstep { font-size: 1.1rem; color: var(--muted); max-width: 560px; margin: 0; }
+.sekcja { margin-top: 36px; }
+.sekcja > .muted { margin: -6px 0 12px; }
+
+/* Karty kierunków: duże zdjęcie z ciemnym gradientem na dole, miasto szeryfowe i kraj */
+.kierunki { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.kierunek {
+  min-height: 150px;
+  padding: 16px;
+  border-radius: var(--promien);
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 -90px 60px -30px rgba(40, 34, 28, 0.7);
+  transition: transform .15s;
+}
+.kierunek:hover { transform: translateY(-2px); }
+.kierunek-kraj { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
+.kierunek-nazwa { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
+.kierunek-tekst { font-size: 0.875rem; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
+
+/* Siatka i karta miejsca (design.md: min. 200 px, odstęp 16 px; zdjęcie 16:10, ramka piaskowa) */
+.siatka { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--odstep); }
+.karta-miejsca {
+  position: relative; /* tu w F02 dojdzie serce w prawym górnym rogu zdjęcia */
+  background: var(--paper);
+  border: 1px solid var(--sand);
+  border-radius: var(--promien);
+  overflow: hidden;
+  transition: box-shadow .15s, transform .15s;
+}
+.karta-miejsca:hover { box-shadow: 0 6px 20px rgba(64, 58, 52, 0.12); transform: translateY(-2px); }
+.karta-zdjecie { display: block; width: 100%; border: 0; padding: 0; background: none; cursor: pointer; }
+.karta-tresc { padding: 12px 14px 14px; }
+.karta-tresc h3 { overflow-wrap: anywhere; }
+.lokalizacja { font-size: 0.875rem; color: var(--muted); margin: 0; }
+.jak-link {
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; color: inherit; text-align: left; cursor: pointer;
+}
+.jak-link:hover { text-decoration: underline; }
+
+/* Zdjęcie: gradient kategorii z ikoną pod spodem, zdjęcie na wierzchu (A4) */
+.zdjecie {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: rgba(255, 253, 249, 0.92);
+}
+.zdjecie.duze { aspect-ratio: 16 / 8; }
+.zdjecie img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+.podpis-zdjec { margin-top: 32px; }
+
+/* Rozwijane „Źródła zdjęć” i „O danych”: odnośnik z obszarem kliknięcia 44 px */
+.rozwijane summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rozwijane summary:hover { color: var(--brown); }
+.rozwijane ul { margin: 4px 0 0; padding-left: 20px; }
+.rozwijane li { margin: 4px 0; overflow-wrap: anywhere; }
+.zrodla { font-size: 0.875rem; color: var(--muted); }
+.zrodla a, .stopka a, .podpis-zdjecia a { color: inherit; }
+
+/* Stopka (DEC-15): mały tekst w kolorze pomocniczym na dole treści każdej sekcji */
+.stopka {
+  margin-top: 48px;
+  padding-top: 12px;
+  border-top: 1px solid var(--sand);
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.stopka p { margin: 0; }
+
+/* Przycisk-ikona: wygląd 36 px, obszar kliknięcia 44×44 px (DEC-14) */
+.przycisk-ikona {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--brown);
+  background: radial-gradient(circle, var(--paper) 0 17px, var(--sand) 17px 18px, transparent 18.5px);
+}
+.przycisk-ikona:hover { background: radial-gradient(circle, var(--sand) 0 18px, transparent 18.5px); }
+
+/* Okno szczegółów (E3): na telefonie wysuwa się od dołu, na komputerze na środku */
+.okno {
+  padding: 0;
+  border: 0;
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  margin: auto auto 0;
+  border-radius: 18px 18px 0 0;
+  background: var(--paper);
+  color: var(--brown);
+  overflow: auto;
+}
+.okno::backdrop { background: rgba(40, 34, 28, 0.45); }
+body:has(.okno[open]) { overflow: hidden; }
+.okno .zamknij { position: absolute; top: 8px; right: 8px; z-index: 1; }
+.okno-tresc { padding: 8px 20px 20px; }
+.okno-tresc h2 { margin: 0 0 4px; overflow-wrap: anywhere; }
+.podpis-zdjecia { font-size: 0.875rem; color: var(--muted); margin: 6px 20px 0; }
+.dane-miejsca { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 0.9375rem; margin: 12px 0 0; }
+.dane-miejsca dt { color: var(--muted); }
+.dane-miejsca dd { margin: 0; }
+@media (min-width: 700px) {
+  .okno { margin: auto; border-radius: 18px; }
+}
