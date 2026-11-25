@@ -1,0 +1,11 @@
+{
+  "name": "szlak",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prosta aplikacja do zapisywania miejsc i planowania podróży; dane zostają w przeglądarce.",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serwer.mjs",
+    "test": "node --test"
+  }
+}

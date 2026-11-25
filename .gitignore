@@ -19,3 +19,10 @@ desktop.ini
 *.tmp
 *.log
 ~$*
+
+# Trail-code: mapa kodu i pasek stanu zostają na tym komputerze (learnings w .trail/learnings/ są commitowane)
+.trail/cache/
+.trail/statusline.cjs
+
+# Lokalne ustawienia Claude Code (zgody i pasek stanu tego komputera)
+.claude/settings.local.json

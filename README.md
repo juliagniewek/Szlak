@@ -12,7 +12,7 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 ## Stan funkcji
 | ID | Funkcja | Priorytet | Status | Weryfikacja |
 |---|---|---|---|---|
-| F00 | Fundament i zabezpieczenia | MVP-1 | do zrobienia | [uzupełnia: Faza C] |
+| F00 | Fundament i zabezpieczenia | MVP-1 | zbudowana, czeka na weryfikację | [uzupełnia: Faza C] |
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | do zrobienia | [uzupełnia: Faza C] |
 | F02 | Zapisywanie miejsc | MVP-1 | do zrobienia | [uzupełnia: Faza C] |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
@@ -36,7 +36,31 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 - Weryfikacja całego MVP: [uzupełnia: Faza C — docs/weryfikacja/MVP.md]
 
 ## Jak uruchomić lokalnie
-[uzupełnia: F00 — kroki od pobrania repozytorium, przez załadowanie zestawu testowego, po uruchomienie aplikacji i testów]
+Potrzebne: [Node.js](https://nodejs.org) w wersji 22 lub nowszej (bez instalowania dodatkowych pakietów) i git.
+
+1. Pobierz repozytorium i wejdź do jego folderu:
+   ```
+   git clone https://github.com/juliagniewek/Szlak.git
+   cd Szlak
+   ```
+2. Uruchom aplikację:
+   ```
+   npm start
+   ```
+   W terminalu pojawi się „szlak. działa: http://localhost:8000”. Otwórz ten adres w Chrome albo Edge.
+   Dwuklik w `index.html` nie wystarczy — przeglądarka blokuje wtedy skrypty aplikacji.
+   Zatrzymanie: Ctrl+C w terminalu.
+3. Zestaw testowy (3 zapisane miejsca i podróż „Testowy wyjazd: Rzym”, 04–06.12.2026): otwórz
+   http://localhost:8000/?dev i kliknij „Załaduj zestaw testowy”. Zestaw zastępuje dane zapisane w tej przeglądarce.
+   Tryb deweloperski działa tylko na `localhost`, nie na opublikowanej stronie.
+4. Atrapa przeglądarki blokującej zapis: http://localhost:8000/?dev&blokada — u góry pojawia się ostrzeżenie, a zmiany znikają po zamknięciu strony.
+5. Testy (w drugim terminalu, w folderze projektu):
+   ```
+   npm test
+   ```
+   Na końcu powinno być „fail 0”.
+
+Jeśli terminal pisze, że nie zna polecenia `npm` albo `node`, zamknij go i otwórz nowy (po instalacji Node.js stary terminal go nie widzi).
 
 ## Dokumentacja
 - Brief, prototyp i testy prototypu: brief.md, prototyp.html, docs/wnioski-z-testow.md, specyfikacja-v1.md (wstępna)

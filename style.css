@@ -1,0 +1,179 @@
+/* szlak. — style aplikacji. Wartości z design.md; komponenty dochodzą w kolejnych kartach. */
+
+:root {
+  /* Paleta (design.md, „Kolory”) */
+  --cream: #F7F4EE;   /* tło strony */
+  --paper: #FFFDF9;   /* karty, okna, pola formularzy */
+  --sand: #E6DED1;    /* obramowania, tło aktywnej pozycji menu */
+  --taupe: #B6A58F;   /* obrys przycisków i pól */
+  --sage: #7B8069;    /* akcent: etykiety kategorii, liczniki, zaznaczenie */
+  --brown: #403A34;   /* tekst główny, przycisk główny */
+  --muted: #6F655B;   /* tekst pomocniczy */
+  --danger: #9B3B2E;  /* usuwanie */
+
+  /* Kolory sekcji */
+  --sekcja-odkrywaj: #7B8069;
+  --sekcja-szukaj: #4F6D8A;
+  --sekcja-zapisane: #B5452F;
+  --sekcja-podroze: #403A34;
+
+  /* Kolory dni na mapie i w planie, w kolejności dni */
+  --dzien-1: #7B8069;
+  --dzien-2: #B0703C;
+  --dzien-3: #4F6D8A;
+  --dzien-4: #8A5A7A;
+  --dzien-5: #403A34;
+  --dzien-6: #A68A3D;
+  --dzien-7: #5E8C7A;
+
+  /* Typografia */
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Układ */
+  --promien: 14px;
+  --menu-szerokosc: 220px;
+  --tresc-max: 1180px;
+  --odstep: 16px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--cream);
+  color: var(--brown);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.2; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 8px; }  /* 32–48 px */
+h2 { font-size: 1.375rem; margin: 0 0 12px; }              /* 22 px */
+h3 { font-size: 1.0625rem; margin: 0 0 4px; }              /* 17 px */
+
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--sage); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.muted { color: var(--muted); }
+.maly { font-size: 0.875rem; }
+/* Etykieta kategorii: 12 px, wersaliki, odstęp 0,1 em, kolor szałwiowy */
+.etykieta {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sage);
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+.ikona { display: inline-block; vertical-align: -0.2em; flex: none; }
+
+/* Układ: menu dolne na telefonie, boczne od 900 px */
+.aplikacja { display: flex; min-height: 100vh; }
+main { flex: 1; min-width: 0; padding: 20px var(--odstep) 96px; }
+.tresc { max-width: var(--tresc-max); margin: 0 auto; }
+
+.logo { font-family: var(--serif); font-size: 1.7rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 16px; }
+.logo span { color: var(--sage); }
+.menu .logo { display: none; }
+
+.menu {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--paper);
+  border-top: 1px solid var(--sand);
+}
+.menu-pozycja {
+  min-height: 56px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+.menu-pozycja .ikona { color: var(--sekcja); }
+.menu-pozycja:hover { color: var(--brown); }
+/* Aktywna sekcja: piaskowe tło, pogrubienie i pasek w kolorze sekcji (design.md, zasada 2) */
+.menu-pozycja[aria-current="page"] {
+  color: var(--brown);
+  font-weight: 700;
+  background: var(--sand);
+  box-shadow: inset 0 3px 0 var(--sekcja);
+}
+
+@media (min-width: 900px) {
+  .menu {
+    position: sticky;
+    top: 0;
+    width: var(--menu-szerokosc);
+    height: 100vh;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 28px 16px;
+    border-top: 0;
+    border-right: 1px solid var(--sand);
+    background: var(--cream);
+  }
+  .menu .logo { display: block; margin: 0 8px 24px; }
+  .logo-gora { display: none; }
+  .menu-pozycja {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border-radius: 0 10px 10px 0;
+  }
+  .menu-pozycja[aria-current="page"] { box-shadow: inset 4px 0 0 var(--sekcja); }
+  main { padding: 32px 40px 48px; }
+  .aplikacja { flex-direction: row; }
+}
+
+/* Przyciski: pigułka; główny ciemnobrązowy, drugorzędny biały z obrysem */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--taupe);
+  background: var(--paper);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+}
+.btn:hover { background: var(--sand); }
+.btn.glowny { background: var(--brown); border-color: var(--brown); color: var(--cream); }
+.btn.glowny:hover { background: #2c2824; }
+.btn.usun { color: var(--danger); border-color: var(--danger); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Komunikat ostrzegawczy (A5, uszkodzone dane) */
+.komunikat {
+  background: #efe8da;
+  border-left: 4px solid var(--taupe);
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+/* Tryb deweloperski (tylko localhost z ?dev) */
+.panel-dev {
+  margin-top: 32px;
+  padding: 16px;
+  border: 1px dashed var(--taupe);
+  border-radius: var(--promien);
+  background: var(--paper);
+}
+.panel-dev .maly { margin: 0 0 12px; }
