@@ -91,7 +91,7 @@ Q1: F06 w MVP-2 (DEC-17).
 | Kolejność | Karta | Poziom | Szacunek | Status |
 |---|---|---|---|---|
 | 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | zweryfikowana: WARNING (runda 2, ostatnia); W1, W2, W3a naprawione, W3b: menu 16 px (DEC-19) |
-| 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | zbudowana, czeka na weryfikację (Faza C) |
+| 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | zweryfikowana: WARNING (runda 1), czeka na decyzje właścicielki |
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | do zrobienia |
 | 4 | F04 Podróże | Średni | 1 wieczór | do zrobienia |
 | 5 | F05 Plan dni | Wysoki | 1 wieczór | do zrobienia |
@@ -234,7 +234,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 | ID | Funkcja | Priorytet | Status |
 |---|---|---|---|
 | F00 | Fundament i zabezpieczenia | MVP-1 | zweryfikowana: WARNING, runda 2 (ostatnia); W3b: menu 16 px (DEC-19) (docs/weryfikacja/F00.md) |
-| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zbudowana 25.11.2026, czeka na weryfikację (Faza C) |
+| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F01.md) |
 | F02 | Zapisywanie miejsc | MVP-1 | do zrobienia |
 | F04 | Podróże | MVP-1 | do zrobienia |
 | F05 | Plan dni | MVP-1 | do zrobienia |
@@ -250,7 +250,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 
 ## 11. Następny krok
-F01 zbudowana 25.11.2026: menu i stopka z „O danych” (`src/widoki/menu.js`), E1 z kierunkami, sekcjami i „Źródłami zdjęć” (`src/widoki/odkrywaj.js`), okno E3 jako `<dialog>` (`src/widoki/miejsce.js`), testy w `tests/odkrywaj.test.js`. „O danych” i „Źródła zdjęć” to rozwijane odnośniki (`<details>`), bez osobnego okna. Następnie: Faza C dla F01 (weryfikacja), potem decyzja o I2 z weryfikacji F00 i Faza B: F02 · poziom Średni.
+F01 zweryfikowana 25.11.2026 (runda 1): WARNING, wszystkie 8 kryteriów spełnionych (docs/weryfikacja/F01.md). Właścicielka decyduje o W1 (kliknięcie wewnątrz okna E3 obok podpisu zdjęcia zamyka okno), W2 (obszar kliknięcia × to koło o średnicy 44 px, DEC-14) i W3 (tekst 12–14 px i odnośniki w tekście wobec 16 px i 44 px z sekcji 9; potrzebna DEC). Jeśli poprawić: sesja poprawek F01 (Faza B), potem Faza C, runda 2 (ostatnia). W1 najlepiej teraz (najpóźniej przed F04), W2 i W3 przed F02. Uwagi I1–I4 do rozważenia przy F02. Nadal otwarte z F00: I2 (przed F02). Potem Faza B: F02 · poziom Średni.
 
 ## Wnioski
 Trail-code działa; wnioski z sesji są w `.trail/learnings/`.
