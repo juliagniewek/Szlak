@@ -66,7 +66,7 @@ Charakter: nowoczesny magazyn podróżniczy połączony z moodboardem. Spokojny 
   - Główny: ciemnobrązowy z kremowym tekstem.
   - Drugorzędny: biały z obrysem.
   - Usuwanie: czerwony tekst i obrys.
-- **Menu:** ikona i podpis. Aktywna pozycja ma piaskowe tło, pogrubiony tekst i pasek w kolorze sekcji.
+- **Menu:** ikona i podpis, podpis 16 px na komputerze i telefonie (DEC-19). Aktywna pozycja ma piaskowe tło, pogrubiony tekst i pasek w kolorze sekcji.
 - **Chipy (kategorie, filtry, zakładki):** zaokrąglone. Aktywny chip jest wypełniony ciemnobrązowym kolorem.
 - **Punkt planu:**
   - kolorowe kółko z numerem w kolorze dnia,

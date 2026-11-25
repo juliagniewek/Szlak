@@ -51,3 +51,8 @@ test("etykiety kategorii używają ciemnej szałwii, a nie --sage (DEC-18)", () 
   assert.match(etykieta, /color:\s*var\(--sage-dark\)/);
   assert.ok(kontrast(zmienne["--sage"], zmienne["--cream"]) < 4.5, "--sage nie nadaje się do małego tekstu");
 });
+
+test("podpisy menu mają 16 px na telefonie i komputerze (DEC-19)", () => {
+  const rozmiary = [...css.matchAll(/\.menu-pozycja\s*\{[^}]*?font-size:\s*([\d.]+rem)/g)].map((m) => m[1]);
+  assert.deepEqual(rozmiary, ["1rem", "1rem"]);
+});
