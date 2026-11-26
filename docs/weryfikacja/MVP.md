@@ -152,6 +152,15 @@ Prototyp ma tę samą kolizję nazw (`.empty` i `.num.empty`), więc wygląd mó
 - **W2 — poprawić.** `.numer.pusty` w `style.css` ma teraz `padding: 0` i `border-radius: 50%` (z komentarzem o kolizji z `.pusty`). W przeglądarce pod `127.0.0.1:8000` (zestaw testowy, „Testowy wyjazd: Rzym”): znacznik ma 28×28 px, `padding: 0px`, `border-radius: 50%`, czyli kółko z przerywanym obrysem. Nowy test „wygląd: puste kółko „Do zaplanowania” nie bierze wypełnienia stanu pustego .pusty …” w `tests/plan.test.js`.
 - Testy po zmianach: 114 z 114. Druga runda weryfikacji nie jest potrzebna: obie zmiany są małe i sprawdzone wyżej; F06 i tak przejdzie własną weryfikację.
 
+## Bramka prawdziwych danych: odhaczona 26.11.2026
+Specyfikacja, sekcja 7; dotyczy całego MVP (MVP-1 i MVP-2, docs/weryfikacja/MVP-2.md), stan repozytorium z commitu `f42582c`. Plan publikacji: docs/publikacja.md.
+
+| Punkt | Wynik | Kto i jak sprawdził |
+|---|---|---|
+| Repozytorium bez kluczy i prawdziwych danych (N4) | tak | Agent, 26.11.2026: w całej historii git nie ma pliku `.env` ani `.trail/cache/`; brak wzorców kluczy, haseł, tokenów, numerów telefonów, numerów PESEL i adresów; jedyne adresy e-mail to „noreply” GitHuba; test N4 przechodzi. Nazwiska w repozytorium to tylko autorzy zdjęć z Commons (wymagani przez licencje, DEC-13) oraz nazwa właścicielki w nazwach plików i polu autora learnings (dozwolone w AGENTS.md). |
+| Informacja na stronie, że dane zostają tylko w przeglądarce i znikają po jej wyczyszczeniu | tak | Agent, 26.11.2026, na opublikowanej stronie `juliagniewek.github.io/Szlak/`: stopka „Twoje dane zostają tylko w tej przeglądarce i znikną po jej wyczyszczeniu.” i „O danych” z 4 punktami (przeglądarka, czyszczenie, adresy IP w GitHub Pages, adres IP w Wikimedia) (DEC-15). |
+| Lista usług zewnętrznych z warunkami w aktualnej wersji | tak | Warunki GitHub Pages i Wikimedia Commons sprawdzone ze źródłami 24.11.2026 (docs/plan.md, sekcja 2); polityki prywatności GitHuba i Wikimedia Foundation przeczytała właścicielka 26.11.2026. Odnośniki do licencji zdjęć: DEC-22. |
+
 ## Jak sprawdzić ręcznie (dla właścicielki)
 1. **Start:** w terminalu w folderze projektu wpisz `npm start` i otwórz `http://localhost:8000`. Jeśli terminal pokaże `EADDRINUSE`, inny `npm start` już działa: zamknij tamten terminal albo otwórz adres, który on podaje.
 2. **Serce (F02, W2):** na Odkrywaj kliknij serce przy „Koloseum”, potem przy „Panteon”, celując w róg wokół białego kółka. Serca się wypełniają, przy „Zapisane” pojawia się „2”, na dole komunikat. Otwórz „Zapisane”: Panteon pierwszy. Odśwież stronę (F5): oba miejsca zostają.

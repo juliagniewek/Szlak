@@ -36,6 +36,8 @@ Trzy punkty. Wynik zapisujemy w docs/weryfikacja/MVP.md jako „Bramka prawdziwy
 | Informacja na stronie, że dane zostają tylko w przeglądarce | jest na opublikowanej stronie (stopka i „O danych”, 4 punkty) | otwierasz stronę, rozwijasz „O danych”, czytasz |
 | Lista usług zewnętrznych z warunkami w aktualnej wersji | GitHub Pages i Wikimedia Commons sprawdzone 24.11.2026 (docs/plan.md, sekcja 2, ze źródłami) | czytasz politykę prywatności GitHuba i Wikimedia Foundation (odnośniki w docs/plan.md, sekcja 2) — plan zostawił to Tobie |
 
+**Zrobione 26.11.2026: bramka odhaczona.** Polityki prywatności przeczytała właścicielka; repozytorium i „O danych” sprawdził agent (szczegóły w docs/weryfikacja/MVP.md, „Bramka prawdziwych danych”).
+
 ### 3. Wysłanie zaległych commitów (to jest publikacja)
 Po krokach 1–2 (i ewentualnej zmianie z kroku 1) w swoim terminalu, w folderze projektu:
 ```bash

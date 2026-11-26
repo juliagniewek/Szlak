@@ -277,7 +277,9 @@ Dodatkowo w sesji F06 (26.11.2026): `src/app.js` (stan ekranu E7 `ekranPodrozy`:
 - (Zrobione w F03: `normalizuj()` przeniesiona do `src/szukaj.js`, E8 jej używa.) Do rozważenia: E8 szuka bez obcinania końcówek, E2 z obcinaniem (np. „punkt widokowy” w E8 nic nie znajduje); ujednolicenie zmieniłoby zachowanie F05, więc wymaga decyzji właścicielki.
 
 ## 11. Następny krok
-I3 z F01 rozstrzygnięte 26.11.2026 (DEC-22, specyfikacja v1.4): nazwa licencji w podpisie zdjęcia i w „Źródłach zdjęć” prowadzi do tekstu licencji na creativecommons.org (`adresLicencji()` w `src/dane/katalog.js`, `nazwaLicencji()` w `src/widoki/odkrywaj.js`); testy 150/150. Dwa testy KA7 z F01 sprawdzają teraz widoczny tekst bez znaczników (napis bez zmian). Następnie: bramka prawdziwych danych (docs/publikacja.md, krok 2), potem `git push`.
+Bramka prawdziwych danych odhaczona 26.11.2026 (docs/weryfikacja/MVP.md): repozytorium bez kluczy i prawdziwych danych, „O danych” na stronie, warunki usług i polityki prywatności przeczytane przez właścicielkę. Następnie: `git push` w terminalu właścicielki (publikacja zaległych commitów, docs/publikacja.md, krok 3), potem test z 2–3 osobami (R1, krok 4).
+
+Wcześniej: I3 z F01 rozstrzygnięte 26.11.2026 (DEC-22, specyfikacja v1.4): nazwa licencji w podpisie zdjęcia i w „Źródłach zdjęć” prowadzi do tekstu licencji na creativecommons.org (`adresLicencji()` w `src/dane/katalog.js`, `nazwaLicencji()` w `src/widoki/odkrywaj.js`); testy 150/150. Dwa testy KA7 z F01 sprawdzają teraz widoczny tekst bez znaczników (napis bez zmian). Następnie: bramka prawdziwych danych (docs/publikacja.md, krok 2), potem `git push`.
 
 Wcześniej: Plan publikacji 26.11.2026: docs/publikacja.md. Aplikacja jest już publiczna pod `juliagniewek.github.io/Szlak/`, bo Pages publikuje `main` przy każdym `git push` (sprawdzone na stronie: wersja z `0b22169`, „O danych” jest, `?dev` wyłączony). Przed udostępnieniem linku ludziom: decyzja I3 z F01 (odnośnik do licencji zdjęć), bramka prawdziwych danych (specyfikacja, sekcja 7), `git push` zaległych commitów, test z 2–3 osobami (R1), uzupełnienie README. Następnie: decyzja I3.
 
