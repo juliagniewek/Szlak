@@ -299,7 +299,10 @@ test("E7: panel mapy obok planu; przełącznik „Plan dni / Mapa” zaczyna od 
 test("wygląd: na telefonie widać jedną kolumnę, od 900 px obie; pinezka ma obszar 44 × 44 px", () => {
   const css = fs.readFileSync(path.join(KATALOG, "style.css"), "utf8");
   assert.match(css, /\.podroz-uklad\[data-panel="plan"\] > \.panel-mapy,\s*\.podroz-uklad\[data-panel="mapa"\] > \.plan \{ display: none; \}/);
-  const od900 = css.slice(css.indexOf("@media (min-width: 900px) {\n  .przelacznik-panelu"));
+  // \r?\n: przy core.autocrlf=true git zapisuje style.css z końcami linii Windowsa (weryfikacja MVP-2, W3).
+  const poczatek = css.search(/@media \(min-width: 900px\) \{\r?\n {2}\.przelacznik-panelu/);
+  assert.ok(poczatek >= 0, "jest blok @media od 900 px z przełącznikiem");
+  const od900 = css.slice(poczatek);
   assert.match(od900, /\.przelacznik-panelu \{ display: none; \}/);
   assert.match(od900, /position: sticky;/);
   const pinezka = css.match(/\.pinezka \{[^}]*\}/)?.[0] ?? "";

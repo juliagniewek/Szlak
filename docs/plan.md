@@ -96,7 +96,7 @@ Q1: F06 w MVP-2 (DEC-17).
 | 4 | F04 Podróże | Średni | 1 wieczór | zweryfikowana w MVP-1: WARNING |
 | 5 | F05 Plan dni | Wysoki | 1 wieczór | zweryfikowana w MVP-1: WARNING; W1: DEC-21, W2 poprawione |
 | 6 | F03 Wyszukiwanie i filtry (MVP-2) | Średni | 0,5 wieczoru | zweryfikowana w MVP-2: WARNING |
-| 7 | F06 Mapa trasy (MVP-2) | Wysoki | 1 wieczór | zweryfikowana w MVP-2: WARNING; W1 poprawione (wariant a), W2 i W3 czekają |
+| 7 | F06 Mapa trasy (MVP-2) | Wysoki | 1 wieczór | zweryfikowana w MVP-2: WARNING; W1 i W3 poprawione, W2 czeka |
 | — | F07 Planowanie automatyczne | — | — | Później (DEC-10) |
 
 Jeśli F05 zajmie więcej niż wieczór, F03 i F06 idą do „Później” (R4, decyduje właścicielka).
@@ -263,7 +263,7 @@ Dodatkowo w sesji F06 (26.11.2026): `src/app.js` (stan ekranu E7 `ekranPodrozy`:
 | F04 | Podróże | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 8/8 |
 | F05 | Plan dni | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 6/6; W1 rozstrzygnięte przez DEC-21 (duży tekst 3:1), W2 (owalne puste kółko) poprawione 26.11.2026 |
 | F03 | Wyszukiwanie i filtry | MVP-2 | zweryfikowana w MVP-2: WARNING, runda 1 (docs/weryfikacja/MVP-2.md); kryteria 5/5 |
-| F06 | Mapa trasy | MVP-2 | zweryfikowana w MVP-2: WARNING, runda 1 (docs/weryfikacja/MVP-2.md); kryteria 6/6; W1 (puste kółko przykrywało numery) poprawione wariantem (a) 26.11.2026; W2 (wybrana zakładka „Plan dni / Mapa”) i W3 (test zależny od końców linii) czekają na decyzję |
+| F06 | Mapa trasy | MVP-2 | zweryfikowana w MVP-2: WARNING, runda 1 (docs/weryfikacja/MVP-2.md); kryteria 6/6; W1 (puste kółko przykrywało numery) poprawione wariantem (a) 26.11.2026; W3 (test zależny od końców linii) poprawione 26.11.2026; W2 (wybrana zakładka „Plan dni / Mapa”) czeka na decyzję |
 | F07 | Planowanie automatyczne | Później | przeniesiona (DEC-10) |
 
 ## 10. Później
@@ -277,7 +277,7 @@ Dodatkowo w sesji F06 (26.11.2026): `src/app.js` (stan ekranu E7 `ekranPodrozy`:
 - (Zrobione w F03: `normalizuj()` przeniesiona do `src/szukaj.js`, E8 jej używa.) Do rozważenia: E8 szuka bez obcinania końcówek, E2 z obcinaniem (np. „punkt widokowy” w E8 nic nie znajduje); ujednolicenie zmieniłoby zachowanie F05, więc wymaga decyzji właścicielki.
 
 ## 11. Następny krok
-Weryfikacja MVP-2 26.11.2026 (docs/weryfikacja/MVP-2.md): WARNING. Kryteria F03 i F06 spełnione (11/11), N1–N5 prawdziwe (N3 sprawdzone kliknięciem ↓ w przeglądarce), `trail check` bez konfliktów. W1 — puste kółko „Do zaplanowania” przykrywało pinezki z numerami w tym samym miejscu; decyzja właścicielki: wariant (a), poprawione (`.pinezka:has(.kolko-puste) { z-index: 0; }`, nowy test); testy 148/148. Do decyzji właścicielki: W2 — wybrana zakładka „Plan dni / Mapa” różni się tylko jaśniejszym tłem, a design.md chce ciemnobrązowej; W3 — test F06 „wygląd: na telefonie…” nie przechodzi, gdy `style.css` ma końce linii Windowsa (`core.autocrlf=true`); propozycja: wyrażenie z `\r?\n` w teście, oczekiwany wynik bez zmian. Następnie: decyzje W2 i W3, potem przygotowanie publikacji MVP (decyzja właścicielki).
+Weryfikacja MVP-2 26.11.2026 (docs/weryfikacja/MVP-2.md): WARNING. Kryteria F03 i F06 spełnione (11/11), N1–N5 prawdziwe (N3 sprawdzone kliknięciem ↓ w przeglądarce), `trail check` bez konfliktów. W1 — puste kółko „Do zaplanowania” przykrywało pinezki z numerami w tym samym miejscu; decyzja właścicielki: wariant (a), poprawione (`.pinezka:has(.kolko-puste) { z-index: 0; }`, nowy test); testy 148/148. Do decyzji właścicielki: W2 — wybrana zakładka „Plan dni / Mapa” różni się tylko jaśniejszym tłem, a design.md chce ciemnobrązowej; W3 — test F06 „wygląd: na telefonie…” nie przechodził, gdy `style.css` ma końce linii Windowsa (`core.autocrlf=true`); za zgodą właścicielki poprawiony (wyrażenie z `\r?\n`, oczekiwany wynik bez zmian). Następnie: decyzja W2, potem przygotowanie publikacji MVP (decyzja właścicielki).
 
 Wcześniej: F06 zbudowana 26.11.2026: panel mapy na E7 (obok planu od 900 px, na telefonie zakładka „Mapa”), wybór „Pokaż” (Cała podróż albo dzień), schemat z siatką i północą, pinezki z numerami z planu (N3), puste kółka „Do zaplanowania”, linie osobno dla każdego dnia, podświetlanie pinezki i punktu listy w obie strony, tekst o mapie schematycznej i o brakujących współrzędnych. Rzut w `src/mapa.js`. Testy 147/147. KA6 (Tab i Enter) sprawdzone w przeglądarce pod 127.0.0.1. MVP-2 jest kompletne. Następnie: weryfikacja MVP-2 (F03, F06), Faza C.
 

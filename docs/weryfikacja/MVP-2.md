@@ -12,7 +12,7 @@ WARNING wynika z dwóch znalezisk dotyczących wyglądu mapy. Żadne nie dotyczy
 |---|---|---|
 | W1 | Pinezki w tym samym albo bliskim miejscu leżą jedna na drugiej, a puste kółko „Do zaplanowania” jest zawsze na wierzchu. W podróży „Rzym + Dolomity” przy „Cała podróż” w Rzymie widać tylko puste kółko: 4 pinezki z numerami są pod nim i nie da się ich kliknąć | przed publikacją MVP-2; decyzja właścicielki, jak daleko iść (kolejność warstw albo rozsuwanie pinezek) |
 | W2 | Przełącznik „Plan dni / Mapa” na telefonie pokazuje wybraną zakładkę tylko jaśniejszym tłem (1,3:1 względem tła przełącznika). design.md mówi, że aktywna zakładka jest ciemnobrązowa | dowolnie; zmiana w CSS albo zapis w design.md, że przełącznik zostaje jak w prototypie |
-| W3 | Znalezione po rundzie 1, przy poprawce W1: test F06 „wygląd: na telefonie…” przechodzi tylko wtedy, gdy `style.css` ma uniksowe końce linii. Po zwykłym pobraniu repozytorium na Windowsie (`core.autocrlf=true`, tak jest na tym komputerze) `npm test` daje 1 błąd | przed kolejną kartą; test do poprawy za zgodą właścicielki (oczekiwany wynik bez zmian) |
+| W3 | Znalezione po rundzie 1, przy poprawce W1: test F06 „wygląd: na telefonie…” przechodzi tylko wtedy, gdy `style.css` ma uniksowe końce linii. Po zwykłym pobraniu repozytorium na Windowsie (`core.autocrlf=true`, tak jest na tym komputerze) `npm test` daje 1 błąd | poprawione po rundzie 1 za zgodą właścicielki (oczekiwany wynik bez zmian) |
 
 Uwagi I1–I5 nie wpływają na werdykt. Decyzje właścicielki po rundzie 1: na końcu raportu.
 
@@ -146,8 +146,8 @@ Wyszło przypadkiem: przy sprawdzaniu poprawki W1 użyłam `git stash`, który z
   - Nowy test „wygląd: puste kółko „Do zaplanowania” leży pod pinezkami z numerami (weryfikacja MVP-2, W1a)” w `tests/mapa.test.js`: sprawdza warstwy i kolejność reguł w CSS oraz to, że przy „Cała podróż” pinezki dni są w HTML przed pustymi kółkami. Bez poprawki w CSS test nie przechodzi.
   - W przeglądarce pod `127.0.0.1:8001` (zestaw testowy; dzień 1: Koloseum, Panteon; dzień 3: Jezioro Braies, Cortina d'Ampezzo; Fontanna di Trevi w „Do zaplanowania”; „Cała podróż”): puste kółko ma `z-index: 0`, na środku każdej pinezki z Rzymu `elementFromPoint` trafia teraz w Panteon („2”), nie w puste kółko; na mapie w Rzymie widać „2”. Tab na puste kółko: `z-index: 2`, jest na wierzchu z widoczną ramką; Enter: `z-index: 3`, podświetlone. Dane pod `127.0.0.1:8001` przywrócone jak wcześniej.
 - **W2** — czeka na decyzję.
-- **W3** (znalezione przy tej poprawce) — czeka na zgodę na poprawkę testu.
-- Testy po zmianie: 148 z 148.
+- **W3** (znalezione przy tej poprawce) — **poprawić test** (zgoda właścicielki). Test „wygląd: na telefonie…” w `tests/mapa.test.js` szuka bloku `@media` wyrażeniem `/@media \(min-width: 900px\) \{\r?\n {2}\.przelacznik-panelu/` i najpierw sprawdza, że blok w ogóle jest (wcześniej brak bloku dawał `indexOf` = −1 i niejasny błąd). Oczekiwane wartości bez zmian. Sprawdzone: `style.css` z końcami `\n` → test przechodzi; ten sam plik z `\r\n` → przechodzi; CSS z `901px` zamiast `900px` → test nie przechodzi. `.gitattributes` nie dodawałam (propozycja zostaje do decyzji).
+- Testy po zmianach: 148 z 148.
 
 ## Jak sprawdzić ręcznie (dla właścicielki)
 1. **Start:** w terminalu w folderze projektu wpisz `npm start` i otwórz `http://127.0.0.1:8000/?dev` (to ta sama aplikacja co pod `localhost`, ale z osobną, pustą pamięcią, więc Twoje dane zostają nietknięte). Jeśli terminal pokaże `EADDRINUSE`, inny `npm start` już działa: użyj jego adresu, zamieniając `localhost` na `127.0.0.1`.
@@ -159,7 +159,7 @@ Wyszło przypadkiem: przy sprawdzaniu poprawki W1 użyłam `git stash`, który z
 7. **Podświetlanie i klawiatura (F06):** kliknij pinezkę: robi się większa z nazwą, a punkt na liście pod mapą jest podświetlony. Kliknij inny punkt na liście: podświetla się jego pinezka. Kliknij w listę „Pokaż”, naciśnij Tab: wokół pinezki widać ramkę; Enter ją podświetla.
 8. **W1 (po poprawce):** dodaj dwa miejsca z Dolomitów, przypisz do „Dzień 3”, Fontannę di Trevi zostaw w „Do zaplanowania”. Przy „Cała podróż” w miejscu Rzymu widać pinezkę z numerem, nie przerywane kółko. Przed poprawką było tam tylko przerywane kółko.
 9. **Telefon:** F12 → Ctrl+Shift+M → szerokość 375. Na ekranie podróży przełącznik „Plan dni / Mapa”; „Mapa” pokazuje mapę, strona nie przesuwa się w bok (W2: wybrana zakładka różni się tylko jasnością tła).
-10. **Testy:** `npm test`; na końcu „pass 148” i „fail 0” (147 w chwili weryfikacji, plus test W1a). Jeśli wyjdzie 1 błąd w „wygląd: na telefonie…”, to W3: plik `style.css` ma końce linii Windowsa.
+10. **Testy:** `npm test`; na końcu „pass 148” i „fail 0” (147 w chwili weryfikacji, plus test W1a). Po poprawce W3 wynik nie zależy od końców linii w `style.css`.
 
 ## Ograniczenia tej weryfikacji
 - Przeglądarka oparta na Chromium (szerokość 1024 px i 375 px w emulacji), nie Edge, Firefox ani Safari.
