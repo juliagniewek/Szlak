@@ -33,7 +33,8 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 ## Bezpieczeństwo i dane
 - Poziom ochrony danych: P0
 - Bramka prawdziwych danych: jeszcze nie
-- Weryfikacja MVP-1 (F02, F04, F05, poprawki F01): WARNING, 26.11.2026 — [docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md); MVP-2 (F03, F06) jeszcze nie
+- Weryfikacja MVP-1 (F02, F04, F05, poprawki F01): WARNING, 26.11.2026 — [docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md); MVP-2 (F03, F06): WARNING, 26.11.2026, ostrzeżenia W1–W3 poprawione — [docs/weryfikacja/MVP-2.md](docs/weryfikacja/MVP-2.md)
+- Publikacja: plan i stan w [docs/publikacja.md](docs/publikacja.md)
 
 ## Jak uruchomić lokalnie
 Potrzebne: [Node.js](https://nodejs.org) w wersji 22 lub nowszej (bez instalowania dodatkowych pakietów) i git.
