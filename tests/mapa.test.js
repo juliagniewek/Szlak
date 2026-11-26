@@ -308,3 +308,25 @@ test("wygląd: na telefonie widać jedną kolumnę, od 900 px obie; pinezka ma o
   // Numer na pinezce to ten sam duży tekst co w planie (19,2 px, DEC-21): .pinezka .numer nie zmienia rozmiaru.
   assert.ok(!/\.pinezka[^{]*\.numer \{[^}]*font-size/.test(css));
 });
+
+test("wygląd: puste kółko „Do zaplanowania” leży pod pinezkami z numerami (weryfikacja MVP-2, W1a)", () => {
+  // Pinezki „Do zaplanowania” są w HTML na końcu, więc bez niższej warstwy przykrywały numery w tym samym miejscu.
+  const css = fs.readFileSync(path.join(KATALOG, "style.css"), "utf8");
+  const warstwa = (selektor) => {
+    const m = css.match(new RegExp(`${selektor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*\\{[^}]*z-index: (\\d+)`));
+    assert.ok(m, selektor);
+    return { z: Number(m[1]), pozycja: m.index };
+  };
+  const zwykla = warstwa(".pinezka");
+  const pusta = warstwa(".pinezka:has(.kolko-puste)");
+  const fokus = warstwa(".pinezka:hover, .pinezka:focus-visible");
+  const aktywna = warstwa(".pinezka.aktywna");
+  assert.ok(pusta.z < zwykla.z, "puste kółko niżej niż pinezka z numerem");
+  // Ta sama szczegółowość selektorów, więc najechanie, fokus i podświetlenie muszą stać w CSS po regule pustego kółka.
+  assert.ok(fokus.pozycja > pusta.pozycja && fokus.z > zwykla.z);
+  assert.ok(aktywna.pozycja > pusta.pozycja && aktywna.z > fokus.z);
+  // „Cała podróż”: pinezki dni są w HTML przed pustymi kółkami, kolejność listy i Tab bez zmian (F06-KA3).
+  const stan = plan((s) => dodajPunkty(s, ID, [PINCIO]), przypisz(KOLOSEUM, 1));
+  const piny = pinezki(kod(panelMapy(podroz(stan, ID), ekran())));
+  assert.deepEqual(piny.map((x) => x.pusta), [false, true, true, true]);
+});

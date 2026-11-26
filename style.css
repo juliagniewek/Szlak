@@ -691,6 +691,10 @@ body:has(.okno[open]) { overflow: hidden; }
   background: none;
   cursor: pointer;
 }
+/* Puste kółko „Do zaplanowania” leży pod pinezkami z numerami: w HTML jest na końcu, więc bez tej reguły
+   przykrywało numery w tym samym miejscu (weryfikacja MVP-2, W1, wariant a). Najechanie, fokus i podświetlenie
+   (reguły niżej) nadal wynoszą je na wierzch. */
+.pinezka:has(.kolko-puste) { z-index: 0; }
 .pinezka:hover, .pinezka:focus-visible { z-index: 2; }
 .pinezka .numer { box-shadow: 0 0 0 2px var(--paper), 0 1px 3px rgba(64, 58, 52, 0.35); }
 /* Aktywna pinezka: większa, z obwódką i podpisem z nazwą (design.md) */
