@@ -629,7 +629,9 @@ body:has(.okno[open]) { overflow: hidden; }
   font-weight: 600;
   cursor: pointer;
 }
-.przelacznik-panelu button[aria-pressed="true"] { background: var(--paper); }
+/* Wybrana zakładka jak aktywny chip z design.md: ciemnobrązowa z kremowym tekstem. Samo jaśniejsze tło
+   (jak w prototypie) odróżniało się od tła przełącznika tylko 1,3:1 (weryfikacja MVP-2, W2). */
+.przelacznik-panelu button[aria-pressed="true"] { background: var(--brown); color: var(--cream); }
 .podroz-uklad { display: grid; gap: 12px; }
 .podroz-uklad > .plan { margin-top: 0; }
 .podroz-uklad[data-panel="plan"] > .panel-mapy,

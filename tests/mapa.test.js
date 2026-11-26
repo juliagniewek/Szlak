@@ -312,6 +312,29 @@ test("wygląd: na telefonie widać jedną kolumnę, od 900 px obie; pinezka ma o
   assert.ok(!/\.pinezka[^{]*\.numer \{[^}]*font-size/.test(css));
 });
 
+test("wygląd: wybrana zakładka „Plan dni / Mapa” jest ciemnobrązowa z kremowym tekstem (design.md, weryfikacja MVP-2, W2)", () => {
+  const css = fs.readFileSync(path.join(KATALOG, "style.css"), "utf8");
+  const zmienna = (nazwa) => css.match(new RegExp(`--${nazwa}: (#[0-9A-Fa-f]{6});`))?.[1];
+  const jasnosc = (hex) => {
+    const [r, g, b] = [1, 3, 5]
+      .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const kontrast = (a, b) => {
+    const [x, y] = [jasnosc(a), jasnosc(b)].sort((p, q) => q - p);
+    return (x + 0.05) / (y + 0.05);
+  };
+  const regula = css.match(/\.przelacznik-panelu button\[aria-pressed="true"\] \{([^}]*)\}/)?.[1] ?? "";
+  assert.match(regula, /background: var\(--brown\);/);
+  assert.match(regula, /color: var\(--cream\);/);
+  const tloGrupy = css.match(/\.przelacznik-panelu \{[^}]*background: var\(--(\w+)\);/)?.[1];
+  assert.equal(tloGrupy, "sand");
+  // Stan wybrany odróżnia się od tła przełącznika co najmniej 3:1 (WCAG 1.4.11), a tekst ma co najmniej 4,5:1.
+  assert.ok(kontrast(zmienna("brown"), zmienna("sand")) >= 3);
+  assert.ok(kontrast(zmienna("cream"), zmienna("brown")) >= 4.5);
+});
+
 test("wygląd: puste kółko „Do zaplanowania” leży pod pinezkami z numerami (weryfikacja MVP-2, W1a)", () => {
   // Pinezki „Do zaplanowania” są w HTML na końcu, więc bez niższej warstwy przykrywały numery w tym samym miejscu.
   const css = fs.readFileSync(path.join(KATALOG, "style.css"), "utf8");
