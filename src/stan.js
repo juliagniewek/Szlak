@@ -139,3 +139,114 @@ export function dodajDoPodrozy(stan, idPodrozy, idMiejsca) {
     dodano: true
   };
 }
+
+// ---------- Plan dni (F05) ----------
+// Punkt planu to { miejsce, dzien } (plan 5.2). Pozycja w dniu wynika z kolejności w tablicy `punkty`
+// wśród punktów tego samego dnia, więc numeracja jest zawsze od 1 bez luk. Operacje szukają punktu
+// po identyfikatorze miejsca (miejsce jest w podróży najwyżej raz), dlatego żadna nie może
+// zgubić ani zdublować punktu, nawet przy szybkim podwójnym kliknięciu.
+
+/** Dzień punktu do pokazania: 1..liczba dni albo 0 („Do zaplanowania”, także dla dnia spoza zakresu). */
+export function dzienPunktu(pk, dni) {
+  return pk.dzien >= 1 && pk.dzien <= dni ? pk.dzien : 0;
+}
+
+/**
+ * Punkty jednego dnia (0 = „Do zaplanowania”) w kolejności planu:
+ * [{ punkt, miejsce (z katalogu albo null), numer }]. Numer mają tylko miejsca z katalogu,
+ * od 1 bez luk; „Miejsce niedostępne” ma numer null (plan 5.4, N3).
+ */
+export function planDnia(p, dzien) {
+  const dni = liczbaDni(p);
+  let numer = 0;
+  return p.punkty
+    .filter((pk) => dzienPunktu(pk, dni) === dzien)
+    .map((pk) => {
+      const m = miejsce(pk.miejsce) ?? null;
+      return { punkt: pk, miejsce: m, numer: m && dzien > 0 ? ++numer : null };
+    });
+}
+
+/** Zmienia punkty jednej podróży. `zmiana(punkty, dni)` zwraca nowe punkty albo null (bez zmian). */
+function zmienPunkty(stan, idPodrozy, zmiana) {
+  const p = podroz(stan, idPodrozy);
+  if (!p) return { stan, zmieniono: false };
+  const punkty = zmiana(p.punkty, liczbaDni(p));
+  if (!punkty) return { stan, zmieniono: false };
+  const zmieniona = { ...p, punkty };
+  return {
+    stan: { ...stan, podroze: stan.podroze.map((x) => (x.id === idPodrozy ? zmieniona : x)) },
+    zmieniono: true
+  };
+}
+
+/**
+ * Przenosi punkt do dnia `dzien` (0 = „Do zaplanowania”) na koniec tego dnia (F05-KA3).
+ * Dzień spoza 0..liczba dni albo ten sam dzień: bez zmian. Zwraca { stan, zmieniono }.
+ */
+export function przeniesDoDnia(stan, idPodrozy, idMiejsca, dzien) {
+  return zmienPunkty(stan, idPodrozy, (punkty, dni) => {
+    const pk = punkty.find((x) => x.miejsce === idMiejsca);
+    if (!pk || !Number.isInteger(dzien) || dzien < 0 || dzien > dni) return null;
+    if (dzienPunktu(pk, dni) === dzien) return null;
+    return [...punkty.filter((x) => x !== pk), { ...pk, dzien }];
+  });
+}
+
+/** „Przypisz do dnia…” z listy „Do zaplanowania” (F05-KA1): punkt trafia na koniec dnia. */
+export function przypiszDoDnia(stan, idPodrozy, idMiejsca, dzien) {
+  return przeniesDoDnia(stan, idPodrozy, idMiejsca, dzien);
+}
+
+/**
+ * ↑ (kierunek -1) albo ↓ (kierunek 1) w dniu (F05-KA2): punkt zamienia się miejscem z sąsiednim
+ * numerowanym punktem tego dnia. „Miejsce niedostępne” nie ma strzałek i zostaje na swoim miejscu.
+ * Pierwszy punkt w górę i ostatni w dół: bez zmian. Zwraca { stan, zmieniono }.
+ */
+export function przesun(stan, idPodrozy, idMiejsca, kierunek) {
+  return zmienPunkty(stan, idPodrozy, (punkty, dni) => {
+    const i = punkty.findIndex((x) => x.miejsce === idMiejsca);
+    if (i < 0 || (kierunek !== -1 && kierunek !== 1)) return null;
+    const dzien = dzienPunktu(punkty[i], dni);
+    if (dzien === 0 || !miejsce(idMiejsca)) return null;
+    let j = i + kierunek;
+    while (j >= 0 && j < punkty.length && !(dzienPunktu(punkty[j], dni) === dzien && miejsce(punkty[j].miejsce))) {
+      j += kierunek;
+    }
+    if (j < 0 || j >= punkty.length) return null;
+    const nowe = [...punkty];
+    [nowe[i], nowe[j]] = [nowe[j], nowe[i]];
+    return nowe;
+  });
+}
+
+/**
+ * × przy punkcie: usuwa punkt z podróży (F05-KA4). Nie dotyka Zapisanych (N2).
+ * Zwraca { stan, zmieniono }.
+ */
+export function usunPunkt(stan, idPodrozy, idMiejsca) {
+  return zmienPunkty(stan, idPodrozy, (punkty) =>
+    punkty.some((x) => x.miejsce === idMiejsca) ? punkty.filter((x) => x.miejsce !== idMiejsca) : null
+  );
+}
+
+/**
+ * E8 „Dodaj (n)”: miejsca z katalogu trafiają na koniec „Do zaplanowania” (F05-KA5).
+ * Miejsca, które już są w podróży, powtórzenia i id spoza katalogu są pomijane.
+ * Zwraca { stan, dodano: liczba, zmieniono }.
+ */
+export function dodajPunkty(stan, idPodrozy, idMiejsc) {
+  let dodano = 0;
+  const wynik = zmienPunkty(stan, idPodrozy, (punkty) => {
+    const juz = new Set(punkty.map((x) => x.miejsce));
+    const nowe = [];
+    for (const id of idMiejsc) {
+      if (juz.has(id) || !miejsce(id)) continue;
+      juz.add(id);
+      nowe.push({ miejsce: id, dzien: 0 });
+    }
+    dodano = nowe.length;
+    return nowe.length ? [...punkty, ...nowe] : null;
+  });
+  return { stan: wynik.stan, dodano, zmieniono: wynik.zmieniono };
+}

@@ -1,4 +1,5 @@
-// Start aplikacji: wczytanie danych, ostrzeżenia, nawigacja po adresie (#/...), okno szczegółów, tryb deweloperski.
+// Start aplikacji: wczytanie danych, ostrzeżenia, nawigacja po adresie (#/...), okna (E3, E5, E8),
+// zmiany planu dni (F05), tryb deweloperski.
 // Widoki (src/widoki/) zwracają HTML z szablonu html``; tylko ten plik wstawia go do strony.
 import { html } from "./html.js";
 import { wczytaj, zapisz, zatwierdz, atrapaBlokujaca, KOMUNIKATY } from "./magazyn.js";
@@ -6,7 +7,8 @@ import { zestawTestowy } from "./dane/zestaw-testowy.js";
 import { miejsce } from "./dane/katalog.js";
 import {
   przelaczZapis, czyZapisane, liczbaZapisanych, wPodrozy, zapisaneMiejsca,
-  podroz, podrozeOdNajnowszej, podrozeZMiejscem, nowyIdPodrozy, utworzPodroz, edytujPodroz, usunPodroz, dodajDoPodrozy
+  podroz, podrozeOdNajnowszej, podrozeZMiejscem, nowyIdPodrozy, utworzPodroz, edytujPodroz, usunPodroz, dodajDoPodrozy,
+  przypiszDoDnia, przeniesDoDnia, przesun, usunPunkt, dodajPunkty
 } from "./stan.js";
 import { walidujPodroz } from "./walidacja.js";
 import { dzisiaj } from "./daty.js";
@@ -19,6 +21,8 @@ import {
   pytanieOUsuniecie, komunikatDodania
 } from "./widoki/podroze.js";
 import { widokFormularzaPodrozy, wartosciNowej, wartosciEdycji } from "./widoki/formularz-podrozy.js";
+import { komunikatUsunieciaPunktu, komunikatDodaniaMiejsc, NIEDOSTEPNE } from "./widoki/plan.js";
+import { widokDodawania, listaDodawania, przyciskiDodawania } from "./widoki/dodaj-miejsca.js";
 
 const DOMYSLNA = "odkrywaj";
 
@@ -32,6 +36,7 @@ let { stan, ostrzezenie, trwaly } = wczytaj(pamiec);
 
 const okno = document.getElementById("okno");
 const oknoFormularza = document.getElementById("okno-formularza");
+const oknoDodawania = document.getElementById("okno-dodawania");
 /** Zaznaczone miejsca na E4 (F04). Stan ekranu: nie jest zapisywany. */
 let zaznaczone = new Set();
 let elementPrzedOknem = null; // tu wraca fokus po zamknięciu okna
@@ -360,23 +365,133 @@ function zaznaczWszystkie(wszystkie, przycisk) {
   cel?.focus();
 }
 
-oknoFormularza.addEventListener("click", (zdarzenie) => {
-  if (zdarzenie.target !== oknoFormularza) return;
-  const r = oknoFormularza.getBoundingClientRect();
-  const { clientX: x, clientY: y } = zdarzenie;
-  if (x < r.left || x > r.right || y < r.top || y > r.bottom) oknoFormularza.close();
+// ---------- Plan dni (F05) ----------
+
+/** Selektor elementu planu po rodzaju (data-akcja / data-zmiana) i id miejsca. */
+const wPlanie = (atrybut, wartosc, id) => `#widok [${atrybut}="${wartosc}"][data-id="${CSS.escape(id)}"]`;
+
+/**
+ * Przyjmuje zmianę planu: zapis przez magazyn, przebudowa ekranu, fokus, komunikat.
+ * Przy błędzie zapisu stan zostaje poprzedni, a ekran jest budowany od nowa, żeby lista wyboru
+ * nie pokazywała dnia, którego nie zapisano (F05: widok pokazuje stan, który naprawdę zapisano).
+ * `fokus(udalo)` wybiera element, na który trafia fokus po przebudowie.
+ */
+function zmienPlan({ stan: nowy, zmieniono }, fokus, komunikat = null) {
+  const udalo = zmieniono && zatwierdz(pamiec, trwaly, nowy);
+  if (udalo) stan = nowy;
+  render();
+  (fokus(udalo) ?? naglowekEkranu())?.focus();
+  if (zmieniono && !udalo) pokazKomunikat(KOMUNIKATY.bladZapisu);
+  else if (udalo && komunikat) pokazKomunikat(komunikat);
+}
+
+/** Id podróży, której plan jest na ekranie (E7). */
+const podrozPlanu = (el) => el.closest("[data-podroz]")?.dataset.podroz;
+
+/** ↑ / ↓: fokus zostaje na tej samej strzałce przy tym samym punkcie; gdy jest nieaktywna, na drugiej. */
+function przesunPunkt(cel, kierunek) {
+  const id = cel.dataset.id;
+  const [ta, druga] = kierunek < 0 ? ["przesun-wyzej", "przesun-nizej"] : ["przesun-nizej", "przesun-wyzej"];
+  zmienPlan(przesun(stan, podrozPlanu(cel), id, kierunek), () =>
+    document.querySelector(`${wPlanie("data-akcja", ta, id)}:not(:disabled)`)
+      ?? document.querySelector(`${wPlanie("data-akcja", druga, id)}:not(:disabled)`)
+      ?? document.querySelector(wPlanie("data-zmiana", "przenies", id)));
+}
+
+/** „Przypisz do dnia…” i „Przenieś do…”: fokus idzie za punktem do jego nowego miejsca w planie. */
+function zmienDzien(cel) {
+  if (cel.value === "") return;
+  const id = cel.dataset.id;
+  const dzien = Number(cel.value);
+  const operacja = cel.dataset.zmiana === "przypisz" ? przypiszDoDnia : przeniesDoDnia;
+  const zrodlo = cel.dataset.zmiana;
+  zmienPlan(operacja(stan, podrozPlanu(cel), id, dzien), (udalo) => {
+    const lista = udalo ? (dzien === 0 ? "przypisz" : "przenies") : zrodlo;
+    return document.querySelector(wPlanie("data-zmiana", lista, id));
+  });
+}
+
+/** ×: punkt znika z podróży, zapis miejsca zostaje (N2). Fokus na × kolejnego punktu tej listy albo na jej nagłówek. */
+function usunPunktZPodrozy(cel) {
+  const id = cel.dataset.id;
+  const sekcja = cel.closest("section")?.getAttribute("aria-labelledby");
+  const pozycja = [...(cel.closest(".punkty")?.children ?? [])].indexOf(cel.closest("li"));
+  const nazwa = miejsce(id)?.nazwa ?? NIEDOSTEPNE;
+  const komunikat = komunikatUsunieciaPunktu(nazwa, czyZapisane(stan, id));
+  zmienPlan(usunPunkt(stan, podrozPlanu(cel), id), (udalo) => {
+    if (!udalo) return document.querySelector(wPlanie("data-akcja", "usun-punkt", id));
+    const przyciski = [...document.querySelectorAll(`#widok section[aria-labelledby="${sekcja}"] [data-akcja="usun-punkt"]`)];
+    return przyciski[Math.min(pozycja, przyciski.length - 1)] ?? document.getElementById(sekcja ?? "");
+  }, komunikat);
+}
+
+// ---------- Dodaj miejsca (E8, F05) ----------
+
+/** Otwarte okno E8: { idPodrozy, fraza, wybrane }. Stan okna, nie jest zapisywany. */
+let dodawanie = null;
+let selektorPowrotuDodawania = null;
+
+function otworzDodawanie(cel) {
+  const p = podroz(stan, cel.dataset.id);
+  if (!p) return;
+  dodawanie = { idPodrozy: p.id, fraza: "", wybrane: new Set() };
+  selektorPowrotuDodawania = selektorPrzycisku(cel);
+  oknoDodawania.innerHTML = widokDodawania(stan, p, "", dodawanie.wybrane).toString();
+  oknoDodawania.showModal();
+  oknoDodawania.querySelector("#pole-szukaj-dodawanie")?.focus();
+}
+
+oknoDodawania.addEventListener("close", () => {
+  oknoDodawania.innerHTML = "";
+  dodawanie = null;
+  // Fokus wraca na „+ Dodaj miejsca” (ekran mógł zostać zbudowany od nowa, więc szukamy przycisku ponownie).
+  (selektorPowrotuDodawania && document.querySelector(`#widok ${selektorPowrotuDodawania}`) || naglowekEkranu())?.focus();
+  selektorPowrotuDodawania = null;
 });
+
+/** Wpisywanie w wyszukiwarkę E8: zmienia się tylko lista, pole zostaje z fokusem. */
+function szukajWDodawaniu(fraza) {
+  const p = dodawanie && podroz(stan, dodawanie.idPodrozy);
+  if (!p) return;
+  dodawanie.fraza = fraza;
+  oknoDodawania.querySelector("#lista-dodawania").innerHTML = listaDodawania(stan, p, fraza, dodawanie.wybrane).toString();
+}
+
+function wybierzDoDodania(cel) {
+  if (!dodawanie || cel.disabled) return;
+  if (cel.checked) dodawanie.wybrane.add(cel.dataset.id);
+  else dodawanie.wybrane.delete(cel.dataset.id);
+  oknoDodawania.querySelector("#akcje-dodawania").innerHTML =
+    przyciskiDodawania(dodawanie.idPodrozy, dodawanie.wybrane.size).toString();
+}
+
+function potwierdzDodawanie() {
+  if (!dodawanie) return; // np. drugie kliknięcie po zamknięciu okna
+  const { stan: nowy, dodano } = dodajPunkty(stan, dodawanie.idPodrozy, [...dodawanie.wybrane]);
+  if (dodano && !zatwierdz(pamiec, trwaly, nowy)) {
+    // Błąd zapisu: okno zostaje z wyborem, bez komunikatu o sukcesie.
+    pokazKomunikat(KOMUNIKATY.bladZapisu);
+    return;
+  }
+  stan = nowy;
+  render();
+  oknoDodawania.close();
+  if (dodano) pokazKomunikat(komunikatDodaniaMiejsc(dodano));
+}
+
+// ---------- Zamykanie okien kliknięciem obok ----------
 
 // Kliknięcie w przyciemnione tło trafia w samo <dialog>. W <dialog> trafia jednak też kliknięcie
 // w margines elementu wewnątrz okna, dlatego okno zamyka się tylko wtedy, gdy punkt kliknięcia
 // leży poza prostokątem okna (weryfikacja F01, W1).
-okno.addEventListener("click", (zdarzenie) => {
-  if (zdarzenie.target !== okno) return;
-  const r = okno.getBoundingClientRect();
-  const { clientX: x, clientY: y } = zdarzenie;
-  const poza = x < r.left || x > r.right || y < r.top || y > r.bottom;
-  if (poza) okno.close();
-});
+for (const o of [okno, oknoFormularza, oknoDodawania]) {
+  o.addEventListener("click", (zdarzenie) => {
+    if (zdarzenie.target !== o) return;
+    const r = o.getBoundingClientRect();
+    const { clientX: x, clientY: y } = zdarzenie;
+    if (x < r.left || x > r.right || y < r.top || y > r.bottom) o.close();
+  });
+}
 
 // ---------- Zdarzenia ----------
 
@@ -398,10 +513,18 @@ document.addEventListener("click", (zdarzenie) => {
   else if (akcja === "zamknij-formularz") oknoFormularza.close();
   else if (akcja === "zaznacz-wszystkie") zaznaczWszystkie(true, cel);
   else if (akcja === "odznacz") zaznaczWszystkie(false, cel);
+  // ↑ / ↓: drugie kliknięcie szybkiego dwukliku (detail 2) trafiłoby po przebudowie w strzałkę innego punktu
+  // i cofnęło ruch, więc liczy się tylko pierwsze. Klawiatura ma detail 0.
+  else if (akcja === "przesun-wyzej" || akcja === "przesun-nizej") {
+    if (zdarzenie.detail <= 1) przesunPunkt(cel, akcja === "przesun-wyzej" ? -1 : 1);
+  } else if (akcja === "usun-punkt") usunPunktZPodrozy(cel);
+  else if (akcja === "dodaj-miejsca") otworzDodawanie(cel);
+  else if (akcja === "zamknij-dodawanie") oknoDodawania.close();
+  else if (akcja === "potwierdz-dodawanie") potwierdzDodawanie();
   else if (akcja === "zestaw-testowy" && trybDev) zaladujZestaw();
 });
 
-// Pola wyboru i listy (F04): zaznaczanie miejsc na E4, wybór kierunku z listy w E5.
+// Pola wyboru i listy: zaznaczanie miejsc na E4 i kierunek w E5 (F04), dni w planie i wybór w E8 (F05).
 document.addEventListener("change", (zdarzenie) => {
   const cel = zdarzenie.target.closest("[data-zmiana]");
   if (!cel) return;
@@ -410,7 +533,13 @@ document.addEventListener("change", (zdarzenie) => {
     // Wybór z listy wpisuje kierunek do pola (F04, pkt 3).
     const pole = oknoFormularza.querySelector("#pole-kierunek");
     if (pole) pole.value = cel.value;
-  }
+  } else if (cel.dataset.zmiana === "przypisz" || cel.dataset.zmiana === "przenies") zmienDzien(cel);
+  else if (cel.dataset.zmiana === "wybierz-miejsce") wybierzDoDodania(cel);
+});
+
+// Wpisywanie w wyszukiwarkę okna E8 (F05).
+document.addEventListener("input", (zdarzenie) => {
+  if (zdarzenie.target.dataset?.wpis === "szukaj-dodawanie") szukajWDodawaniu(zdarzenie.target.value);
 });
 
 // Formularze: E5 (podróż) i „Dodaj do podróży” w E3. Strona nigdzie ich nie wysyła (CSP: form-action 'none').
@@ -433,6 +562,7 @@ document.addEventListener("error", (zdarzenie) => {
 window.addEventListener("hashchange", () => {
   if (okno.open) okno.close();
   if (oknoFormularza.open) oknoFormularza.close();
+  if (oknoDodawania.open) oknoDodawania.close();
   render();
   window.scrollTo(0, 0);
   if (fokusNaNaglowek) {

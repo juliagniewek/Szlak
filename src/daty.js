@@ -1,4 +1,4 @@
-// Daty podróży (F04, plan 5.2): liczba dni, status, format „04.12.2026”, odmiana liczebników.
+// Daty podróży (F04, plan 5.2): liczba dni, status, format „04.12.2026” i „pt., 4.12” (F05), odmiana liczebników.
 // Daty to teksty „RRRR-MM-DD” (jak w polu <input type="date">). Różnice liczymy w UTC,
 // żeby zmiana czasu letniego nie zmieniała liczby dni. „Dzisiaj” podaje wywołujący (testy).
 
@@ -73,12 +73,20 @@ export function zakresDat(podroz) {
   return maDaty(podroz) ? `${formatDaty(podroz.start)} – ${formatDaty(podroz.koniec)}` : "Szkic bez dat";
 }
 
-/** Data n-tego dnia podróży (od 1) jako „04.12”; null w szkicu bez dat. */
+/** Skróty dni tygodnia jak w pl-PL (getUTCDay: 0 = niedziela). Stała tabela, żeby wynik nie zależał od przeglądarki. */
+const DNI_TYGODNIA = ["niedz.", "pon.", "wt.", "śr.", "czw.", "pt.", "sob."];
+
+/** Data n-tego dnia podróży (od 1) jako „pt., 4.12” (F05); null w szkicu bez dat. */
 export function dataDnia(podroz, n) {
   if (!maDaty(podroz)) return null;
   const d = new Date(wUtc(podroz.start) + (n - 1) * DZIEN_MS);
-  const dwie = (x) => String(x).padStart(2, "0");
-  return `${dwie(d.getUTCDate())}.${dwie(d.getUTCMonth() + 1)}`;
+  return `${DNI_TYGODNIA[d.getUTCDay()]}, ${d.getUTCDate()}.${d.getUTCMonth() + 1}`;
+}
+
+/** Nazwa dnia w planie: „Dzień 1 · pt., 4.12” albo „Dzień 1” w szkicu bez dat (F05). */
+export function nazwaDnia(podroz, n) {
+  const data = dataDnia(podroz, n);
+  return data ? `Dzień ${n} · ${data}` : `Dzień ${n}`;
 }
 
 /** Odmiana po liczbie: odmiana(1, "miejsce", "miejsca", "miejsc") → „miejsce”, 2 → „miejsca”, 5 → „miejsc”. */

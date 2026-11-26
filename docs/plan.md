@@ -94,7 +94,7 @@ Q1: F06 w MVP-2 (DEC-17).
 | 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | zweryfikowana: WARNING (runda 1), czeka na decyzje właścicielki |
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | do zrobienia |
 | 4 | F04 Podróże | Średni | 1 wieczór | zbudowana 25.11.2026 |
-| 5 | F05 Plan dni | Wysoki | 1 wieczór | do zrobienia |
+| 5 | F05 Plan dni | Wysoki | 1 wieczór | zbudowana 26.11.2026 |
 | 6 | F03 Wyszukiwanie i filtry (MVP-2) | Średni | 0,5 wieczoru | do zrobienia |
 | 7 | F06 Mapa trasy (MVP-2) | Wysoki | 1 wieczór | do zrobienia |
 | — | F07 Planowanie automatyczne | — | — | Później (DEC-10) |
@@ -203,6 +203,14 @@ Dodatkowo w sesji F04 (25.11.2026): `src/app.js` (formularz, zaznaczanie, usuwan
 4. Stany puste, komunikaty, punkt „Miejsce niedostępne” (5.4).
 5. Testy KA1–KA6 i przypadki brzegowe (podwójne ↓).
 Pliki: `src/stan.js`, `src/widoki/plan.js`, `dodaj-miejsca.js`, `src/app.js`, `tests/plan.test.js`.
+Dodatkowo w sesji F05 (26.11.2026): `src/daty.js` (`dataDnia` w formacie „pt., 4.12”, `nazwaDnia`), `src/widoki/podroze.js` (podgląd E7 z F04 usunięty, `widokPodrozy` eksportowany z `plan.js`), `index.html` (trzecie okno `<dialog id="okno-dodawania">` na E8), `style.css`, `tests/podroze.test.js` (KA2 z F04: format dnia zmieniony na „Dzień 1 · pt., 4.12” — decyzja właścicielki 26.11.2026).
+- Operacje planu szukają punktu po id miejsca, nie po pozycji, więc żadna nie gubi ani nie dubluje punktu. `planDnia()` w `stan.js` daje punkty dnia z numerami (od 1, bez „Miejsce niedostępne”); F06 może z niej brać numery pinezek (N3).
+- Punkt z dniem spoza zakresu podróży (uszkodzone dane) jest traktowany jak „Do zaplanowania” (`dzienPunktu()`).
+- Szybkie podwójne kliknięcie ↑/↓: liczy się tylko pierwsze kliknięcie (`detail` zdarzenia), bo po przebudowie ekranu drugie trafiłoby w strzałkę innego punktu i cofnęło ruch. Punkt przesuwa się o jedną pozycję.
+- Numer w kółku ma biały pogrubiony tekst 19,2 px. To „duży tekst” w WCAG AA, dla którego wystarcza kontrast 3:1; kolory dni z design.md mają z białym od 3,3:1 (przy 4,5:1 jasne kolory dni by nie przeszły).
+- E8: wyszukiwanie jak w prototypie (każde słowo w nazwie, mieście, kraju albo kategorii; bez polskich znaków), funkcja `normalizuj()` w `widoki/dodaj-miejsca.js`. „+ Dodaj miejsca” jest główną akcją ekranu (ciemny przycisk), „Edytuj podróż” ma obrys.
+- Podróż bez żadnych miejsc: zamiast „Wszystkie miejsca są przypisane do dni.” lista mówi „Ta podróż nie ma jeszcze miejsc. Dodaj je przyciskiem „+ Dodaj miejsca”.” (pierwszy tekst byłby nieprawdziwy).
+- Po zmianie planu fokus idzie za punktem (strzałka, lista „Przenieś do…” w nowym dniu); po × na × kolejnego punktu tej listy albo na jej nagłówek.
 
 ### F03 · Wyszukiwanie i filtry (MVP-2)
 1. `szukaj.js`: normalizacja (małe litery, bez polskich znaków), każde słowo musi pasować, obcięcie końcówki jak w prototypie, filtry, sortowanie.
@@ -247,7 +255,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F01.md); W1 i W2 poprawione w sesji F02 (sprawdza weryfikacja MVP) |
 | F02 | Zapisywanie miejsc | MVP-1 | zbudowana, czeka na weryfikację MVP-1 |
 | F04 | Podróże | MVP-1 | zbudowana, czeka na weryfikację MVP-1 |
-| F05 | Plan dni | MVP-1 | do zrobienia |
+| F05 | Plan dni | MVP-1 | zbudowana, czeka na weryfikację MVP-1 |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia |
 | F06 | Mapa trasy | MVP-2 | do zrobienia |
 | F07 | Planowanie automatyczne | Później | przeniesiona (DEC-10) |
@@ -259,9 +267,13 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Zdjęcia skopiowane do repozytorium zamiast osadzania z Wikimedia (zalecane przez Commons, usuwa R3 i R-T2).
 - Automatyczne testy w prawdziwej przeglądarce (wymagałyby narzędzia spoza DEC-10).
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
+- F05: lista „Przypisz do dnia…” / „Przenieś do…” działa od razu po zmianie wyboru (jak w prototypie). W Chrome na Windows strzałka na zamkniętej liście zmienia wybór bez otwierania, więc z klawiatury trzeba listę najpierw otworzyć (Alt+↓ albo spacja). Do rozważenia: przycisk „Przenieś” obok listy.
+- F03 może użyć `normalizuj()` z `widoki/dodaj-miejsca.js` (albo przenieść ją do `szukaj.js`).
 
 ## 11. Następny krok
-F04 zbudowana 25.11.2026: zaznaczanie na E4, formularz E5 z walidacją i podpowiedzią kierunku, lista E6 ze statusem, usuwanie z potwierdzeniem, „Dodaj do podróży” w E3, podgląd E7 do czasu F05; testy 95/95. Następnie: Faza B: F05 · Plan dni (poziom Wysoki), która zastępuje podgląd E7 w `widoki/podroze.js`; potem weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02, F04 oraz W1 i W2 z F01.
+F05 zbudowana 26.11.2026: plan dni na E7 (przypisywanie, ↑/↓, przenoszenie na koniec dnia, ×), okno E8 „Dodaj miejsca”, stany puste, „Miejsce niedostępne”, błąd zapisu; testy 113/113. Podgląd E7 z F04 zastąpiony. MVP-1 (F00–F02, F04, F05) jest kompletne. Następnie: weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02, F04, F05 oraz W1 i W2 z F01; potem MVP-2: F03, F06.
+
+Wcześniej: F04 zbudowana 25.11.2026: zaznaczanie na E4, formularz E5 z walidacją i podpowiedzią kierunku, lista E6 ze statusem, usuwanie z potwierdzeniem, „Dodaj do podróży” w E3, podgląd E7 do czasu F05; testy 95/95.
 
 Wcześniej: F02 zbudowana 25.11.2026: serce na kartach i w E3, licznik w menu, komunikaty, ekran Zapisane, A5 i błąd zapisu; testy 73/73. W tej samej sesji: poprawki W1 i W2 z weryfikacji F01, I2 z F00 rozstrzygnięte (plan 5.3: uszkodzone elementy pomijane, kopia i komunikat), odwołanie do DEC-20 w sekcji 9 specyfikacji. I1 i I4 z F01 przeniesione do „Później”. Następnie: Faza B: F04 · Podróże (poziom Średni), potem F05; na końcu jedna weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02 oraz W1 i W2 z F01.
 

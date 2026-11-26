@@ -16,8 +16,8 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | zbudowana, zweryfikowana (runda 1); W1 i W2 poprawione 25.11.2026 | WARNING, 25.11.2026: [docs/weryfikacja/F01.md](docs/weryfikacja/F01.md); poprawki sprawdza weryfikacja MVP-1 |
 | F02 | Zapisywanie miejsc | MVP-1 | zbudowana 25.11.2026 | [uzupełnia: Faza C, weryfikacja MVP-1] |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
-| F04 | Podróże | MVP-1 | zbudowana 25.11.2026; ekran podróży (E7) na razie tylko podgląd, plan dni w F05 | [uzupełnia: Faza C, weryfikacja MVP-1] |
-| F05 | Plan dni | MVP-1 | do zrobienia | [uzupełnia: Faza C] |
+| F04 | Podróże | MVP-1 | zbudowana 25.11.2026; ekran podróży (E7) z planem dni od F05 | [uzupełnia: Faza C, weryfikacja MVP-1] |
+| F05 | Plan dni | MVP-1 | zbudowana 26.11.2026: przypisywanie do dni, kolejność ↑/↓, przenoszenie, usuwanie z podróży, okno „Dodaj miejsca” | [uzupełnia: Faza C, weryfikacja MVP-1] |
 | F06 | Mapa trasy | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
 | F07 | Planowanie automatyczne | Później | przeniesiona do „Później” (DEC-10) | — |
 

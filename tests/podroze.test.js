@@ -120,8 +120,9 @@ test("KA2 / N5: daty 04.12–06.12.2026 → 3 dni, 3 miejsca w „Do zaplanowani
   assert.match(e7, /Do zaplanowania <span class="znacznik">3<\/span>/);
   assert.match(e7, /04\.12\.2026 – 06\.12\.2026 · 3 dni/);
   for (const id of RZYM) assert.ok(e7.includes(miejsce(id).nazwa));
-  assert.match(e7, /Dzień 1 · 04\.12/);
-  assert.match(e7, /Dzień 3 · 06\.12/);
+  // Format dnia z karty F05 (decyzja właścicielki 26.11.2026; wcześniej podgląd F04 miał „Dzień 1 · 04.12”).
+  assert.match(e7, /Dzień 1 · pt\., 4\.12/);
+  assert.match(e7, /Dzień 3 · niedz\., 6\.12/);
   assert.doesNotMatch(e7, /Dzień 4/);
 });
 

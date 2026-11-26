@@ -494,16 +494,82 @@ body:has(.okno[open]) { overflow: hidden; }
 .status-szkic { border-style: dashed; color: var(--muted); }
 .naglowek-sekcji .status { margin-bottom: 6px; }
 
-/* Podgląd podróży (E7) do czasu F05 */
+/* ---------- F05: plan dni (E7) i okno „Dodaj miejsca” (E8) ---------- */
+
+/* Nagłówek podróży: nazwa, kierunek, daty, liczba dni i miejsc; obok „Edytuj podróż” i „+ Dodaj miejsca” */
+.naglowek-podrozy { min-width: 0; flex: 1 1 320px; }
+.naglowek-podrozy h1 { overflow-wrap: anywhere; }
 .opis-podrozy { margin: 8px 0 0; max-width: 640px; overflow-wrap: anywhere; white-space: pre-line; }
-.lista-punktow { margin: 0; padding-left: 20px; }
-.lista-punktow li { margin: 4px 0; }
-.lista-dni { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-.dzien {
+.naglowek-sekcji .akcje-podrozy { justify-content: flex-start; }
+.naglowek-sekcji .akcje-podrozy .btn { margin-bottom: 0; }
+
+/* „Do zaplanowania” i karty dni jedna pod drugą; dzień ma pasek w swoim kolorze (design.md) */
+.plan { display: grid; gap: 12px; margin-top: 8px; max-width: 760px; }
+.karta-planu {
   padding: 12px 16px;
   background: var(--paper);
   border: 1px solid var(--sand);
-  border-top: 4px solid var(--dzien);
   border-radius: var(--promien);
 }
-.dzien p { margin: 0; }
+.karta-planu.dzien { border-top: 4px solid var(--dzien); }
+.karta-planu > p { margin: 0; }
+.naglowek-dnia { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 8px; }
+.naglowek-dnia h2 { font-size: 1.2rem; margin: 0 0 8px; }
+
+/* Punkt planu: numer, nazwa i kategoria, pod nimi przyciski */
+.punkty { list-style: none; margin: 0; padding: 0; }
+.punkt {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 4px 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--sand);
+}
+.punkt:first-child { border-top: 0; }
+.punkt-tresc { min-width: 0; align-self: center; }
+.punkt-tresc p { margin: 0; overflow-wrap: anywhere; }
+.punkt-nazwa { font-weight: 600; }
+.niedostepny .punkt-nazwa { font-weight: 400; color: var(--muted); font-style: italic; }
+.punkt-akcje { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; }
+.punkt-akcje select {
+  min-height: 44px;
+  max-width: 220px;
+  padding: 6px 10px;
+  border: 1px solid var(--taupe);
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+/* Numer w kolorze dnia: biały, pogrubiony, 19,2 px, czyli „duży tekst” w WCAG AA (od 18,66 px pogrubionego),
+   dla którego wystarcza kontrast 3:1. Najjaśniejszy kolor dnia (#A68A3D) ma z białym 3,3:1. */
+.numer {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--dzien);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.numer.pusty { background: var(--paper); border: 2px dashed var(--taupe); width: 28px; height: 28px; margin: 2px; }
+
+/* Strzałki i ×: przyciski-ikony 44×44 px (DEC-14) */
+.przycisk-ikona:disabled { opacity: 0.35; cursor: not-allowed; }
+.przycisk-ikona:disabled:hover { background: radial-gradient(circle, var(--paper) 0 17px, var(--sand) 17px 18px, transparent 18.5px); }
+.przycisk-ikona.usun-punkt { color: var(--danger); }
+
+/* Okno „Dodaj miejsca” (E8): lista z polami wyboru, przewijana */
+.dodawanie h2 { padding-right: 44px; }
+#okno-dodawania .okno-tresc { padding-top: 20px; }
+.dodawanie .pole { margin-top: 12px; }
+.lista-wyboru { list-style: none; margin: 12px 0 0; padding: 0; max-height: 45vh; overflow: auto; border-top: 1px solid var(--sand); border-bottom: 1px solid var(--sand); }
+.wybor { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 8px; border-radius: 8px; cursor: pointer; }
+.wybor:hover { background: var(--cream); }
+.wybor input { width: 20px; height: 20px; margin: 0; flex: none; accent-color: var(--brown); cursor: pointer; }
+.wybor.nieaktywny { cursor: default; color: var(--muted); }
+.wybor.nieaktywny:hover { background: none; }
+.wybor.nieaktywny input { cursor: default; }
+.serduszko { color: var(--sekcja-zapisane); }
