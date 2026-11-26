@@ -2,9 +2,10 @@
 import { html } from "../html.js";
 import { ikona } from "../ikony.js";
 
-/** Sekcje menu w kolejności z design.md. Szukaj dochodzi w F03. */
+/** Sekcje menu w kolejności z design.md (Szukaj od F03). */
 export const SEKCJE_MENU = [
   { id: "odkrywaj", tytul: "Odkrywaj", ikona: "kompas" },
+  { id: "szukaj", tytul: "Szukaj", ikona: "lupa" },
   { id: "zapisane", tytul: "Zapisane", ikona: "serce" },
   { id: "podroze", tytul: "Podróże", ikona: "walizka" }
 ];

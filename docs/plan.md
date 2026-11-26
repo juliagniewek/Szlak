@@ -95,7 +95,7 @@ Q1: F06 w MVP-2 (DEC-17).
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | zweryfikowana w MVP-1: WARNING |
 | 4 | F04 Podróże | Średni | 1 wieczór | zweryfikowana w MVP-1: WARNING |
 | 5 | F05 Plan dni | Wysoki | 1 wieczór | zweryfikowana w MVP-1: WARNING; W1: DEC-21, W2 poprawione |
-| 6 | F03 Wyszukiwanie i filtry (MVP-2) | Średni | 0,5 wieczoru | do zrobienia |
+| 6 | F03 Wyszukiwanie i filtry (MVP-2) | Średni | 0,5 wieczoru | zbudowana |
 | 7 | F06 Mapa trasy (MVP-2) | Wysoki | 1 wieczór | do zrobienia |
 | — | F07 Planowanie automatyczne | — | — | Później (DEC-10) |
 
@@ -256,7 +256,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 | F02 | Zapisywanie miejsc | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 6/6 |
 | F04 | Podróże | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 8/8 |
 | F05 | Plan dni | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 6/6; W1 rozstrzygnięte przez DEC-21 (duży tekst 3:1), W2 (owalne puste kółko) poprawione 26.11.2026 |
-| F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia |
+| F03 | Wyszukiwanie i filtry | MVP-2 | zbudowana 26.11.2026; czeka na weryfikację (Faza C) |
 | F06 | Mapa trasy | MVP-2 | do zrobienia |
 | F07 | Planowanie automatyczne | Później | przeniesiona (DEC-10) |
 
@@ -268,10 +268,12 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - Automatyczne testy w prawdziwej przeglądarce (wymagałyby narzędzia spoza DEC-10).
 - Konta i synchronizacja (DEC-1), prawdziwa mapa (DEC-9).
 - F05: lista „Przypisz do dnia…” / „Przenieś do…” działa od razu po zmianie wyboru (jak w prototypie). W Chrome na Windows strzałka na zamkniętej liście zmienia wybór bez otwierania, więc z klawiatury trzeba listę najpierw otworzyć (Alt+↓ albo spacja). Do rozważenia: przycisk „Przenieś” obok listy.
-- F03 może użyć `normalizuj()` z `widoki/dodaj-miejsca.js` (albo przenieść ją do `szukaj.js`).
+- (Zrobione w F03: `normalizuj()` przeniesiona do `src/szukaj.js`, E8 jej używa.) Do rozważenia: E8 szuka bez obcinania końcówek, E2 z obcinaniem (np. „punkt widokowy” w E8 nic nie znajduje); ujednolicenie zmieniłoby zachowanie F05, więc wymaga decyzji właścicielki.
 
 ## 11. Następny krok
-Decyzje po weryfikacji MVP-1 (26.11.2026): W1 → DEC-21 (duży tekst, np. numery dni i pinezek, ma kontrast co najmniej 3:1; specyfikacja v1.3 i design.md), W2 poprawione (`.numer.pusty` z `padding: 0`, nowy test); testy 114/114. Następnie: MVP-2: F03 · Wyszukiwanie i filtry, potem F06 · Mapa trasy (pinezki według DEC-21, puste kółka bez klasy `pusty`).
+F03 zbudowana 26.11.2026: sekcja Szukaj w menu (lupa, 4 pozycje także w menu dolnym), ekran E2 z polem hasła, filtrami (kategoria, kraj, miasto lub region zależne od kraju, sortowanie), liczbą wyników i stanem pustym z podpowiedziami; chipy kategorii na E1 (`#/szukaj/<kategoria>`). Logika w `src/szukaj.js`. Test menu F01 (KA5) zmieniony z 3 na 4 sekcje za zgodą właścicielki. Testy 128/128. Odejście od prototypu: pole hasła ma własny wiersz nad 4 listami (w jednym rzędzie listy obcinały „Wszystkie” przy 1024 px). Następnie: MVP-2: F06 · Mapa trasy, potem weryfikacja MVP-2 (F03, F06).
+
+Wcześniej: Decyzje po weryfikacji MVP-1 (26.11.2026): W1 → DEC-21 (duży tekst, np. numery dni i pinezek, ma kontrast co najmniej 3:1; specyfikacja v1.3 i design.md), W2 poprawione (`.numer.pusty` z `padding: 0`, nowy test); testy 114/114. Następnie: MVP-2: F03 · Wyszukiwanie i filtry, potem F06 · Mapa trasy (pinezki według DEC-21, puste kółka bez klasy `pusty`).
 
 Wcześniej: weryfikacja MVP-1 26.11.2026 (docs/weryfikacja/MVP.md): WARNING. Kryteria F02, F04, F05 spełnione (20/20), poprawki W1 i W2 z F01 działają, N1, N2, N4, N5 prawdziwe, testy 113/113, `trail check` bez konfliktów. Do decyzji właścicielki przed F06: W1 — numer dnia ma kontrast 3,3–4,1:1 (WCAG AA dla dużego tekstu), a design.md wymaga 4,5:1 bez wyjątku (propozycja DEC-21); W2 — puste kółko „Do zaplanowania” jest owalem 36×84 px przez kolizję klasy `pusty` (poprawka 1 linii CSS). Następnie: decyzje W1 i W2, potem MVP-2: F03, F06.
 

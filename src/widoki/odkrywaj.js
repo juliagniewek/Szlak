@@ -1,4 +1,4 @@
-// E1 Odkrywaj (F01): kierunki, sekcje według oznaczeń, lista miejsc kierunku, źródła zdjęć (DEC-13).
+// E1 Odkrywaj (F01): chipy kategorii (F03), kierunki, sekcje według oznaczeń, lista miejsc kierunku, źródła zdjęć (DEC-13).
 // Widoki to funkcje „dane → HTML”; kliknięcia obsługuje app.js przez data-akcja i adresy #/...
 import { html } from "../html.js";
 import { ikona } from "../ikony.js";
@@ -21,6 +21,20 @@ export function miejscaSekcji(oznaczenie) {
 /** Wszystkie miejsca kierunku (miasta lub regionu) w kolejności katalogu. */
 export function miejscaKierunku(miasto) {
   return MIEJSCA.filter((m) => m.miasto === miasto);
+}
+
+/** Adres E2 z wybraną kategorią, np. #/szukaj/kawiarnia (F03, pkt 5). */
+export function adresKategorii(kategoria) {
+  return `#/szukaj/${encodeURIComponent(kategoria)}`;
+}
+
+/** Chipy kategorii na E1: kliknięcie otwiera E2 z wybraną kategorią (F03, pkt 5). */
+export function chipyKategorii() {
+  return html`
+    <ul class="chipy">
+      ${Object.entries(KATEGORIE).map(([id, k]) => html`
+        <li><a class="chip" href="${adresKategorii(id)}">${ikona(k.ikona, 18)}${k.etykieta}</a></li>`)}
+    </ul>`;
 }
 
 /** Adres listy miejsc kierunku, np. #/odkrywaj/Lizbona. */
@@ -138,6 +152,10 @@ function widokGlowny(zapisane) {
       <h1>Dokąd tym razem?</h1>
       <p class="wstep">Zbieraj miejsca, które Cię inspirują, a potem zamień je w plan wyjazdu.</p>
     </header>
+    <section class="sekcja">
+      <h2>Kategorie</h2>
+      ${chipyKategorii()}
+    </section>
     <section class="sekcja">
       <h2>Wyróżnione kierunki</h2>
       <div class="kierunki">${KIERUNKI.map(kartaKierunku)}</div>

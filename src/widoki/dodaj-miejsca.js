@@ -4,15 +4,10 @@
 import { html } from "../html.js";
 import { MIEJSCA, KATEGORIE } from "../dane/katalog.js";
 import { czyZapisane } from "../stan.js";
+import { normalizuj } from "../szukaj.js";
 
-/** Tekst do porównania: małe litery, bez polskich znaków i akcentów („Łódź” → „lodz”). */
-export function normalizuj(tekst) {
-  return String(tekst)
-    .toLowerCase()
-    .replace(/ł/g, "l")
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "");
-}
+// Normalizacja tekstu jest wspólna z wyszukiwaniem E2 (F03); eksport zostaje dla zgodności.
+export { normalizuj };
 
 /**
  * Miejsca do listy E8: każde słowo frazy musi wystąpić w nazwie, mieście, kraju albo kategorii

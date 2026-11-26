@@ -139,12 +139,12 @@ test("KA8: stopka jest wstawiana na każdym ekranie (app.js renderuje ją niezal
 });
 
 test("KA5 (HTML): w menu wyróżniona jest tylko aktywna sekcja", () => {
-  assert.deepEqual(SEKCJE_MENU.map((s) => s.tytul), ["Odkrywaj", "Zapisane", "Podróże"]);
+  assert.deepEqual(SEKCJE_MENU.map((s) => s.tytul), ["Odkrywaj", "Szukaj", "Zapisane", "Podróże"]); // Szukaj od F03 (zgoda właścicielki)
   for (const aktywna of SEKCJE_MENU) {
     const kod = tekst(widokMenu(aktywna.id));
     assert.equal(policz(kod, /aria-current="page"/g), 1, aktywna.id);
     assert.match(kod, new RegExp(`data-sekcja="${aktywna.id}"[^>]*aria-current="page"`));
-    assert.equal(policz(kod, /<svg class="ikona"/g), 3, "każda pozycja ma ikonę");
+    assert.equal(policz(kod, /<svg class="ikona"/g), 4, "każda pozycja ma ikonę");
   }
 });
 

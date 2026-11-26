@@ -1,5 +1,5 @@
 // Start aplikacji: wczytanie danych, ostrzeżenia, nawigacja po adresie (#/...), okna (E3, E5, E8),
-// zmiany planu dni (F05), tryb deweloperski.
+// zmiany planu dni (F05), wyszukiwanie i filtry (F03), tryb deweloperski.
 // Widoki (src/widoki/) zwracają HTML z szablonu html``; tylko ten plik wstawia go do strony.
 import { html } from "./html.js";
 import { wczytaj, zapisz, zatwierdz, atrapaBlokujaca, KOMUNIKATY } from "./magazyn.js";
@@ -23,6 +23,8 @@ import {
 import { widokFormularzaPodrozy, wartosciNowej, wartosciEdycji } from "./widoki/formularz-podrozy.js";
 import { komunikatUsunieciaPunktu, komunikatDodaniaMiejsc, NIEDOSTEPNE } from "./widoki/plan.js";
 import { widokDodawania, listaDodawania, przyciskiDodawania } from "./widoki/dodaj-miejsca.js";
+import { widokSzukaj, listaWynikow, tekstLiczbyWynikow } from "./widoki/szukaj.js";
+import { wynikiSzukania, pustyStanSzukania, zmienFiltr, wyczysc } from "./szukaj.js";
 
 const DOMYSLNA = "odkrywaj";
 
@@ -41,6 +43,8 @@ const oknoDodawania = document.getElementById("okno-dodawania");
 let zaznaczone = new Set();
 let elementPrzedOknem = null; // tu wraca fokus po zamknięciu okna
 let idWOknie = null; // miejsce pokazane w oknie E3
+/** Hasło, filtry i sortowanie na E2 (F03). Stan ekranu: nie jest zapisywany; wejście na E2 zaczyna od nowa. */
+let szukanie = pustyStanSzukania();
 
 function pobierzLocalStorage() {
   try {
@@ -78,6 +82,7 @@ function zbiorZapisanych() {
 
 function widokSekcji({ sekcja, parametr }) {
   if (sekcja === "odkrywaj") return widokOdkrywaj(parametr, zbiorZapisanych());
+  if (sekcja === "szukaj") return widokSzukaj(szukanie, zbiorZapisanych());
   if (sekcja === "zapisane") {
     // Zaznaczenie dotyczy tylko miejsc, które nadal są na E4.
     const naEkranie = new Set(zapisaneMiejsca(stan).map((m) => m.id));
@@ -479,6 +484,36 @@ function potwierdzDodawanie() {
   if (dodano) pokazKomunikat(komunikatDodaniaMiejsc(dodano));
 }
 
+// ---------- Szukaj (E2, F03) ----------
+
+/** Wejście na E2: puste hasło i filtry; #/szukaj/<kategoria> (chip na E1) wybiera kategorię. */
+function zacznijSzukanie() {
+  const adres = biezacyAdres();
+  if (adres.sekcja === "szukaj") szukanie = pustyStanSzukania(adres.parametr ?? "");
+}
+
+/** Wpisywanie hasła: zmieniają się tylko liczba i karty, pole zostaje z fokusem (F03, pkt 3). */
+function szukaj(fraza) {
+  szukanie = { ...szukanie, fraza };
+  const wyniki = wynikiSzukania(szukanie);
+  document.getElementById("liczba-wynikow").textContent = tekstLiczbyWynikow(wyniki);
+  document.getElementById("wyniki-szukania").innerHTML = listaWynikow(wyniki, zbiorZapisanych()).toString();
+}
+
+/** Zmiana filtra albo sortowania: lista miast zależy od kraju, więc ekran jest budowany od nowa. */
+function zmienFiltrSzukania(cel) {
+  szukanie = zmienFiltr(szukanie, cel.dataset.klucz, cel.value);
+  render();
+  document.getElementById(`filtr-${cel.dataset.klucz}`)?.focus();
+}
+
+/** Podpowiedź albo „Wyczyść wyszukiwanie i filtry”: nowy stan, fokus w polu hasła. */
+function ustawSzukanie(nowy) {
+  szukanie = nowy;
+  render();
+  document.getElementById("pole-szukaj")?.focus();
+}
+
 // ---------- Zamykanie okien kliknięciem obok ----------
 
 // Kliknięcie w przyciemnione tło trafia w samo <dialog>. W <dialog> trafia jednak też kliknięcie
@@ -521,6 +556,8 @@ document.addEventListener("click", (zdarzenie) => {
   else if (akcja === "dodaj-miejsca") otworzDodawanie(cel);
   else if (akcja === "zamknij-dodawanie") oknoDodawania.close();
   else if (akcja === "potwierdz-dodawanie") potwierdzDodawanie();
+  else if (akcja === "podpowiedz") ustawSzukanie({ ...wyczysc(szukanie), fraza: cel.dataset.fraza ?? "" });
+  else if (akcja === "wyczysc-szukanie") ustawSzukanie(wyczysc(szukanie));
   else if (akcja === "zestaw-testowy" && trybDev) zaladujZestaw();
 });
 
@@ -535,14 +572,18 @@ document.addEventListener("change", (zdarzenie) => {
     if (pole) pole.value = cel.value;
   } else if (cel.dataset.zmiana === "przypisz" || cel.dataset.zmiana === "przenies") zmienDzien(cel);
   else if (cel.dataset.zmiana === "wybierz-miejsce") wybierzDoDodania(cel);
+  else if (cel.dataset.zmiana === "filtr") zmienFiltrSzukania(cel);
 });
 
-// Wpisywanie w wyszukiwarkę okna E8 (F05).
+// Wpisywanie w wyszukiwarkę okna E8 (F05) i w pole hasła na E2 (F03).
 document.addEventListener("input", (zdarzenie) => {
-  if (zdarzenie.target.dataset?.wpis === "szukaj-dodawanie") szukajWDodawaniu(zdarzenie.target.value);
+  const wpis = zdarzenie.target.dataset?.wpis;
+  if (wpis === "szukaj-dodawanie") szukajWDodawaniu(zdarzenie.target.value);
+  else if (wpis === "szukaj") szukaj(zdarzenie.target.value);
 });
 
-// Formularze: E5 (podróż) i „Dodaj do podróży” w E3. Strona nigdzie ich nie wysyła (CSP: form-action 'none').
+// Formularze: E5 (podróż), „Dodaj do podróży” w E3 i wyszukiwanie E2 (Enter niczego nie wysyła).
+// Strona nigdzie ich nie wysyła (CSP: form-action 'none').
 document.addEventListener("submit", (zdarzenie) => {
   const form = zdarzenie.target;
   if (!form.dataset.formularz) return;
@@ -563,6 +604,7 @@ window.addEventListener("hashchange", () => {
   if (okno.open) okno.close();
   if (oknoFormularza.open) oknoFormularza.close();
   if (oknoDodawania.open) oknoDodawania.close();
+  zacznijSzukanie();
   render();
   window.scrollTo(0, 0);
   if (fokusNaNaglowek) {
@@ -572,4 +614,5 @@ window.addEventListener("hashchange", () => {
 });
 
 pokazOstrzezenie(ostrzezenie);
+zacznijSzukanie();
 render();

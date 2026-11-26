@@ -84,7 +84,7 @@ main { flex: 1; min-width: 0; padding: 20px var(--odstep) 96px; }
   left: 0; right: 0; bottom: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   background: var(--paper);
   border-top: 1px solid var(--sand);
 }
@@ -575,3 +575,33 @@ body:has(.okno[open]) { overflow: hidden; }
 .wybor.nieaktywny:hover { background: none; }
 .wybor.nieaktywny input { cursor: default; }
 .serduszko { color: var(--sekcja-zapisane); }
+
+/* ---------- F03: Szukaj (E2) i chipy kategorii na E1 ---------- */
+
+/* Chipy: zaokrąglone, obszar kliknięcia 44 px (DEC-14); aktywny chip byłby ciemnobrązowy (design.md) */
+.chipy { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--sand);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--brown);
+  text-decoration: none;
+  cursor: pointer;
+}
+.chip:hover { border-color: var(--taupe); background: var(--sand); }
+.chip .ikona { color: var(--sage-dark); }
+.pusty .chipy { justify-content: center; margin: 12px 0; }
+
+/* Pole hasła i filtry: jedna kolumna na telefonie; od 700 px pole hasła w całym wierszu, pod nim 4 listy
+   (w jednym rzędzie z hasłem, jak w prototypie, napisy „Wszystkie” obcinały się przy 1024 px) */
+.filtry { display: grid; gap: 12px; margin: 16px 0; }
+@media (min-width: 700px) {
+  .filtry { grid-template-columns: repeat(4, 1fr); align-items: end; }
+  .filtry > .pole:first-child { grid-column: 1 / -1; max-width: 640px; }
+}
+.liczba-wynikow { color: var(--muted); margin: 0 0 12px; }

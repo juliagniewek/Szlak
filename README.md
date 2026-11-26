@@ -15,7 +15,7 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 | F00 | Fundament i zabezpieczenia | MVP-1 | zbudowana, zweryfikowana (2 rundy); W3b rozstrzygnięte: podpisy menu 16 px (DEC-19) | runda 2 (ostatnia): WARNING, 25.11.2026 — W1, W2 i kontrast z W3 naprawione ([docs/weryfikacja/F00.md](docs/weryfikacja/F00.md)) |
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | zbudowana, zweryfikowana (runda 1); W1 i W2 poprawione 25.11.2026 | WARNING, 25.11.2026: [docs/weryfikacja/F01.md](docs/weryfikacja/F01.md); W1 i W2 potwierdzone w weryfikacji MVP-1 (26.11.2026) |
 | F02 | Zapisywanie miejsc | MVP-1 | zbudowana 25.11.2026, zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 6/6 spełnione ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
-| F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
+| F03 | Wyszukiwanie i filtry | MVP-2 | zbudowana 26.11.2026: sekcja Szukaj, hasło i filtry (kategoria, kraj, miasto lub region, sortowanie), chipy kategorii na Odkrywaj | [uzupełnia: Faza C] |
 | F04 | Podróże | MVP-1 | zbudowana 25.11.2026; ekran podróży (E7) z planem dni od F05; zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 8/8 spełnione ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
 | F05 | Plan dni | MVP-1 | zbudowana 26.11.2026: przypisywanie do dni, kolejność ↑/↓, przenoszenie, usuwanie z podróży, okno „Dodaj miejsca”; zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 6/6 spełnione; W1 rozstrzygnięte (DEC-21), W2 poprawione ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
 | F06 | Mapa trasy | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
