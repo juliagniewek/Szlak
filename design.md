@@ -69,7 +69,7 @@ Charakter: nowoczesny magazyn podróżniczy połączony z moodboardem. Spokojny 
 - **Menu:** ikona i podpis, podpis 16 px na komputerze i telefonie (DEC-19). Aktywna pozycja ma piaskowe tło, pogrubiony tekst i pasek w kolorze sekcji.
 - **Chipy (kategorie, filtry, zakładki):** zaokrąglone. Aktywny chip jest wypełniony ciemnobrązowym kolorem.
 - **Punkt planu:**
-  - kolorowe kółko z numerem w kolorze dnia,
+  - kolorowe kółko z numerem w kolorze dnia (biały, pogrubiony numer 19,2 px, DEC-21); punkt w „Do zaplanowania” ma puste kółko z przerywanym obrysem,
   - nazwa i kategoria,
   - przyciski ↑, ↓ i × oraz lista „Przenieś do…”.
 - **Pinezka na mapie:** kółko w kolorze dnia z numerem. Aktywna pinezka jest większa, ma obwódkę i podpis z nazwą.
@@ -93,6 +93,7 @@ Proste ikony liniowe o jednolitej grubości kreski, jeden zestaw w całej aplika
 ## Dostępność
 
 - Kontrast tekstu co najmniej 4,5:1. Mały tekst w kolorze szałwii ma odcień `--sage-dark`, bo `--sage` ma na kremowym tle tylko 3,73:1 (DEC-18).
+- Wyjątek (DEC-21): duży tekst, czyli co najmniej 18,66 px pogrubiony albo 24 px, ma kontrast co najmniej 3:1 (WCAG AA). Dotyczy białego numeru na kolorze dnia w planie i na pinezkach mapy: numer ma 19,2 px i pogrubienie, a biały na kolorach dni ma od 3,3:1.
 - Każdy element klikalny ma obszar kliknięcia co najmniej 44×44 px. Wyjątek: odnośniki w zdaniu lub na liście (DEC-20).
 - Tekst ma co najmniej 16 px. Wyjątek (DEC-20): etykiety 12 px i mały tekst pomocniczy 12,8–14 px (lokalizacja, podpisy zdjęć, stopka, źródła zdjęć, karty kierunków), zawsze z kontrastem co najmniej 4,5:1.
 - Widoczny fokus: obrys 2 px w kolorze szałwiowym.

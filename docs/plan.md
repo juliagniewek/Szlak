@@ -94,7 +94,7 @@ Q1: F06 w MVP-2 (DEC-17).
 | 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | zweryfikowana: WARNING (runda 1); W1, W2 poprawione i potwierdzone w weryfikacji MVP-1, W3: DEC-20 |
 | 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | zweryfikowana w MVP-1: WARNING |
 | 4 | F04 Podróże | Średni | 1 wieczór | zweryfikowana w MVP-1: WARNING |
-| 5 | F05 Plan dni | Wysoki | 1 wieczór | zweryfikowana w MVP-1: WARNING; W1, W2 czekają na decyzje |
+| 5 | F05 Plan dni | Wysoki | 1 wieczór | zweryfikowana w MVP-1: WARNING; W1: DEC-21, W2 poprawione |
 | 6 | F03 Wyszukiwanie i filtry (MVP-2) | Średni | 0,5 wieczoru | do zrobienia |
 | 7 | F06 Mapa trasy (MVP-2) | Wysoki | 1 wieczór | do zrobienia |
 | — | F07 Planowanie automatyczne | — | — | Później (DEC-10) |
@@ -255,7 +255,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 | F01 | Układ aplikacji i Odkrywaj | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F01.md); W1 i W2 poprawione w sesji F02, potwierdzone w weryfikacji MVP-1 (docs/weryfikacja/MVP.md) |
 | F02 | Zapisywanie miejsc | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 6/6 |
 | F04 | Podróże | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 8/8 |
-| F05 | Plan dni | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 6/6; W1 (kontrast numeru dnia a design.md) i W2 (owalne puste kółko) czekają na decyzje właścicielki |
+| F05 | Plan dni | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 6/6; W1 rozstrzygnięte przez DEC-21 (duży tekst 3:1), W2 (owalne puste kółko) poprawione 26.11.2026 |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia |
 | F06 | Mapa trasy | MVP-2 | do zrobienia |
 | F07 | Planowanie automatyczne | Później | przeniesiona (DEC-10) |
@@ -271,7 +271,9 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - F03 może użyć `normalizuj()` z `widoki/dodaj-miejsca.js` (albo przenieść ją do `szukaj.js`).
 
 ## 11. Następny krok
-Weryfikacja MVP-1 26.11.2026 (docs/weryfikacja/MVP.md): WARNING. Kryteria F02, F04, F05 spełnione (20/20), poprawki W1 i W2 z F01 działają, N1, N2, N4, N5 prawdziwe, testy 113/113, `trail check` bez konfliktów. Do decyzji właścicielki przed F06: W1 — numer dnia ma kontrast 3,3–4,1:1 (WCAG AA dla dużego tekstu), a design.md wymaga 4,5:1 bez wyjątku (propozycja DEC-21); W2 — puste kółko „Do zaplanowania” jest owalem 36×84 px przez kolizję klasy `pusty` (poprawka 1 linii CSS). Następnie: decyzje W1 i W2, potem MVP-2: F03, F06.
+Decyzje po weryfikacji MVP-1 (26.11.2026): W1 → DEC-21 (duży tekst, np. numery dni i pinezek, ma kontrast co najmniej 3:1; specyfikacja v1.3 i design.md), W2 poprawione (`.numer.pusty` z `padding: 0`, nowy test); testy 114/114. Następnie: MVP-2: F03 · Wyszukiwanie i filtry, potem F06 · Mapa trasy (pinezki według DEC-21, puste kółka bez klasy `pusty`).
+
+Wcześniej: weryfikacja MVP-1 26.11.2026 (docs/weryfikacja/MVP.md): WARNING. Kryteria F02, F04, F05 spełnione (20/20), poprawki W1 i W2 z F01 działają, N1, N2, N4, N5 prawdziwe, testy 113/113, `trail check` bez konfliktów. Do decyzji właścicielki przed F06: W1 — numer dnia ma kontrast 3,3–4,1:1 (WCAG AA dla dużego tekstu), a design.md wymaga 4,5:1 bez wyjątku (propozycja DEC-21); W2 — puste kółko „Do zaplanowania” jest owalem 36×84 px przez kolizję klasy `pusty` (poprawka 1 linii CSS). Następnie: decyzje W1 i W2, potem MVP-2: F03, F06.
 
 Wcześniej: F05 zbudowana 26.11.2026: plan dni na E7 (przypisywanie, ↑/↓, przenoszenie na koniec dnia, ×), okno E8 „Dodaj miejsca”, stany puste, „Miejsce niedostępne”, błąd zapisu; testy 113/113. Podgląd E7 z F04 zastąpiony. MVP-1 (F00–F02, F04, F05) jest kompletne. Następnie: weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02, F04, F05 oraz W1 i W2 z F01; potem MVP-2: F03, F06.
 

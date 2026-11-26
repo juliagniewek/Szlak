@@ -147,6 +147,11 @@ Prototyp ma tę samą kolizję nazw (`.empty` i `.num.empty`), więc wygląd mó
 - `trail check`: „nothing to check”, bo MVP-1 jest już na `origin/main`. `trail check --base 46be604`: zmiany „follows” learnings, „no conflicts”.
 - Propozycja learning z tej weryfikacji: w wiadomości do właścicielki; zapis dopiero po jej zgodzie.
 
+## Decyzje właścicielki po rundzie 1 (26.11.2026)
+- **W1 — wyjątek dla dużego tekstu.** DEC-21 w specyfikacji (v1.3, sekcje 9 i 11) i w design.md (Dostępność, Punkt planu): duży tekst (co najmniej 18,66 px pogrubiony albo 24 px) ma kontrast co najmniej 3:1 zgodnie z WCAG AA; dotyczy numeru dnia w planie i pinezek F06. Kolory dni i kod bez zmian; test `tests/plan.test.js` („… co najmniej 3:1 (WCAG AA, DEC-21)”) sprawdza tę zasadę.
+- **W2 — poprawić.** `.numer.pusty` w `style.css` ma teraz `padding: 0` i `border-radius: 50%` (z komentarzem o kolizji z `.pusty`). W przeglądarce pod `127.0.0.1:8000` (zestaw testowy, „Testowy wyjazd: Rzym”): znacznik ma 28×28 px, `padding: 0px`, `border-radius: 50%`, czyli kółko z przerywanym obrysem. Nowy test „wygląd: puste kółko „Do zaplanowania” nie bierze wypełnienia stanu pustego .pusty …” w `tests/plan.test.js`.
+- Testy po zmianach: 114 z 114. Druga runda weryfikacji nie jest potrzebna: obie zmiany są małe i sprawdzone wyżej; F06 i tak przejdzie własną weryfikację.
+
 ## Jak sprawdzić ręcznie (dla właścicielki)
 1. **Start:** w terminalu w folderze projektu wpisz `npm start` i otwórz `http://localhost:8000`. Jeśli terminal pokaże `EADDRINUSE`, inny `npm start` już działa: zamknij tamten terminal albo otwórz adres, który on podaje.
 2. **Serce (F02, W2):** na Odkrywaj kliknij serce przy „Koloseum”, potem przy „Panteon”, celując w róg wokół białego kółka. Serca się wypełniają, przy „Zapisane” pojawia się „2”, na dole komunikat. Otwórz „Zapisane”: Panteon pierwszy. Odśwież stronę (F5): oba miejsca zostają.
@@ -154,9 +159,9 @@ Prototyp ma tę samą kolizję nazw (`.empty` i `.num.empty`), więc wygląd mó
 4. **Podróż (F04):** zapisz jeszcze „Forum Romanum”, w „Zapisane” zaznacz trzy karty (kwadrat w lewym górnym rogu) i kliknij „Utwórz podróż z wybranych”. Powinno być „Rzym” i „Wyjazd: Rzym”. Usuń nazwę i kliknij „Utwórz podróż”: „Podaj nazwę podróży.”. Wpisz `<b>test</b>`, podaj tylko datę rozpoczęcia: „Podaj obie daty albo zostaw obie puste.”. Podaj 04.12.2026–06.12.2026 i zapisz: widzisz plan z 3 dniami i 3 miejscami w „Do zaplanowania”, a nazwę dokładnie jako `<b>test</b>`.
 5. **Plan (F05):** przypisz dwa miejsca do „Dzień 1”, kliknij ↓ przy pierwszym (numery się zamieniają), przenieś jedno do dnia 2 („Przenieś do…”), usuń jedno krzyżykiem. W „Zapisane” to miejsce nadal jest. Kliknij „+ Dodaj miejsca”, wpisz „rzym”, zaznacz dwa miejsca i „Dodaj (2)”. Odśwież stronę: plan jest taki sam.
 6. **Skracanie i usuwanie (F04):** zostaw dwa miejsca w dniu 3, kliknij „Edytuj podróż” i zmień koniec na 05.12.2026: komunikat „… 2 miejsca z usuniętych dni wróciły …”. Na liście „Podróże” kliknij „Usuń”, potem „Anuluj” (nic się nie zmienia), potem „Usuń” i „OK”. „Zapisane” są bez zmian.
-7. **W2 (owal):** przy miejscach w „Do zaplanowania” po lewej widać wysoki przerywany owal zamiast małego kółka.
+7. **W2 (po poprawce):** przy miejscach w „Do zaplanowania” po lewej jest małe kółko z przerywanym obrysem, nie wysoki owal.
 8. **Telefon:** F12 → Ctrl+Shift+M → szerokość 375. Zapisane, Podróże, plan i okna nie przesuwają się w bok, menu jest na dole.
-9. **Testy:** `npm test`; na końcu „pass 113” i „fail 0”.
+9. **Testy:** `npm test`; na końcu „pass 114” i „fail 0” (113 w chwili weryfikacji, plus test W2).
 
 Uwaga: kroki 2–6 zmieniają dane w Twojej przeglądarce pod `localhost:8000`. Jeśli chcesz zachować swoje dane, otwórz zamiast tego `http://127.0.0.1:8000` — to ta sama aplikacja z osobną, pustą pamięcią.
 

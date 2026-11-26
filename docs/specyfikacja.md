@@ -1,5 +1,5 @@
 # Specyfikacja MVP: szlak.
-Wersja 1.2 · 25.11.2026 · Źródła: brief.md, prototyp.html, design.md, specyfikacja-v1.md (wstępna specyfikacja z kartą decyzji), docs/wnioski-z-testow.md, odpowiedzi właścicielki projektu w rozmowie (22.11.2026), odpowiedzi na pytania z Fazy A (24.11.2026, DEC-13–DEC-17), decyzje po weryfikacji F00 i F01 (25.11.2026, DEC-18–DEC-20)
+Wersja 1.3 · 26.11.2026 · Źródła: brief.md, prototyp.html, design.md, specyfikacja-v1.md (wstępna specyfikacja z kartą decyzji), docs/wnioski-z-testow.md, odpowiedzi właścicielki projektu w rozmowie (22.11.2026), odpowiedzi na pytania z Fazy A (24.11.2026, DEC-13–DEC-17), decyzje po weryfikacji F00 i F01 (25.11.2026, DEC-18–DEC-20), decyzja po weryfikacji MVP-1 (26.11.2026, DEC-21)
 
 ## 1. Cel i użytkownicy
 szlak. to prosta aplikacja webowa dla osób, które same planują city break, wakacje albo krótki wyjazd, często w kilka osób. Dziś zapisują inspiracje w kilku aplikacjach, zakładkach i notatkach, a potem ręcznie przepisują je do planu i nie widzą, gdzie leżą zapisane miejsca. W aplikacji odkrywają i zapisują miejsca, zamieniają je w podróż, rozkładają na dni i oglądają trasę dnia na mapie. Wszystko w jednym miejscu, w przeglądarce na komputerze, bez zakładania konta.
@@ -176,7 +176,7 @@ Usuwanie:
 
 ## 9. Wymagania ogólne
 - Wygląd zgodny z design.md: paleta, kolory sekcji, typografia, karty, ikony liniowe, zdjęcia z zastępczą ikoną kategorii.
-- Dostępność: kontrast WCAG AA, tekst co najmniej 16 px, elementy klikalne co najmniej 44×44 px (wyjątki dla etykiet, małego tekstu pomocniczego i odnośników w tekście: DEC-20), obsługa klawiatury (także pinezek na mapie), widoczny fokus, etykieta przy każdym polu formularza, tekst alternatywny zdjęć.
+- Dostępność: kontrast WCAG AA (tekst 4,5:1, duży tekst, np. numery dni i pinezek, 3:1: DEC-21), tekst co najmniej 16 px, elementy klikalne co najmniej 44×44 px (wyjątki dla etykiet, małego tekstu pomocniczego i odnośników w tekście: DEC-20), obsługa klawiatury (także pinezek na mapie), widoczny fokus, etykieta przy każdym polu formularza, tekst alternatywny zdjęć.
 - Komunikaty błędów zrozumiałe dla użytkownika, po polsku, przy polu, którego dotyczą.
 - Brak połączenia: aplikacja działa, zdjęcia zastępuje ikona kategorii (A4).
 - Krótki komunikat (toast) po zapisie, usunięciu i utworzeniu podróży.
@@ -216,6 +216,7 @@ Usuwanie:
 - DEC-18 · 25.11.2026: Mały tekst w kolorze szałwii (etykiety kategorii, liczniki, mały tekst w kolorze sekcji Odkrywaj) ma ciemniejszy odcień `--sage-dark` #666B57 (kontrast 5,03:1 na kremowym tle); `--sage` #7B8069 zostaje dla ikon, pasków, obrysów i fokusu (dopisane do design.md) — powód: `--sage` ma na kremowym tle 3,73:1 zamiast wymaganych 4,5:1 (sekcja 9) — źródło: właścicielka (W3 z weryfikacji F00).
 - DEC-19 · 25.11.2026: Podpisy w menu mają 16 px na komputerze i telefonie, zgodnie z wymogiem tekstu co najmniej 16 px z sekcji 9 (prototyp miał 12,5–15 px; dopisane do design.md) — źródło: właścicielka (W3b z weryfikacji F00).
 - DEC-20 · 25.11.2026: Wyjątek od „tekst co najmniej 16 px” i „elementy klikalne co najmniej 44×44 px” (sekcja 9): etykiety mogą mieć 12 px, a mały tekst pomocniczy (lokalizacja, podpisy zdjęć, stopka, źródła zdjęć, tekst na kartach kierunków) 12,8–14 px, przy kontraście co najmniej 4,5:1; odnośniki w zdaniu lub na liście nie muszą mieć 44 px wysokości (dopisane do design.md) — powód: zgodne z design.md, prototypem i WCAG AA — źródło: właścicielka (W3 z weryfikacji F01).
+- DEC-21 · 26.11.2026: Wyjątek od „kontrast tekstu co najmniej 4,5:1” w design.md dla dużego tekstu w rozumieniu WCAG AA (co najmniej 18,66 px pogrubiony albo 24 px): wystarcza kontrast 3:1. Dotyczy białego numeru na kolorze dnia w planie (F05) i na pinezkach mapy (F06); kolory dni z design.md zostają (dopisane do design.md) — powód: zgodne z WCAG AA i z sekcją 9; biały na kolorach dni ma od 3,3:1 (`#A68A3D`), więc przy 4,5:1 trzeba by zmienić wygląd z prototypu — źródło: właścicielka (W1 z weryfikacji MVP-1).
 - A1: Podróż ma od 1 do 30 dni; szkic bez dat ma domyślnie 3 dni — zaakceptowane: 22.11.2026
 - A2: Nazwa i kierunek do 60 znaków, opis do 300 znaków — zaakceptowane: 22.11.2026
 - A3: Usunięcie zapisu miejsca nie usuwa go z podróży, a usunięcie z podróży nie usuwa zapisu — zaakceptowane: 22.11.2026

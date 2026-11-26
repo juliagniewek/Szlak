@@ -554,7 +554,9 @@ body:has(.okno[open]) { overflow: hidden; }
   font-weight: 700;
   line-height: 1;
 }
-.numer.pusty { background: var(--paper); border: 2px dashed var(--taupe); width: 28px; height: 28px; margin: 2px; }
+/* Puste kółko „Do zaplanowania”. Klasa .pusty to też stan pusty E4/E6 (padding 40px 16px), dlatego padding: 0;
+   bez tego znacznik rozpycha się do owalu 36×84 px (weryfikacja MVP-1, W2). */
+.numer.pusty { background: var(--paper); border: 2px dashed var(--taupe); width: 28px; height: 28px; margin: 2px; padding: 0; border-radius: 50%; }
 
 /* Strzałki i ×: przyciski-ikony 44×44 px (DEC-14) */
 .przycisk-ikona:disabled { opacity: 0.35; cursor: not-allowed; }

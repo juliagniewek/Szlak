@@ -17,7 +17,7 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 | F02 | Zapisywanie miejsc | MVP-1 | zbudowana 25.11.2026, zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 6/6 spełnione ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
 | F04 | Podróże | MVP-1 | zbudowana 25.11.2026; ekran podróży (E7) z planem dni od F05; zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 8/8 spełnione ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
-| F05 | Plan dni | MVP-1 | zbudowana 26.11.2026: przypisywanie do dni, kolejność ↑/↓, przenoszenie, usuwanie z podróży, okno „Dodaj miejsca”; zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 6/6 spełnione; do decyzji W1 (kontrast numeru dnia) i W2 (owalne puste kółko) ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
+| F05 | Plan dni | MVP-1 | zbudowana 26.11.2026: przypisywanie do dni, kolejność ↑/↓, przenoszenie, usuwanie z podróży, okno „Dodaj miejsca”; zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 6/6 spełnione; W1 rozstrzygnięte (DEC-21), W2 poprawione ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
 | F06 | Mapa trasy | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
 | F07 | Planowanie automatyczne | Później | przeniesiona do „Później” (DEC-10) | — |
 

@@ -390,7 +390,21 @@ test("N1: zmiany planu i dodawanie miejsc nie wysyłają żadnego żądania siec
   assert.deepEqual(wywolania, []);
 });
 
-test("wygląd: numer w kolorze dnia to duży pogrubiony tekst z kontrastem co najmniej 3:1 (WCAG AA)", () => {
+test("wygląd: puste kółko „Do zaplanowania” nie bierze wypełnienia stanu pustego .pusty (weryfikacja MVP-1, W2)", () => {
+  const css = fs.readFileSync(path.join(KATALOG, "style.css"), "utf8");
+  // Stan pusty E4/E6 ma duże wypełnienie; znacznik z tą samą klasą musi je wyzerować, inaczej jest owalem 36×84 px.
+  assert.match(css, /\n\.pusty\s*\{[^}]*padding:\s*40px/);
+  const kolko = css.match(/\n\.numer\.pusty\s*\{[^}]*\}/)?.[0] ?? "";
+  assert.match(kolko, /width:\s*28px/);
+  assert.match(kolko, /height:\s*28px/);
+  assert.match(kolko, /padding:\s*0\s*[;}]/);
+  assert.match(kolko, /border-radius:\s*50%/);
+  // Znacznik w HTML ma obie klasy, więc ta reguła naprawdę go dotyczy.
+  const { stan } = start();
+  assert.match(tekst(widokPodrozy(podroz(stan, ID), DZIS)), /<span class="numer pusty" aria-hidden="true"><\/span>/);
+});
+
+test("wygląd: numer w kolorze dnia to duży pogrubiony tekst z kontrastem co najmniej 3:1 (WCAG AA, DEC-21)", () => {
   const css = fs.readFileSync(path.join(KATALOG, "style.css"), "utf8");
   const numer = css.match(/\n\.numer\s*\{[^}]*\}/)?.[0] ?? "";
   assert.match(numer, /color:\s*#fff/);
