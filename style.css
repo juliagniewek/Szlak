@@ -605,3 +605,142 @@ body:has(.okno[open]) { overflow: hidden; }
   .filtry > .pole:first-child { grid-column: 1 / -1; max-width: 640px; }
 }
 .liczba-wynikow { color: var(--muted); margin: 0 0 12px; }
+
+/* ---------- F06: mapa trasy (E7) ---------- */
+
+/* Telefon: „Plan dni / Mapa” przełącza kolumny; od 900 px (menu boczne) plan po lewej, mapa po prawej (design.md) */
+.przelacznik-panelu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  max-width: 420px;
+  margin: 8px 0 12px;
+  padding: 4px;
+  background: var(--sand);
+  border-radius: 999px;
+}
+.przelacznik-panelu button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--brown);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.przelacznik-panelu button[aria-pressed="true"] { background: var(--paper); }
+.podroz-uklad { display: grid; gap: 12px; }
+.podroz-uklad > .plan { margin-top: 0; }
+.podroz-uklad[data-panel="plan"] > .panel-mapy,
+.podroz-uklad[data-panel="mapa"] > .plan { display: none; }
+@media (min-width: 900px) {
+  .przelacznik-panelu { display: none; }
+  .podroz-uklad { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; margin-top: 8px; }
+  .podroz-uklad[data-panel] > .plan { display: grid; }
+  /* Mapa przyklejona przy przewijaniu; gdy panel jest wyższy niż okno, przewija się w środku */
+  .podroz-uklad[data-panel] > .panel-mapy {
+    display: block;
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+  }
+}
+
+.naglowek-mapy { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
+.naglowek-mapy h2 { font-size: 1.2rem; margin: 0; }
+.pokaz { display: flex; align-items: center; gap: 8px; }
+.pokaz select {
+  min-height: 44px;
+  max-width: 220px;
+  padding: 6px 10px;
+  border: 1px solid var(--taupe);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--brown);
+  font: inherit;
+}
+
+/* Schemat bez podkładu: siatka i linie w SVG, pinezki jako przyciski HTML w tych samych proporcjach (600 × 440).
+   Dzięki temu numer pinezki ma zawsze 19,2 px (DEC-21), a obszar kliknięcia 44 × 44 px (DEC-14) przy każdej szerokości. */
+.mapa {
+  position: relative;
+  aspect-ratio: 600 / 440;
+  overflow: hidden;
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: 10px;
+}
+.mapa svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.siatka line { stroke: var(--sand); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.trasa { fill: none; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+.polnoc { position: absolute; top: 8px; right: 12px; color: var(--brown); font-weight: 700; }
+.mapa-pusta { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 16px; text-align: center; color: var(--muted); }
+
+.pinezka {
+  position: absolute;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.pinezka:hover, .pinezka:focus-visible { z-index: 2; }
+.pinezka .numer { box-shadow: 0 0 0 2px var(--paper), 0 1px 3px rgba(64, 58, 52, 0.35); }
+/* Aktywna pinezka: większa, z obwódką i podpisem z nazwą (design.md) */
+.pinezka.aktywna { z-index: 3; }
+.pinezka.aktywna .numer { width: 40px; height: 40px; box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--brown); }
+.podpis-pinezki {
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 220px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 1px 3px rgba(64, 58, 52, 0.35);
+  color: var(--brown);
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+}
+.podpis-pinezki.pod { bottom: auto; top: calc(100% + 2px); }
+.podpis-pinezki.od-lewej { left: 0; transform: none; text-align: left; }
+.podpis-pinezki.od-prawej { left: auto; right: 0; transform: none; text-align: right; }
+
+/* Puste kółko „Do zaplanowania” na mapie i na liście (bez klasy .pusty, która rozpycha znacznik) */
+.numer.kolko-puste { width: 28px; height: 28px; background: var(--paper); border: 2px dashed var(--muted); }
+
+.opis-mapy, .brak-wspolrzednych { margin: 8px 0 0; }
+.brak-wspolrzednych { color: var(--brown); }
+
+/* Lista punktów pod mapą: kliknięcie podświetla pinezkę */
+.lista-mapy { list-style: none; margin: 8px 0 0; padding: 8px 0 0; display: grid; gap: 2px; border-top: 1px solid var(--sand); }
+.punkt-mapy {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--brown);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.punkt-mapy .numer { flex: none; }
+.punkt-mapy:hover { background: var(--cream); }
+.punkt-mapy.aktywny { background: var(--sand); font-weight: 600; }
+/* Na piaskowym tle tekst pomocniczy ma za mały kontrast (4,27:1), więc w aktywnym punkcie jest brązowy */
+.punkt-mapy.aktywny .muted { color: var(--brown); }

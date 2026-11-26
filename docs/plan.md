@@ -96,7 +96,7 @@ Q1: F06 w MVP-2 (DEC-17).
 | 4 | F04 Podróże | Średni | 1 wieczór | zweryfikowana w MVP-1: WARNING |
 | 5 | F05 Plan dni | Wysoki | 1 wieczór | zweryfikowana w MVP-1: WARNING; W1: DEC-21, W2 poprawione |
 | 6 | F03 Wyszukiwanie i filtry (MVP-2) | Średni | 0,5 wieczoru | zbudowana |
-| 7 | F06 Mapa trasy (MVP-2) | Wysoki | 1 wieczór | do zrobienia |
+| 7 | F06 Mapa trasy (MVP-2) | Wysoki | 1 wieczór | zbudowana |
 | — | F07 Planowanie automatyczne | — | — | Później (DEC-10) |
 
 Jeśli F05 zajmie więcej niż wieczór, F03 i F06 idą do „Później” (R4, decyduje właścicielka).
@@ -226,6 +226,12 @@ Pliki: `src/szukaj.js`, `src/widoki/szukaj.js`, `menu.js`, `odkrywaj.js`, `tests
 4. Przełącznik „Plan dni / Mapa” na telefonie; tekst o mapie schematycznej.
 5. Testy KA1–KA5 na funkcjach `mapa.js` i HTML panelu.
 Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
+Dodatkowo w sesji F06 (26.11.2026): `src/app.js` (stan ekranu E7 `ekranPodrozy`: wybór „Pokaż”, podświetlona pinezka, zakładka na telefonie; nie jest zapisywany i zaczyna od nowa przy każdym wejściu na ekran).
+- Pinezki to przyciski HTML położone w procentach nad rysunkiem SVG o tych samych proporcjach (600 × 440); w SVG są tylko siatka i linie. Powód: SVG skaluje się z panelem, więc numer w SVG miałby na telefonie ok. 10 px, czyli nie byłby już „dużym tekstem” z DEC-21 (kontrast 3,3:1 by nie wystarczył), a obszar kliknięcia byłby mniejszy niż 44 × 44 px. Przycisk daje też Tab i Enter bez dodatkowego kodu.
+- Dwie kolumny (plan i mapa) od 900 px, jak w design.md (prototyp miał 1100 px); poniżej przełącznik „Plan dni / Mapa”. Na komputerze panel mapy jest przyklejony, a gdy jest wyższy niż okno, przewija się w środku.
+- Podświetlenie jak w prototypie: drugie kliknięcie tej samej pinezki albo punktu listy je zdejmuje; zmiana „Pokaż” też je zdejmuje. Kliknięcie buduje od nowa tylko panel mapy, fokus zostaje na klikniętym elemencie.
+- Lista pod mapą pokazuje tylko punkty z pinezką; „Miejsce niedostępne” (usunięte z katalogu) trafia do zdania „Brak współrzędnych…”.
+- Puste kółko „Do zaplanowania” na mapie i liście ma przerywany obrys `--muted`, bo `--taupe` ma na kremowym tle mapy 2,2:1 (mniej niż 3:1 dla elementów graficznych). Klasa `kolko-puste`, nie `pusty`.
 
 ## 7. Testowanie
 - Jedno polecenie: `npm test` (`node --test`, wbudowane w Node 26, bez bibliotek).
@@ -257,7 +263,7 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 | F04 | Podróże | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 8/8 |
 | F05 | Plan dni | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 6/6; W1 rozstrzygnięte przez DEC-21 (duży tekst 3:1), W2 (owalne puste kółko) poprawione 26.11.2026 |
 | F03 | Wyszukiwanie i filtry | MVP-2 | zbudowana 26.11.2026; czeka na weryfikację (Faza C) |
-| F06 | Mapa trasy | MVP-2 | do zrobienia |
+| F06 | Mapa trasy | MVP-2 | zbudowana 26.11.2026; czeka na weryfikację (Faza C) |
 | F07 | Planowanie automatyczne | Później | przeniesiona (DEC-10) |
 
 ## 10. Później
@@ -271,7 +277,9 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - (Zrobione w F03: `normalizuj()` przeniesiona do `src/szukaj.js`, E8 jej używa.) Do rozważenia: E8 szuka bez obcinania końcówek, E2 z obcinaniem (np. „punkt widokowy” w E8 nic nie znajduje); ujednolicenie zmieniłoby zachowanie F05, więc wymaga decyzji właścicielki.
 
 ## 11. Następny krok
-F03 zbudowana 26.11.2026: sekcja Szukaj w menu (lupa, 4 pozycje także w menu dolnym), ekran E2 z polem hasła, filtrami (kategoria, kraj, miasto lub region zależne od kraju, sortowanie), liczbą wyników i stanem pustym z podpowiedziami; chipy kategorii na E1 (`#/szukaj/<kategoria>`). Logika w `src/szukaj.js`. Test menu F01 (KA5) zmieniony z 3 na 4 sekcje za zgodą właścicielki. Testy 128/128. Odejście od prototypu: pole hasła ma własny wiersz nad 4 listami (w jednym rzędzie listy obcinały „Wszystkie” przy 1024 px); właścicielka zaakceptowała ten układ 26.11.2026. Następnie: MVP-2: F06 · Mapa trasy, potem weryfikacja MVP-2 (F03, F06).
+F06 zbudowana 26.11.2026: panel mapy na E7 (obok planu od 900 px, na telefonie zakładka „Mapa”), wybór „Pokaż” (Cała podróż albo dzień), schemat z siatką i północą, pinezki z numerami z planu (N3), puste kółka „Do zaplanowania”, linie osobno dla każdego dnia, podświetlanie pinezki i punktu listy w obie strony, tekst o mapie schematycznej i o brakujących współrzędnych. Rzut w `src/mapa.js`. Testy 147/147. KA6 (Tab i Enter) sprawdzone w przeglądarce pod 127.0.0.1. MVP-2 jest kompletne. Następnie: weryfikacja MVP-2 (F03, F06), Faza C.
+
+Wcześniej: F03 zbudowana 26.11.2026: sekcja Szukaj w menu (lupa, 4 pozycje także w menu dolnym), ekran E2 z polem hasła, filtrami (kategoria, kraj, miasto lub region zależne od kraju, sortowanie), liczbą wyników i stanem pustym z podpowiedziami; chipy kategorii na E1 (`#/szukaj/<kategoria>`). Logika w `src/szukaj.js`. Test menu F01 (KA5) zmieniony z 3 na 4 sekcje za zgodą właścicielki. Testy 128/128. Odejście od prototypu: pole hasła ma własny wiersz nad 4 listami (w jednym rzędzie listy obcinały „Wszystkie” przy 1024 px); właścicielka zaakceptowała ten układ 26.11.2026. Następnie: MVP-2: F06 · Mapa trasy, potem weryfikacja MVP-2 (F03, F06).
 
 Wcześniej: Decyzje po weryfikacji MVP-1 (26.11.2026): W1 → DEC-21 (duży tekst, np. numery dni i pinezek, ma kontrast co najmniej 3:1; specyfikacja v1.3 i design.md), W2 poprawione (`.numer.pusty` z `padding: 0`, nowy test); testy 114/114. Następnie: MVP-2: F03 · Wyszukiwanie i filtry, potem F06 · Mapa trasy (pinezki według DEC-21, puste kółka bez klasy `pusty`).
 

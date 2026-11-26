@@ -1,5 +1,5 @@
 // Start aplikacji: wczytanie danych, ostrzeżenia, nawigacja po adresie (#/...), okna (E3, E5, E8),
-// zmiany planu dni (F05), wyszukiwanie i filtry (F03), tryb deweloperski.
+// zmiany planu dni (F05), panel mapy (F06), wyszukiwanie i filtry (F03), tryb deweloperski.
 // Widoki (src/widoki/) zwracają HTML z szablonu html``; tylko ten plik wstawia go do strony.
 import { html } from "./html.js";
 import { wczytaj, zapisz, zatwierdz, atrapaBlokujaca, KOMUNIKATY } from "./magazyn.js";
@@ -21,7 +21,8 @@ import {
   pytanieOUsuniecie, komunikatDodania
 } from "./widoki/podroze.js";
 import { widokFormularzaPodrozy, wartosciNowej, wartosciEdycji } from "./widoki/formularz-podrozy.js";
-import { komunikatUsunieciaPunktu, komunikatDodaniaMiejsc, NIEDOSTEPNE } from "./widoki/plan.js";
+import { komunikatUsunieciaPunktu, komunikatDodaniaMiejsc, NIEDOSTEPNE, EKRAN_PODROZY, panelMapy } from "./widoki/plan.js";
+import { przelaczPodswietlenie } from "./mapa.js";
 import { widokDodawania, listaDodawania, przyciskiDodawania } from "./widoki/dodaj-miejsca.js";
 import { widokSzukaj, listaWynikow, tekstLiczbyWynikow } from "./widoki/szukaj.js";
 import { wynikiSzukania, pustyStanSzukania, zmienFiltr, wyczysc } from "./szukaj.js";
@@ -45,6 +46,8 @@ let elementPrzedOknem = null; // tu wraca fokus po zamknięciu okna
 let idWOknie = null; // miejsce pokazane w oknie E3
 /** Hasło, filtry i sortowanie na E2 (F03). Stan ekranu: nie jest zapisywany; wejście na E2 zaczyna od nowa. */
 let szukanie = pustyStanSzukania();
+/** Wybór „Pokaż”, podświetlona pinezka i zakładka „Plan dni / Mapa” na E7 (F06). Nie jest zapisywany; wejście na E7 zaczyna od nowa. */
+let ekranPodrozy = { ...EKRAN_PODROZY };
 
 function pobierzLocalStorage() {
   try {
@@ -90,7 +93,7 @@ function widokSekcji({ sekcja, parametr }) {
     return widokZapisane(stan, zaznaczone);
   }
   // Podróże: lista E6 albo podróż E7 (#/podroze/<id>).
-  if (parametr !== null) return widokPodrozy(podroz(stan, parametr), dzisiaj());
+  if (parametr !== null) return widokPodrozy(podroz(stan, parametr), dzisiaj(), ekranPodrozy);
   return widokPodroze(stan, dzisiaj());
 }
 
@@ -430,6 +433,45 @@ function usunPunktZPodrozy(cel) {
   }, komunikat);
 }
 
+// ---------- Mapa trasy (F06) ----------
+
+/**
+ * Buduje od nowa tylko panel mapy (plan obok zostaje, przewinięcie też) i ustawia fokus
+ * na elemencie z tego samego selektora, bo poprzedni zniknął razem z panelem.
+ */
+function odswiezMape(cel, selektorFokusu) {
+  const p = podroz(stan, podrozPlanu(cel) ?? "");
+  const panel = document.getElementById("panel-mapy");
+  if (!p || !panel) return;
+  panel.innerHTML = panelMapy(p, ekranPodrozy).toString();
+  (panel.querySelector(selektorFokusu) ?? panel.querySelector("#pokaz-mapa"))?.focus();
+}
+
+/** Pinezka albo punkt listy pod mapą: podświetla pinezkę i punkt listy (F06, pkt 5). Fokus zostaje na klikniętym. */
+function podswietl(cel) {
+  const klucz = cel.dataset.klucz;
+  ekranPodrozy = { ...ekranPodrozy, aktywny: przelaczPodswietlenie(ekranPodrozy.aktywny, klucz) };
+  const rodzaj = cel.classList.contains("pinezka") ? ".pinezka" : ".punkt-mapy";
+  odswiezMape(cel, `${rodzaj}[data-klucz="${CSS.escape(klucz)}"]`);
+}
+
+/** „Pokaż”: Cała podróż albo dzień; podświetlenie znika. Fokus zostaje na liście wyboru. */
+function pokazNaMapie(cel) {
+  ekranPodrozy = { ...ekranPodrozy, pokaz: cel.value, aktywny: null };
+  odswiezMape(cel, "#pokaz-mapa");
+}
+
+/** „Plan dni / Mapa” na telefonie: zmienia się widoczna kolumna, fokus zostaje na przycisku. */
+function pokazPanel(cel) {
+  ekranPodrozy = { ...ekranPodrozy, panel: cel.dataset.panel === "mapa" ? "mapa" : "plan" };
+  const uklad = document.querySelector("#widok .podroz-uklad");
+  if (!uklad) return;
+  uklad.dataset.panel = ekranPodrozy.panel;
+  for (const b of document.querySelectorAll('#widok [data-akcja="pokaz-panel"]')) {
+    b.setAttribute("aria-pressed", String(b.dataset.panel === ekranPodrozy.panel));
+  }
+}
+
 // ---------- Dodaj miejsca (E8, F05) ----------
 
 /** Otwarte okno E8: { idPodrozy, fraza, wybrane }. Stan okna, nie jest zapisywany. */
@@ -556,6 +598,8 @@ document.addEventListener("click", (zdarzenie) => {
   else if (akcja === "dodaj-miejsca") otworzDodawanie(cel);
   else if (akcja === "zamknij-dodawanie") oknoDodawania.close();
   else if (akcja === "potwierdz-dodawanie") potwierdzDodawanie();
+  else if (akcja === "podswietl") podswietl(cel);
+  else if (akcja === "pokaz-panel") pokazPanel(cel);
   else if (akcja === "podpowiedz") ustawSzukanie({ ...wyczysc(szukanie), fraza: cel.dataset.fraza ?? "" });
   else if (akcja === "wyczysc-szukanie") ustawSzukanie(wyczysc(szukanie));
   else if (akcja === "zestaw-testowy" && trybDev) zaladujZestaw();
@@ -573,6 +617,7 @@ document.addEventListener("change", (zdarzenie) => {
   } else if (cel.dataset.zmiana === "przypisz" || cel.dataset.zmiana === "przenies") zmienDzien(cel);
   else if (cel.dataset.zmiana === "wybierz-miejsce") wybierzDoDodania(cel);
   else if (cel.dataset.zmiana === "filtr") zmienFiltrSzukania(cel);
+  else if (cel.dataset.zmiana === "pokaz-mapa") pokazNaMapie(cel);
 });
 
 // Wpisywanie w wyszukiwarkę okna E8 (F05) i w pole hasła na E2 (F03).
@@ -605,6 +650,7 @@ window.addEventListener("hashchange", () => {
   if (oknoFormularza.open) oknoFormularza.close();
   if (oknoDodawania.open) oknoDodawania.close();
   zacznijSzukanie();
+  ekranPodrozy = { ...EKRAN_PODROZY };
   render();
   window.scrollTo(0, 0);
   if (fokusNaNaglowek) {
