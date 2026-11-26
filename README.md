@@ -13,11 +13,11 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 | ID | Funkcja | Priorytet | Status | Weryfikacja |
 |---|---|---|---|---|
 | F00 | Fundament i zabezpieczenia | MVP-1 | zbudowana, zweryfikowana (2 rundy); W3b rozstrzygnięte: podpisy menu 16 px (DEC-19) | runda 2 (ostatnia): WARNING, 25.11.2026 — W1, W2 i kontrast z W3 naprawione ([docs/weryfikacja/F00.md](docs/weryfikacja/F00.md)) |
-| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zbudowana, zweryfikowana (runda 1); W1 i W2 poprawione 25.11.2026 | WARNING, 25.11.2026: [docs/weryfikacja/F01.md](docs/weryfikacja/F01.md); poprawki sprawdza weryfikacja MVP-1 |
-| F02 | Zapisywanie miejsc | MVP-1 | zbudowana 25.11.2026 | [uzupełnia: Faza C, weryfikacja MVP-1] |
+| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zbudowana, zweryfikowana (runda 1); W1 i W2 poprawione 25.11.2026 | WARNING, 25.11.2026: [docs/weryfikacja/F01.md](docs/weryfikacja/F01.md); W1 i W2 potwierdzone w weryfikacji MVP-1 (26.11.2026) |
+| F02 | Zapisywanie miejsc | MVP-1 | zbudowana 25.11.2026, zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 6/6 spełnione ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
-| F04 | Podróże | MVP-1 | zbudowana 25.11.2026; ekran podróży (E7) z planem dni od F05 | [uzupełnia: Faza C, weryfikacja MVP-1] |
-| F05 | Plan dni | MVP-1 | zbudowana 26.11.2026: przypisywanie do dni, kolejność ↑/↓, przenoszenie, usuwanie z podróży, okno „Dodaj miejsca” | [uzupełnia: Faza C, weryfikacja MVP-1] |
+| F04 | Podróże | MVP-1 | zbudowana 25.11.2026; ekran podróży (E7) z planem dni od F05; zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 8/8 spełnione ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
+| F05 | Plan dni | MVP-1 | zbudowana 26.11.2026: przypisywanie do dni, kolejność ↑/↓, przenoszenie, usuwanie z podróży, okno „Dodaj miejsca”; zweryfikowana | MVP-1: WARNING, 26.11.2026, kryteria 6/6 spełnione; do decyzji W1 (kontrast numeru dnia) i W2 (owalne puste kółko) ([docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md)) |
 | F06 | Mapa trasy | MVP-2 | do zrobienia | [uzupełnia: Faza C] |
 | F07 | Planowanie automatyczne | Później | przeniesiona do „Później” (DEC-10) | — |
 
@@ -33,7 +33,7 @@ Osoba planująca wyjazd → zapisuje miejsca na ekranie Odkrywaj → tworzy z ni
 ## Bezpieczeństwo i dane
 - Poziom ochrony danych: P0
 - Bramka prawdziwych danych: jeszcze nie
-- Weryfikacja całego MVP: [uzupełnia: Faza C — docs/weryfikacja/MVP.md]
+- Weryfikacja MVP-1 (F02, F04, F05, poprawki F01): WARNING, 26.11.2026 — [docs/weryfikacja/MVP.md](docs/weryfikacja/MVP.md); MVP-2 (F03, F06) jeszcze nie
 
 ## Jak uruchomić lokalnie
 Potrzebne: [Node.js](https://nodejs.org) w wersji 22 lub nowszej (bez instalowania dodatkowych pakietów) i git.

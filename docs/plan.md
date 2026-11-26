@@ -91,10 +91,10 @@ Q1: F06 w MVP-2 (DEC-17).
 | Kolejność | Karta | Poziom | Szacunek | Status |
 |---|---|---|---|---|
 | 1 | F00 Fundament i zabezpieczenia | Wysoki | 1 wieczór | zweryfikowana: WARNING (runda 2, ostatnia); W1, W2, W3a naprawione, W3b: menu 16 px (DEC-19) |
-| 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | zweryfikowana: WARNING (runda 1), czeka na decyzje właścicielki |
-| 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | do zrobienia |
-| 4 | F04 Podróże | Średni | 1 wieczór | zbudowana 25.11.2026 |
-| 5 | F05 Plan dni | Wysoki | 1 wieczór | zbudowana 26.11.2026 |
+| 2 | F01 Układ aplikacji i Odkrywaj | Średni | 1 wieczór | zweryfikowana: WARNING (runda 1); W1, W2 poprawione i potwierdzone w weryfikacji MVP-1, W3: DEC-20 |
+| 3 | F02 Zapisywanie miejsc | Średni | 0,5 wieczoru | zweryfikowana w MVP-1: WARNING |
+| 4 | F04 Podróże | Średni | 1 wieczór | zweryfikowana w MVP-1: WARNING |
+| 5 | F05 Plan dni | Wysoki | 1 wieczór | zweryfikowana w MVP-1: WARNING; W1, W2 czekają na decyzje |
 | 6 | F03 Wyszukiwanie i filtry (MVP-2) | Średni | 0,5 wieczoru | do zrobienia |
 | 7 | F06 Mapa trasy (MVP-2) | Wysoki | 1 wieczór | do zrobienia |
 | — | F07 Planowanie automatyczne | — | — | Później (DEC-10) |
@@ -252,10 +252,10 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 | ID | Funkcja | Priorytet | Status |
 |---|---|---|---|
 | F00 | Fundament i zabezpieczenia | MVP-1 | zweryfikowana: WARNING, runda 2 (ostatnia); W3b: menu 16 px (DEC-19) (docs/weryfikacja/F00.md) |
-| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F01.md); W1 i W2 poprawione w sesji F02 (sprawdza weryfikacja MVP) |
-| F02 | Zapisywanie miejsc | MVP-1 | zbudowana, czeka na weryfikację MVP-1 |
-| F04 | Podróże | MVP-1 | zbudowana, czeka na weryfikację MVP-1 |
-| F05 | Plan dni | MVP-1 | zbudowana, czeka na weryfikację MVP-1 |
+| F01 | Układ aplikacji i Odkrywaj | MVP-1 | zweryfikowana: WARNING, runda 1 (docs/weryfikacja/F01.md); W1 i W2 poprawione w sesji F02, potwierdzone w weryfikacji MVP-1 (docs/weryfikacja/MVP.md) |
+| F02 | Zapisywanie miejsc | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 6/6 |
+| F04 | Podróże | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 8/8 |
+| F05 | Plan dni | MVP-1 | zweryfikowana w MVP-1: WARNING, runda 1 (docs/weryfikacja/MVP.md); kryteria 6/6; W1 (kontrast numeru dnia a design.md) i W2 (owalne puste kółko) czekają na decyzje właścicielki |
 | F03 | Wyszukiwanie i filtry | MVP-2 | do zrobienia |
 | F06 | Mapa trasy | MVP-2 | do zrobienia |
 | F07 | Planowanie automatyczne | Później | przeniesiona (DEC-10) |
@@ -271,7 +271,9 @@ Pliki: `src/mapa.js`, `src/widoki/plan.js`, `style.css`, `tests/mapa.test.js`.
 - F03 może użyć `normalizuj()` z `widoki/dodaj-miejsca.js` (albo przenieść ją do `szukaj.js`).
 
 ## 11. Następny krok
-F05 zbudowana 26.11.2026: plan dni na E7 (przypisywanie, ↑/↓, przenoszenie na koniec dnia, ×), okno E8 „Dodaj miejsca”, stany puste, „Miejsce niedostępne”, błąd zapisu; testy 113/113. Podgląd E7 z F04 zastąpiony. MVP-1 (F00–F02, F04, F05) jest kompletne. Następnie: weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02, F04, F05 oraz W1 i W2 z F01; potem MVP-2: F03, F06.
+Weryfikacja MVP-1 26.11.2026 (docs/weryfikacja/MVP.md): WARNING. Kryteria F02, F04, F05 spełnione (20/20), poprawki W1 i W2 z F01 działają, N1, N2, N4, N5 prawdziwe, testy 113/113, `trail check` bez konfliktów. Do decyzji właścicielki przed F06: W1 — numer dnia ma kontrast 3,3–4,1:1 (WCAG AA dla dużego tekstu), a design.md wymaga 4,5:1 bez wyjątku (propozycja DEC-21); W2 — puste kółko „Do zaplanowania” jest owalem 36×84 px przez kolizję klasy `pusty` (poprawka 1 linii CSS). Następnie: decyzje W1 i W2, potem MVP-2: F03, F06.
+
+Wcześniej: F05 zbudowana 26.11.2026: plan dni na E7 (przypisywanie, ↑/↓, przenoszenie na koniec dnia, ×), okno E8 „Dodaj miejsca”, stany puste, „Miejsce niedostępne”, błąd zapisu; testy 113/113. Podgląd E7 z F04 zastąpiony. MVP-1 (F00–F02, F04, F05) jest kompletne. Następnie: weryfikacja MVP-1 (docs/weryfikacja/MVP.md), która sprawdza F02, F04, F05 oraz W1 i W2 z F01; potem MVP-2: F03, F06.
 
 Wcześniej: F04 zbudowana 25.11.2026: zaznaczanie na E4, formularz E5 z walidacją i podpowiedzią kierunku, lista E6 ze statusem, usuwanie z potwierdzeniem, „Dodaj do podróży” w E3, podgląd E7 do czasu F05; testy 95/95.
 
