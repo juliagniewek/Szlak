@@ -4,7 +4,7 @@
 import { html } from "../html.js";
 import { ikona } from "../ikony.js";
 import { KATEGORIE, adresStronyPliku } from "../dane/katalog.js";
-import { zdjecieMiejsca } from "./odkrywaj.js";
+import { zdjecieMiejsca, nazwaLicencji } from "./odkrywaj.js";
 
 /** Współrzędne w formacie „41.8902, 12.4922”; null, gdy miejsce ich nie ma. */
 export function formatWspolrzednych(wsp) {
@@ -12,11 +12,14 @@ export function formatWspolrzednych(wsp) {
   return `${wsp[0].toFixed(4)}, ${wsp[1].toFixed(4)}`;
 }
 
-/** Podpis zdjęcia „Zdjęcie: autor, licencja” z odnośnikiem do strony pliku na Commons (DEC-13). */
+/**
+ * Podpis zdjęcia „Zdjęcie: autor, licencja” z odnośnikiem do strony pliku na Commons (DEC-13);
+ * nazwa licencji prowadzi do jej tekstu (DEC-22).
+ */
 function podpisZdjecia(zdjecie) {
   if (!zdjecie) return "";
   return html`
-    <p class="podpis-zdjecia">Zdjęcie: ${zdjecie.autor}, ${zdjecie.licencja} ·
+    <p class="podpis-zdjecia">Zdjęcie: ${zdjecie.autor}, ${nazwaLicencji(zdjecie.licencja)} ·
       <a href="${adresStronyPliku(zdjecie)}" target="_blank" rel="noopener noreferrer">strona pliku na Wikimedia Commons</a></p>`;
 }
 

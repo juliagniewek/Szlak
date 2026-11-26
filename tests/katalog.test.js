@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   MIEJSCA, KIERUNKI, KATEGORIE, OZNACZENIA, SZEROKOSCI_ZDJEC,
-  adresZdjecia, adresStronyPliku, miejsce
+  adresZdjecia, adresStronyPliku, adresLicencji, miejsce
 } from "../src/dane/katalog.js";
 
 /** Zwraca listę problemów z miejscem katalogu (pusta lista = miejsce poprawne). */
@@ -89,4 +89,23 @@ test("adresy zdjęć używają tylko standardowych szerokości 500 i 960 px", ()
   assert.equal(adresZdjecia(z, 960), "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/960px-Colosseo_2020.jpg");
   assert.throws(() => adresZdjecia(z, 640), /Niedozwolona szerokość/);
   assert.equal(adresStronyPliku(z), "https://commons.wikimedia.org/wiki/File:Colosseo_2020.jpg");
+});
+
+test("DEC-22: każda licencja zdjęcia w katalogu ma adres swojego tekstu na creativecommons.org", () => {
+  const licencje = new Set([...MIEJSCA, ...KIERUNKI].filter((x) => x.zdjecie).map((x) => x.zdjecie.licencja));
+  for (const l of licencje) assert.match(adresLicencji(l) ?? "", /^https:\/\/creativecommons\.org\/(licenses|publicdomain)\/[a-z-]+\/\d\.\d\/([a-z]{2}\/)?$/, l);
+  // Wersja i rodzaj w adresie zgadzają się z nazwą.
+  assert.equal(adresLicencji("CC BY-SA 4.0"), "https://creativecommons.org/licenses/by-sa/4.0/");
+  assert.equal(adresLicencji("CC BY 2.0"), "https://creativecommons.org/licenses/by/2.0/");
+  assert.equal(adresLicencji("CC BY-SA 3.0 de"), "https://creativecommons.org/licenses/by-sa/3.0/de/");
+  assert.equal(adresLicencji("CC0"), "https://creativecommons.org/publicdomain/zero/1.0/");
+  for (const l of licencje) {
+    if (l === "CC0") continue;
+    const [, rodzaj, wersja, kraj] = l.match(/^CC (BY(?:-SA)?) (\d\.\d)(?: ([a-z]{2}))?$/) ?? [];
+    assert.ok(rodzaj, `nieznany zapis licencji: ${l}`);
+    assert.equal(adresLicencji(l), `https://creativecommons.org/licenses/${rodzaj.toLowerCase()}/${wersja}/${kraj ? `${kraj}/` : ""}`, l);
+  }
+  // Nieznana nazwa → brak adresu (podpis pokazuje samą nazwę); nazwy pól obiektu nie są licencjami.
+  assert.equal(adresLicencji("Licencja nieznana"), null);
+  assert.equal(adresLicencji("toString"), null);
 });

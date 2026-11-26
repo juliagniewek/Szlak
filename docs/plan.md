@@ -1,5 +1,5 @@
 # Plan techniczny: szlak.
-Wersja 1.2 · 25.11.2026 · Faza A; w 1.2 zmieniona sekcja 5.3 po weryfikacji F00 (W2) · Podstawa: docs/specyfikacja.md (v1.2, 25.11.2026), karty F00–F06, AGENTS.md, design.md, prototyp.html
+Wersja 1.2 · 25.11.2026 · Faza A; w 1.2 zmieniona sekcja 5.3 po weryfikacji F00 (W2) · Podstawa: docs/specyfikacja.md (v1.2, 25.11.2026; obecnie v1.4 z DEC-21 i DEC-22), karty F00–F06, AGENTS.md, design.md, prototyp.html
 
 Pierwszeństwo bez zmian: decyzje DEC > specyfikacja > karta > ten plan. Ten plan dopowiada tylko to, co specyfikacja zostawiła Fazie A (sekcja 8, „Decyzje dla Fazy A”). Pytania z Fazy A i odpowiedzi właścicielki są na końcu (sekcja 12); decyzje trafiły do specyfikacji jako DEC-13–DEC-17.
 
@@ -277,7 +277,9 @@ Dodatkowo w sesji F06 (26.11.2026): `src/app.js` (stan ekranu E7 `ekranPodrozy`:
 - (Zrobione w F03: `normalizuj()` przeniesiona do `src/szukaj.js`, E8 jej używa.) Do rozważenia: E8 szuka bez obcinania końcówek, E2 z obcinaniem (np. „punkt widokowy” w E8 nic nie znajduje); ujednolicenie zmieniłoby zachowanie F05, więc wymaga decyzji właścicielki.
 
 ## 11. Następny krok
-Plan publikacji 26.11.2026: docs/publikacja.md. Aplikacja jest już publiczna pod `juliagniewek.github.io/Szlak/`, bo Pages publikuje `main` przy każdym `git push` (sprawdzone na stronie: wersja z `0b22169`, „O danych” jest, `?dev` wyłączony). Przed udostępnieniem linku ludziom: decyzja I3 z F01 (odnośnik do licencji zdjęć), bramka prawdziwych danych (specyfikacja, sekcja 7), `git push` zaległych commitów, test z 2–3 osobami (R1), uzupełnienie README. Następnie: decyzja I3.
+I3 z F01 rozstrzygnięte 26.11.2026 (DEC-22, specyfikacja v1.4): nazwa licencji w podpisie zdjęcia i w „Źródłach zdjęć” prowadzi do tekstu licencji na creativecommons.org (`adresLicencji()` w `src/dane/katalog.js`, `nazwaLicencji()` w `src/widoki/odkrywaj.js`); testy 150/150. Dwa testy KA7 z F01 sprawdzają teraz widoczny tekst bez znaczników (napis bez zmian). Następnie: bramka prawdziwych danych (docs/publikacja.md, krok 2), potem `git push`.
+
+Wcześniej: Plan publikacji 26.11.2026: docs/publikacja.md. Aplikacja jest już publiczna pod `juliagniewek.github.io/Szlak/`, bo Pages publikuje `main` przy każdym `git push` (sprawdzone na stronie: wersja z `0b22169`, „O danych” jest, `?dev` wyłączony). Przed udostępnieniem linku ludziom: decyzja I3 z F01 (odnośnik do licencji zdjęć), bramka prawdziwych danych (specyfikacja, sekcja 7), `git push` zaległych commitów, test z 2–3 osobami (R1), uzupełnienie README. Następnie: decyzja I3.
 
 Wcześniej: Weryfikacja MVP-2 26.11.2026 (docs/weryfikacja/MVP-2.md): WARNING. Kryteria F03 i F06 spełnione (11/11), N1–N5 prawdziwe (N3 sprawdzone kliknięciem ↓ w przeglądarce), `trail check` bez konfliktów. W1 — puste kółko „Do zaplanowania” przykrywało pinezki z numerami w tym samym miejscu; decyzja właścicielki: wariant (a), poprawione (`.pinezka:has(.kolko-puste) { z-index: 0; }`, nowy test); testy 148/148. W2 — wybrana zakładka „Plan dni / Mapa” różniła się tylko jaśniejszym tłem (1,3:1); decyzja właścicielki: jak w design.md, poprawione (`--brown` z tekstem `--cream`, nowy test); testy 149/149. W3 — test F06 „wygląd: na telefonie…” nie przechodził, gdy `style.css` ma końce linii Windowsa (`core.autocrlf=true`); za zgodą właścicielki poprawiony (wyrażenie z `\r?\n`, oczekiwany wynik bez zmian). MVP-1 i MVP-2 są zweryfikowane, ostrzeżenia rozwiązane. Następnie: przygotowanie publikacji na GitHub Pages (decyzja właścicielki).
 

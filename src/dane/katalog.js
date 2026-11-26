@@ -323,6 +323,25 @@ export function adresStronyPliku(zdjecie) {
   return `https://commons.wikimedia.org/wiki/File:${zdjecie.plik.split("/").pop()}`;
 }
 
+/**
+ * Teksty licencji zdjęć z katalogu na creativecommons.org (DEC-22, I3 z weryfikacji F01): licencje CC 2.0 i 3.0
+ * wymagają podania adresu licencji. Nowa licencja w katalogu musi tu trafić (sprawdza test katalogu).
+ */
+const ADRESY_LICENCJI = {
+  "CC0": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "CC BY 2.0": "https://creativecommons.org/licenses/by/2.0/",
+  "CC BY 3.0": "https://creativecommons.org/licenses/by/3.0/",
+  "CC BY-SA 2.0": "https://creativecommons.org/licenses/by-sa/2.0/",
+  "CC BY-SA 3.0": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "CC BY-SA 3.0 de": "https://creativecommons.org/licenses/by-sa/3.0/de/",
+  "CC BY-SA 4.0": "https://creativecommons.org/licenses/by-sa/4.0/"
+};
+
+/** Adres tekstu licencji; null, gdy nazwa jest nieznana (wtedy podpis pokazuje samą nazwę). */
+export function adresLicencji(licencja) {
+  return Object.hasOwn(ADRESY_LICENCJI, licencja) ? ADRESY_LICENCJI[licencja] : null;
+}
+
 /** Miejsce po identyfikatorze; undefined, gdy miejsca nie ma już w katalogu (plan 5.4). */
 const poId = new Map(MIEJSCA.map((m) => [m.id, m]));
 export function miejsce(id) {

@@ -2,7 +2,7 @@
 // Kliknięcia sprawdzamy na poziomie widoku, który kliknięcie pokazuje (plan, sekcja 7).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { MIEJSCA, KIERUNKI, miejsce, adresStronyPliku } from "../src/dane/katalog.js";
+import { MIEJSCA, KIERUNKI, miejsce, adresStronyPliku, adresLicencji } from "../src/dane/katalog.js";
 import {
   widokOdkrywaj, miejscaSekcji, miejscaKierunku, adresKierunku, kartaMiejsca, zrodlaZdjec, KART_W_SEKCJI
 } from "../src/widoki/odkrywaj.js";
@@ -11,6 +11,8 @@ import { widokMenu, widokStopki, SEKCJE_MENU, TEKST_STOPKI } from "../src/widoki
 
 const tekst = (bezpieczny) => bezpieczny.toString();
 const policz = (napis, wzor) => (napis.match(wzor) ?? []).length;
+/** HTML bez znaczników, z zachowanymi encjami: tekst, który widzi osoba czytająca. */
+const bezZnacznikow = (kod) => kod.replace(/<[^>]+>/g, "");
 const KARTA = /<article class="karta-miejsca">/g;
 
 /** Nazwy miejsc z kart w HTML, w kolejności (nazwa jest w przycisku .jak-link). */
@@ -102,7 +104,10 @@ test("KA7: E3 „Koloseum” ma podpis z autorem i licencją oraz odnośnik do s
   const koloseum = miejsce("rzym-koloseum");
   const kod = tekst(widokMiejsca(koloseum));
   const { autor, licencja } = koloseum.zdjecie;
-  assert.ok(kod.includes(`Zdjęcie: ${autor}, ${licencja}`));
+  // Widoczny tekst bez znaczników: od DEC-22 nazwa licencji jest odnośnikiem, napis się nie zmienia.
+  assert.ok(bezZnacznikow(kod).includes(`Zdjęcie: ${autor}, ${licencja}`));
+  assert.ok(kod.includes(`<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="license noopener noreferrer">CC BY-SA 4.0</a>`),
+    "nazwa licencji prowadzi do jej tekstu (DEC-22)");
   assert.ok(kod.includes(`href="${adresStronyPliku(koloseum.zdjecie)}"`));
   assert.match(kod, /href="https:\/\/commons\.wikimedia\.org\/wiki\/File:Colosseo_2020\.jpg"/);
   // podpis jest pod zdjęciem
@@ -116,7 +121,9 @@ test("KA7: „Źródła zdjęć” wymienia każde zdjęcie z katalogu (miejsca 
   assert.equal(zrodlaZdjec().length, wszystkie.length);
   for (const z of wszystkie) {
     assert.ok(kod.includes(`href="${adresStronyPliku(z)}"`), z.plik);
-    assert.ok(kod.includes(`${z.autor}, ${z.licencja}`.replace(/&/g, "&amp;").replace(/'/g, "&#39;")), z.plik);
+    // Widoczny tekst bez znaczników (od DEC-22 nazwa licencji jest odnośnikiem); napis bez zmian.
+    assert.ok(bezZnacznikow(kod).includes(`${z.autor}, ${z.licencja}`.replace(/&/g, "&amp;").replace(/'/g, "&#39;")), z.plik);
+    assert.ok(kod.includes(`<a href="${adresLicencji(z.licencja)}" target="_blank" rel="license noopener noreferrer">${z.licencja}</a>`), z.plik);
   }
   assert.ok(tekst(widokOdkrywaj("Lizbona")).includes("<summary>Źródła zdjęć</summary>"), "także na liście kierunku");
 });

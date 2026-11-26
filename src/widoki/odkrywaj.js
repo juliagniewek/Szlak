@@ -2,7 +2,17 @@
 // Widoki to funkcje „dane → HTML”; kliknięcia obsługuje app.js przez data-akcja i adresy #/...
 import { html } from "../html.js";
 import { ikona } from "../ikony.js";
-import { MIEJSCA, KIERUNKI, KATEGORIE, adresZdjecia, adresStronyPliku } from "../dane/katalog.js";
+import { MIEJSCA, KIERUNKI, KATEGORIE, adresZdjecia, adresStronyPliku, adresLicencji } from "../dane/katalog.js";
+
+/**
+ * Nazwa licencji zdjęcia jako odnośnik do jej tekstu na creativecommons.org (DEC-22);
+ * licencja spoza listy w katalogu zostaje zwykłym tekstem. Używa jej też podpis zdjęcia w E3 (miejsce.js).
+ */
+export function nazwaLicencji(licencja) {
+  const adres = adresLicencji(licencja);
+  if (!adres) return licencja;
+  return html`<a href="${adres}" target="_blank" rel="license noopener noreferrer">${licencja}</a>`;
+}
 
 /** Najwięcej kart w jednej sekcji E1. */
 export const KART_W_SEKCJI = 8;
@@ -128,10 +138,10 @@ function widokZrodel() {
   return html`
     <details class="rozwijane zrodla">
       <summary>Źródła zdjęć</summary>
-      <p class="maly muted">Zdjęcia pochodzą z Wikimedia Commons. Odnośnik prowadzi do strony pliku z pełnym opisem licencji.</p>
+      <p class="maly muted">Zdjęcia pochodzą z Wikimedia Commons. Nazwa licencji prowadzi do jej tekstu, a „strona pliku” do opisu zdjęcia na Commons.</p>
       <ul>
         ${zrodlaZdjec().map((z) => html`
-          <li>${z.podpis}: ${z.zdjecie.autor}, ${z.zdjecie.licencja} ·
+          <li>${z.podpis}: ${z.zdjecie.autor}, ${nazwaLicencji(z.zdjecie.licencja)} ·
             <a href="${adresStronyPliku(z.zdjecie)}" target="_blank" rel="noopener noreferrer">strona pliku</a></li>`)}
       </ul>
     </details>`;

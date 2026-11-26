@@ -25,6 +25,8 @@ Podpis zdjęcia ma dziś nazwę licencji jako tekst („CC BY-SA 4.0”) i odno�
 
 To nie jest porada prawna. Bezpieczniejszy jest wariant (b).
 
+**Zrobione 26.11.2026: wariant (b), DEC-22.** Nazwa licencji w podpisie i w „Źródłach zdjęć” prowadzi do tekstu licencji (7 adresów, wszystkie sprawdzone). Szczegóły w docs/weryfikacja/F01.md, „Decyzje właścicielki”.
+
 ### 2. Bramka prawdziwych danych (specyfikacja, sekcja 7)
 Trzy punkty. Wynik zapisujemy w docs/weryfikacja/MVP.md jako „Bramka prawdziwych danych: odhaczona 26.11.2026” (albo inna data) i w README („Bramka prawdziwych danych: tak, …”).
 
